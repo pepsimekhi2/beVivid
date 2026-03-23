@@ -1,11 +1,10 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
-  "redirects": [
+  "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/",
-      "permanent": false
+      "destination": "/bevivid.html"
     }
   ]
 }
