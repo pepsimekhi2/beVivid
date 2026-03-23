@@ -246,6 +246,32 @@
     color: rgba(245,240,235,0.35);
     margin-bottom: 12px;
   }
+  .notify-toggle {
+    display: flex;
+    gap: 0;
+    max-width: 460px;
+    margin-bottom: 10px;
+  }
+  .toggle-btn {
+    flex: 1;
+    background: transparent;
+    border: 1px solid rgba(245,240,235,0.14);
+    padding: 8px 0;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(245,240,235,0.3);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .toggle-btn:first-child { border-radius: 4px 0 0 4px; }
+  .toggle-btn:last-child  { border-radius: 0 4px 4px 0; border-left: none; }
+  .toggle-btn.active {
+    background: rgba(245,240,235,0.08);
+    color: var(--white);
+    border-color: rgba(245,240,235,0.35);
+  }
   .form-row {
     display: flex;
     max-width: 460px;
@@ -255,6 +281,17 @@
     transition: border-color 0.3s;
   }
   .form-row:focus-within { border-color: rgba(245,240,235,0.45); }
+  .sms-prefix {
+    display: none;
+    align-items: center;
+    padding: 0 12px 0 16px;
+    background: rgba(245,240,235,0.04);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: rgba(245,240,235,0.4);
+    border-right: 1px solid rgba(245,240,235,0.1);
+    white-space: nowrap;
+  }
   .form-row input {
     flex: 1;
     background: rgba(245,240,235,0.04);
@@ -414,19 +451,38 @@
         We're building the space for them. For <em>you</em>.
       </p>
 
-      <div class="form-wrap">
+      <div class="form-wrap" id="formWrap">
         <label class="form-label">Get notified when we open</label>
+
+        <div class="notify-toggle">
+          <button class="toggle-btn active" id="btnEmail" onclick="setMode('email')">Email</button>
+          <button class="toggle-btn" id="btnSms" onclick="setMode('sms')">SMS</button>
+        </div>
+
         <div class="form-row">
-          <input type="email" id="emailInput" placeholder="your@email.com" autocomplete="off" />
+          <span class="sms-prefix" id="smsPrefix">+1</span>
+          <input type="text" id="mainInput" placeholder="your@email.com" autocomplete="off" />
           <button onclick="handleSubmit()">Notify me</button>
         </div>
         <p class="form-note">No noise. Just the moment we open the doors.</p>
         <p class="success-msg" id="successMsg">✦ &nbsp;You're on the list. We'll find you.</p>
 
-        <!-- Hidden Brevo form submitted in background -->
-        <iframe name="brevo-hidden" style="display:none;" aria-hidden="true"></iframe>
-        <form id="brevo-form" method="POST" action="https://cd7a2b82.sibforms.com/serve/MUIFAGkhbkF_N7Ur_VefaSd57zX1BiR5C4aPXPgLR4vPoGwanPI4uNuzZATM_NXCUGxZGy9rUeMVtW4dN8sA11nAgwqdnlp_7SNBV-qX2x3tIl8HxzHd3vmhzzsDzx-5tZJUxf5aFZsxa-n-g8krrnnlfATUaf2x7QrQGgsmPxoXriybxYxvbnfHEYbFOqCzuWGEqwISuadKpY5Ulw==" target="brevo-hidden" style="display:none;">
+        <!-- Hidden Brevo iframes -->
+        <iframe name="brevo-hidden-email" style="display:none;" aria-hidden="true"></iframe>
+        <iframe name="brevo-hidden-sms" style="display:none;" aria-hidden="true"></iframe>
+
+        <!-- Email form -->
+        <form id="brevo-email-form" method="POST" action="https://cd7a2b82.sibforms.com/serve/MUIFAGkhbkF_N7Ur_VefaSd57zX1BiR5C4aPXPgLR4vPoGwanPI4uNuzZATM_NXCUGxZGy9rUeMVtW4dN8sA11nAgwqdnlp_7SNBV-qX2x3tIl8HxzHd3vmhzzsDzx-5tZJUxf5aFZsxa-n-g8krrnnlfATUaf2x7QrQGgsmPxoXriybxYxvbnfHEYbFOqCzuWGEqwISuadKpY5Ulw==" target="brevo-hidden-email" style="display:none;">
           <input type="text" name="EMAIL" id="brevo-email" />
+          <input type="text" name="email_address_check" value="" />
+          <input type="hidden" name="locale" value="en" />
+          <input type="hidden" name="html_type" value="simple" />
+        </form>
+
+        <!-- SMS form -->
+        <form id="brevo-sms-form" method="POST" action="https://cd7a2b82.sibforms.com/serve/MUIFAEkGS-e7i2z-M9mJ7VVbJ4UpkfQB7m07LBzx3fOBBsuQDs2baqCO1WjwwZJG1LlLQcDrCcoBz-6I7gqsHMmC42z_I23Dll827jgwbRqyATU03iy7reUXR3ScBg0ug1OxSlf6CZCEkbf4L6XAEObTXb6G6ii2eYgl52Rij9trO6-utWZrm4IQV2y1df3j3IPd1QLRSvxhsWd8fA==" target="brevo-hidden-sms" style="display:none;">
+          <input type="hidden" name="SMS__COUNTRY_CODE" value="+1" />
+          <input type="text" name="SMS" id="brevo-sms" />
           <input type="text" name="email_address_check" value="" />
           <input type="hidden" name="locale" value="en" />
           <input type="hidden" name="html_type" value="simple" />
@@ -440,31 +496,90 @@
 </div>
 
 <script>
-  // Form
+  let mode = 'email';
+
+  // Check localStorage — if already signed up, hide form
+  if (localStorage.getItem('bevivid_notified')) {
+    document.addEventListener('DOMContentLoaded', () => {
+      const wrap = document.getElementById('formWrap');
+      if (wrap) {
+        wrap.querySelector('.notify-toggle').style.display = 'none';
+        wrap.querySelector('.form-row').style.display = 'none';
+        wrap.querySelector('.form-note').style.display = 'none';
+        const msg = document.getElementById('successMsg');
+        msg.style.display = 'block';
+        msg.textContent = '✦  You\'re already on the list. We\'ll find you.';
+      }
+    });
+  }
+
+  function setMode(m) {
+    mode = m;
+    const input = document.getElementById('mainInput');
+    const prefix = document.getElementById('smsPrefix');
+    document.getElementById('btnEmail').classList.toggle('active', m === 'email');
+    document.getElementById('btnSms').classList.toggle('active', m === 'sms');
+    if (m === 'email') {
+      input.placeholder = 'your@email.com';
+      input.type = 'email';
+      prefix.style.display = 'none';
+    } else {
+      input.placeholder = '2015550123';
+      input.type = 'tel';
+      prefix.style.display = 'flex';
+    }
+    input.value = '';
+    input.focus();
+  }
+
   function handleSubmit() {
-    const input = document.getElementById('emailInput');
+    const input = document.getElementById('mainInput');
     const msg = document.getElementById('successMsg');
     const row = document.querySelector('.form-row');
-    if (!input.value || !input.value.includes('@')) {
-      input.style.borderLeft = '2px solid var(--vivid-1)';
-      setTimeout(() => input.style.borderLeft = '', 1000);
-      return;
+    const toggle = document.querySelector('.notify-toggle');
+    const note = document.querySelector('.form-note');
+    const val = input.value.trim();
+
+    if (mode === 'email') {
+      if (!val || !val.includes('@')) {
+        input.style.borderLeft = '2px solid var(--vivid-1)';
+        setTimeout(() => input.style.borderLeft = '', 1000);
+        return;
+      }
+      document.getElementById('brevo-email').value = val;
+      document.getElementById('brevo-email-form').submit();
+    } else {
+      const digits = val.replace(/\D/g, '');
+      if (digits.length < 6) {
+        input.style.borderLeft = '2px solid var(--vivid-1)';
+        setTimeout(() => input.style.borderLeft = '', 1000);
+        return;
+      }
+      document.getElementById('brevo-sms').value = digits;
+      document.getElementById('brevo-sms-form').submit();
     }
-    // Submit to Brevo silently
-    document.getElementById('brevo-email').value = input.value;
-    document.getElementById('brevo-form').submit();
-    // Show success UI
+
+    // Save to localStorage so form doesn't show again
+    localStorage.setItem('bevivid_notified', '1');
+
+    // Fade out form, show success
     row.style.opacity = '0';
     row.style.transition = 'opacity 0.4s';
+    toggle.style.opacity = '0';
+    toggle.style.transition = 'opacity 0.4s';
     setTimeout(() => {
       row.style.display = 'none';
+      toggle.style.display = 'none';
+      note.style.display = 'none';
       msg.style.display = 'block';
     }, 400);
     input.value = '';
   }
 
-  document.getElementById('emailInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') handleSubmit();
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('mainInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleSubmit();
+    });
   });
 
   // Parallax orbs on mouse
