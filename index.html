@@ -415,13 +415,22 @@
       </p>
 
       <div class="form-wrap">
-        <label class="form-label" for="emailInput">Get notified when we open</label>
+        <label class="form-label">Get notified when we open</label>
         <div class="form-row">
           <input type="email" id="emailInput" placeholder="your@email.com" autocomplete="off" />
           <button onclick="handleSubmit()">Notify me</button>
         </div>
         <p class="form-note">No noise. Just the moment we open the doors.</p>
         <p class="success-msg" id="successMsg">✦ &nbsp;You're on the list. We'll find you.</p>
+
+        <!-- Hidden Brevo form submitted in background -->
+        <iframe name="brevo-hidden" style="display:none;" aria-hidden="true"></iframe>
+        <form id="brevo-form" method="POST" action="https://cd7a2b82.sibforms.com/serve/MUIFAGkhbkF_N7Ur_VefaSd57zX1BiR5C4aPXPgLR4vPoGwanPI4uNuzZATM_NXCUGxZGy9rUeMVtW4dN8sA11nAgwqdnlp_7SNBV-qX2x3tIl8HxzHd3vmhzzsDzx-5tZJUxf5aFZsxa-n-g8krrnnlfATUaf2x7QrQGgsmPxoXriybxYxvbnfHEYbFOqCzuWGEqwISuadKpY5Ulw==" target="brevo-hidden" style="display:none;">
+          <input type="text" name="EMAIL" id="brevo-email" />
+          <input type="text" name="email_address_check" value="" />
+          <input type="hidden" name="locale" value="en" />
+          <input type="hidden" name="html_type" value="simple" />
+        </form>
       </div>
     </div>
   </main>
@@ -441,6 +450,10 @@
       setTimeout(() => input.style.borderLeft = '', 1000);
       return;
     }
+    // Submit to Brevo silently
+    document.getElementById('brevo-email').value = input.value;
+    document.getElementById('brevo-form').submit();
+    // Show success UI
     row.style.opacity = '0';
     row.style.transition = 'opacity 0.4s';
     setTimeout(() => {
