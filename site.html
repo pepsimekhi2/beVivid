@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -10,545 +11,617 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --black: #050505;
-  --white: #f5f0eb;
-  --white-40: rgba(245,240,235,0.40);
-  --white-20: rgba(245,240,235,0.20);
-  --white-10: rgba(245,240,235,0.10);
-  --white-06: rgba(245,240,235,0.06);
-  --vivid-1: #ff2d55;
-  --vivid-2: #ff9500;
-  --vivid-3: #34aadc;
-  --vivid-4: #a259ff;
-  --vivid-5: #00e5b0;
-  --grad: linear-gradient(135deg, var(--vivid-1), var(--vivid-2), var(--vivid-4), var(--vivid-3));
+–black: #050505;
+–white: #f5f0eb;
+–white-40: rgba(245,240,235,0.40);
+–white-20: rgba(245,240,235,0.20);
+–white-10: rgba(245,240,235,0.10);
+–white-06: rgba(245,240,235,0.06);
+–vivid-1: #ff2d55;
+–vivid-2: #ff9500;
+–vivid-3: #34aadc;
+–vivid-4: #a259ff;
+–vivid-5: #00e5b0;
+–grad: linear-gradient(135deg, var(–vivid-1), var(–vivid-2), var(–vivid-4), var(–vivid-3));
 }
 
 html { scroll-behavior: smooth; }
 html, body {
-  width: 100%;
-  background: var(--black);
-  color: var(--white);
-  font-family: 'Syne', sans-serif;
-  overflow-x: hidden;
+width: 100%;
+background: var(–black);
+color: var(–white);
+font-family: ‘Syne’, sans-serif;
+overflow-x: hidden;
 }
 
-/* ── GRAIN ── */
+/* GRAIN */
 body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  opacity: 0.042;
-  pointer-events: none;
-  z-index: 999;
-  animation: grain .4s steps(1) infinite;
+content: ‘’;
+position: fixed; inset: 0;
+background-image: url(“data:image/svg+xml,%3Csvg viewBox=‘0 0 512 512’ xmlns=‘http://www.w3.org/2000/svg’%3E%3Cfilter id=‘n’%3E%3CfeTurbulence type=‘fractalNoise’ baseFrequency=‘0.9’ numOctaves=‘4’ stitchTiles=‘stitch’/%3E%3C/filter%3E%3Crect width=‘100%25’ height=‘100%25’ filter=‘url(%23n)’/%3E%3C/svg%3E”);
+opacity: 0.038;
+pointer-events: none;
+z-index: 999;
+animation: grain .4s steps(1) infinite;
 }
 @keyframes grain {
-  0%   { transform: translate(0,0); }
-  25%  { transform: translate(-2px,1px); }
-  50%  { transform: translate(1px,-1px); }
-  75%  { transform: translate(-1px,2px); }
-  100% { transform: translate(2px,-2px); }
+0%   { transform: translate(0,0); }
+25%  { transform: translate(-2px,1px); }
+50%  { transform: translate(1px,-1px); }
+75%  { transform: translate(-1px,2px); }
+100% { transform: translate(2px,-2px); }
 }
 
-/* ── SCANLINE ── */
+/* SCANLINE */
 .scanline {
-  position: fixed; top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.025), transparent);
-  animation: scan 9s linear infinite;
-  pointer-events: none; z-index: 998;
+position: fixed; top: 0; left: 0; right: 0; height: 1px;
+background: linear-gradient(90deg, transparent, rgba(255,255,255,0.022), transparent);
+animation: scan 10s linear infinite;
+pointer-events: none; z-index: 998;
 }
 @keyframes scan { 0% { top: 0 } 100% { top: 100% } }
 
-/* ── ORBS ── */
+/* ORBS */
 .orb-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
 .orb {
-  position: absolute; border-radius: 50%;
-  filter: blur(110px); opacity: 0;
-  animation: orbf linear infinite;
+position: absolute; border-radius: 50%;
+filter: blur(110px); opacity: 0;
+animation: orbf linear infinite;
 }
-.orb:nth-child(1) { width:650px;height:650px; background:radial-gradient(circle,var(--vivid-1),transparent 70%); top:-15%;left:-8%; animation-duration:22s; }
-.orb:nth-child(2) { width:500px;height:500px; background:radial-gradient(circle,var(--vivid-4),transparent 70%); top:55%;right:-12%; animation-duration:28s; animation-delay:-9s; }
-.orb:nth-child(3) { width:420px;height:420px; background:radial-gradient(circle,var(--vivid-3),transparent 70%); top:28%;left:38%; animation-duration:20s; animation-delay:-14s; }
-.orb:nth-child(4) { width:360px;height:360px; background:radial-gradient(circle,var(--vivid-5),transparent 70%); bottom:0%;left:18%; animation-duration:26s; animation-delay:-6s; }
+.orb:nth-child(1) { width:620px;height:620px; background:radial-gradient(circle,var(–vivid-1),transparent 70%); top:-15%;left:-8%; animation-duration:22s; }
+.orb:nth-child(2) { width:490px;height:490px; background:radial-gradient(circle,var(–vivid-4),transparent 70%); top:55%;right:-12%; animation-duration:28s; animation-delay:-9s; }
+.orb:nth-child(3) { width:410px;height:410px; background:radial-gradient(circle,var(–vivid-3),transparent 70%); top:28%;left:38%; animation-duration:20s; animation-delay:-14s; }
+.orb:nth-child(4) { width:350px;height:350px; background:radial-gradient(circle,var(–vivid-5),transparent 70%); bottom:0%;left:18%; animation-duration:26s; animation-delay:-6s; }
 @keyframes orbf {
-  0%,100% { opacity:0; transform:scale(.8) translateY(0); }
-  10%,90%  { opacity:.16; }
-  50%      { opacity:.22; transform:scale(1.06) translateY(-28px); }
+0%,100% { opacity:0; transform:scale(.8) translateY(0); }
+10%,90%  { opacity:.15; }
+50%      { opacity:.2; transform:scale(1.06) translateY(-28px); }
 }
 
-/* ── NAV ── */
+/* NAV */
 nav {
-  position: fixed; top: 0; left: 0; right: 0;
-  z-index: 200;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 20px clamp(24px,5vw,64px);
-  background: rgba(5,5,5,0.6);
-  backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--white-10);
+position: fixed; top: 0; left: 0; right: 0;
+z-index: 200;
+display: flex; align-items: center; justify-content: space-between;
+padding: 20px clamp(24px,5vw,64px);
+background: rgba(5,5,5,0.65);
+backdrop-filter: blur(16px);
+-webkit-backdrop-filter: blur(16px);
+border-bottom: 1px solid var(–white-10);
 }
 .nav-logo {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 26px; letter-spacing: .04em;
-  background: linear-gradient(135deg,var(--white) 40%,rgba(245,240,235,.4));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 26px; letter-spacing: .05em;
+background: linear-gradient(135deg,var(–white) 40%,rgba(245,240,235,.38));
+-webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
-.nav-links {
-  display: flex; align-items: center; gap: 32px;
-  list-style: none;
+.nav-center {
+display: flex; align-items: center; gap: 32px;
+list-style: none;
 }
-.nav-links a {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
-  color: var(--white-40); text-decoration: none;
-  transition: color .2s;
+.nav-center a {
+font-family: ‘DM Mono’, monospace;
+font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
+color: var(–white-40); text-decoration: none;
+transition: color .2s;
 }
-.nav-links a:hover { color: var(--white); }
+.nav-center a:hover { color: var(–white); }
+.nav-right { display: flex; align-items: center; gap: 10px; }
+.nav-passion {
+font-family: ‘DM Mono’, monospace;
+font-size: 9px; letter-spacing: .16em; text-transform: uppercase;
+color: rgba(245,240,235,.18);
+border: 1px solid rgba(245,240,235,.08);
+padding: 6px 12px; border-radius: 100px;
+}
 .nav-cta {
-  background: var(--white); color: var(--black);
-  padding: 9px 20px; border-radius: 3px;
-  font-family: 'DM Mono', monospace;
-  font-size: 10px; letter-spacing: .2em; text-transform: uppercase; font-weight: 700;
-  text-decoration: none; transition: background .2s;
+background: var(–white); color: var(–black);
+padding: 9px 20px; border-radius: 3px;
+font-family: ‘DM Mono’, monospace;
+font-size: 10px; letter-spacing: .2em; text-transform: uppercase; font-weight: 700;
+text-decoration: none; transition: background .2s;
+white-space: nowrap;
 }
-.nav-cta:hover { background: var(--vivid-2); color: var(--black) !important; -webkit-text-fill-color: var(--black); }
+.nav-cta:hover { background: var(–vivid-2); color: var(–black) !important; -webkit-text-fill-color: var(–black); }
 .nav-mobile-toggle { display: none; background: none; border: none; cursor: pointer; padding: 4px; }
-.nav-mobile-toggle span { display: block; width: 22px; height: 1.5px; background: var(--white-40); margin: 5px 0; transition: .2s; }
+.nav-mobile-toggle span { display: block; width: 22px; height: 1.5px; background: var(–white-40); margin: 5px 0; transition: .2s; }
 
-/* ── HERO ── */
+/* HERO */
 #hero {
-  position: relative; z-index: 1;
-  min-height: 100vh;
-  display: flex; flex-direction: column; justify-content: center;
-  padding: 120px clamp(24px,5vw,64px) 80px;
+position: relative; z-index: 1;
+min-height: 100vh;
+display: flex; flex-direction: column; justify-content: center;
+padding: 120px clamp(24px,5vw,64px) 80px;
 }
 .hero-eyebrow {
-  font-family: 'DM Mono', monospace;
-  font-size: clamp(10px,1.2vw,13px); letter-spacing: .28em; text-transform: uppercase;
-  color: var(--vivid-2); margin-bottom: 28px;
-  animation: fadeUp 1s ease both .2s;
+font-family: ‘DM Mono’, monospace;
+font-size: clamp(10px,1.1vw,12px); letter-spacing: .3em; text-transform: uppercase;
+color: var(–vivid-2); margin-bottom: 28px;
+animation: fadeUp 1s ease both .2s;
 }
 .hero-headline {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(80px,15vw,210px);
-  line-height: .88; letter-spacing: -.01em;
-  overflow: hidden;
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: clamp(80px,15vw,210px);
+line-height: .88; letter-spacing: -.01em;
 }
 .hero-line {
-  display: block; overflow: hidden;
-  animation: slideUp .9s cubic-bezier(.16,1,.3,1) both;
+display: block; overflow: hidden;
+animation: slideUp .9s cubic-bezier(.16,1,.3,1) both;
 }
 .hero-line:nth-child(1) { animation-delay: .3s; }
 .hero-line:nth-child(2) { animation-delay: .44s; }
-
-.grad-word {
-  position: relative; display: inline-block;
-}
+.grad-word { position: relative; display: inline-block; }
 .grad-word::after {
-  content: attr(data-t);
-  position: absolute; inset: 0;
-  background: linear-gradient(90deg,var(--vivid-1),var(--vivid-2),var(--vivid-4),var(--vivid-3));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  background-size: 300% 100%;
-  animation: shimmer 5s linear infinite, reveal 1.6s 1s cubic-bezier(.16,1,.3,1) forwards;
-  clip-path: inset(0 100% 0 0);
+content: attr(data-t);
+position: absolute; inset: 0;
+background: linear-gradient(90deg,var(–vivid-1),var(–vivid-2),var(–vivid-4),var(–vivid-3));
+-webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+background-size: 300% 100%;
+animation: shimmer 5s linear infinite, reveal 1.6s 1s cubic-bezier(.16,1,.3,1) forwards;
+clip-path: inset(0 100% 0 0);
 }
 @keyframes shimmer { 0%{background-position:0% 50%} 100%{background-position:300% 50%} }
-@keyframes reveal { 0%{clip-path:inset(0 100% 0 0)} 100%{clip-path:inset(0 0% 0 0)} }
+@keyframes reveal  { 0%{clip-path:inset(0 100% 0 0)} 100%{clip-path:inset(0 0% 0 0)} }
 
 .hero-sub {
-  max-width: 560px; margin-top: clamp(32px,5vh,56px);
-  font-size: clamp(16px,1.7vw,19px); line-height: 1.65; font-weight: 400;
-  color: var(--white-40);
-  animation: fadeUp 1s ease both .7s;
+max-width: 540px; margin-top: clamp(28px,4vh,52px);
+font-size: clamp(15px,1.6vw,18px); line-height: 1.7; font-weight: 400;
+color: var(–white-40);
+animation: fadeUp 1s ease both .7s;
 }
-.hero-sub em { color: var(--white); font-style: normal; font-weight: 700; }
-
+.hero-sub em { color: var(–white); font-style: normal; font-weight: 700; }
 .hero-actions {
-  display: flex; gap: 16px; flex-wrap: wrap; margin-top: clamp(32px,5vh,52px);
-  animation: fadeUp 1s ease both .9s;
+display: flex; gap: 14px; flex-wrap: wrap; margin-top: clamp(28px,4vh,48px);
+animation: fadeUp 1s ease both .88s;
 }
 .btn-primary {
-  background: var(--white); color: var(--black);
-  padding: 15px 32px; border-radius: 3px; text-decoration: none;
-  font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; font-weight: 700;
-  transition: background .2s;
+background: var(–white); color: var(–black);
+padding: 14px 30px; border-radius: 3px; text-decoration: none;
+font-family: ‘DM Mono’, monospace; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; font-weight: 700;
+transition: background .2s; white-space: nowrap;
 }
-.btn-primary:hover { background: var(--vivid-2); }
+.btn-primary:hover { background: var(–vivid-2); }
 .btn-ghost {
-  background: transparent; color: var(--white-40); border: 1px solid var(--white-20);
-  padding: 15px 32px; border-radius: 3px; text-decoration: none;
-  font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
-  transition: all .2s;
+background: transparent; color: var(–white-40); border: 1px solid var(–white-20);
+padding: 14px 30px; border-radius: 3px; text-decoration: none;
+font-family: ‘DM Mono’, monospace; font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+transition: all .2s; white-space: nowrap;
 }
-.btn-ghost:hover { border-color: var(--white-40); color: var(--white); }
-
+.btn-ghost:hover { border-color: var(–white-40); color: var(–white); }
 .hero-scroll {
-  position: absolute; bottom: 36px; left: clamp(24px,5vw,64px);
-  display: flex; align-items: center; gap: 14px;
-  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .25em; text-transform: uppercase;
-  color: rgba(245,240,235,.18);
-  animation: fadeUp 1.2s ease both 1.3s;
+position: absolute; bottom: 36px; left: clamp(24px,5vw,64px);
+display: flex; align-items: center; gap: 14px;
+font-family: ‘DM Mono’, monospace; font-size: 9px; letter-spacing: .25em; text-transform: uppercase;
+color: rgba(245,240,235,.18);
+animation: fadeUp 1.2s ease both 1.3s;
 }
-.scroll-line { width: 40px; height: 1px; background: rgba(245,240,235,.18); }
+.scroll-line { width: 36px; height: 1px; background: rgba(245,240,235,.18); }
 
-/* ── SECTION WRAPPER ── */
+/* SECTION SHARED */
 section { position: relative; z-index: 1; }
-.section-pad { padding: clamp(80px,12vh,140px) clamp(24px,5vw,64px); }
+.section-pad { padding: clamp(80px,11vh,130px) clamp(24px,5vw,64px); }
 .section-label {
-  font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .3em; text-transform: uppercase;
-  color: var(--vivid-3); margin-bottom: 20px; display: block;
+font-family: ‘DM Mono’, monospace; font-size: 10px; letter-spacing: .3em; text-transform: uppercase;
+color: var(–vivid-3); margin-bottom: 20px; display: block;
 }
 .section-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(52px,8vw,110px); line-height: .9; letter-spacing: -.01em;
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: clamp(52px,8vw,108px); line-height: .9; letter-spacing: -.01em;
 }
 .section-body {
-  font-size: clamp(15px,1.5vw,17px); line-height: 1.7; color: var(--white-40); max-width: 540px;
+font-size: clamp(14px,1.5vw,16px); line-height: 1.75; color: var(–white-40); max-width: 520px;
 }
-.section-body em { color: var(--white); font-style: normal; font-weight: 600; }
-.divider {
-  width: 100%; height: 1px; background: var(--white-10);
-  position: relative; z-index: 1;
-}
+.section-body em { color: var(–white); font-style: normal; font-weight: 600; }
+.divider { width: 100%; height: 1px; background: var(–white-10); position: relative; z-index: 1; }
 
-/* ── MARQUEE ── */
+/* MARQUEE */
 .marquee-wrap {
-  overflow: hidden; border-top: 1px solid var(--white-10); border-bottom: 1px solid var(--white-10);
-  padding: 18px 0; position: relative; z-index: 1;
+overflow: hidden; border-top: 1px solid var(–white-10); border-bottom: 1px solid var(–white-10);
+padding: 16px 0; position: relative; z-index: 1;
 }
 .marquee-track {
-  display: flex; gap: 0; width: max-content;
-  animation: marquee 28s linear infinite;
+display: flex; width: max-content;
+animation: marquee 30s linear infinite;
 }
 .marquee-track:hover { animation-play-state: paused; }
 @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 .marquee-item {
-  display: flex; align-items: center; gap: 20px; padding: 0 32px;
-  font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
-  color: rgba(245,240,235,.22); white-space: nowrap;
+display: flex; align-items: center; gap: 18px; padding: 0 30px;
+font-family: ‘DM Mono’, monospace; font-size: 10px; letter-spacing: .24em; text-transform: uppercase;
+color: rgba(245,240,235,.2); white-space: nowrap;
 }
-.marquee-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.marquee-dot { width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0; }
 
-/* ── WHAT IS BEVIVID ── */
-#what { background: var(--black); }
+/* WHAT */
+#what { background: var(–black); }
 .what-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: clamp(40px,6vw,100px);
-  align-items: start; margin-top: clamp(56px,8vw,80px);
+display: grid; grid-template-columns: 1fr 1fr; gap: clamp(40px,6vw,96px);
+align-items: start; margin-top: clamp(52px,7vw,76px);
 }
-.what-left { }
-.what-right {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
-  padding-top: 8px;
-}
+.what-right { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding-top: 8px; }
 .feature-card {
-  border: 1px solid var(--white-10); border-radius: 4px;
-  padding: 28px 24px; position: relative; overflow: hidden;
-  transition: border-color .3s, transform .3s;
-  cursor: default;
+border: 1px solid var(–white-10); border-radius: 6px;
+padding: 26px 22px; position: relative; overflow: hidden;
+transition: border-color .3s, transform .3s;
 }
 .feature-card::before {
-  content: ''; position: absolute; inset: 0;
-  background: var(--card-glow, transparent);
-  opacity: 0; transition: opacity .4s;
+content: ‘’; position: absolute; inset: 0;
+background: var(–card-glow, transparent);
+opacity: 0; transition: opacity .4s;
 }
-.feature-card:hover { border-color: var(--white-20); transform: translateY(-3px); }
+.feature-card:hover { border-color: var(–white-20); transform: translateY(-3px); }
 .feature-card:hover::before { opacity: 1; }
-.fc-icon {
-  font-size: 28px; margin-bottom: 16px; display: block;
-  filter: grayscale(0);
-}
-.fc-title {
-  font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
-  letter-spacing: .04em; margin-bottom: 8px; color: var(--white);
-}
-.fc-desc {
-  font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .08em;
-  color: var(--white-40); line-height: 1.7;
-}
+.fc-icon { font-size: 26px; margin-bottom: 14px; display: block; }
+.fc-title { font-size: 13px; font-weight: 700; letter-spacing: .03em; margin-bottom: 8px; color: var(–white); }
+.fc-desc { font-family: ‘DM Mono’, monospace; font-size: 10px; letter-spacing: .07em; color: var(–white-40); line-height: 1.7; }
 .fc-tag {
-  display: inline-block; margin-top: 14px;
-  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .18em; text-transform: uppercase;
-  padding: 4px 10px; border-radius: 100px; border: 1px solid;
+display: inline-block; margin-top: 14px;
+font-family: ‘DM Mono’, monospace; font-size: 9px; letter-spacing: .18em; text-transform: uppercase;
+padding: 4px 10px; border-radius: 100px; border: 1px solid;
 }
 
-/* ── FOR YOU ── */
-#foryou { background: var(--black); }
-.foryou-tabs {
-  display: flex; gap: 0; margin-top: 48px;
-  border-bottom: 1px solid var(--white-10); max-width: 420px;
+/* FOR YOU — account selector */
+#foryou { background: var(–black); }
+.account-selector {
+display: flex; gap: 10px; flex-wrap: wrap;
+margin-top: 48px; margin-bottom: 44px;
 }
-.tab-btn {
-  flex: 1; background: none; border: none; cursor: pointer;
-  padding: 12px 0; font-family: 'DM Mono', monospace; font-size: 11px;
-  letter-spacing: .18em; text-transform: uppercase; color: var(--white-40);
-  border-bottom: 2px solid transparent; margin-bottom: -1px;
-  transition: color .2s, border-color .2s;
+.acct-btn {
+background: transparent;
+border: 1px solid var(–white-10);
+padding: 13px 20px 13px 16px;
+border-radius: 6px;
+font-family: ‘Syne’, sans-serif;
+cursor: pointer;
+transition: all .22s cubic-bezier(.16,1,.3,1);
+display: flex; align-items: center; gap: 10px;
+backdrop-filter: blur(4px);
+-webkit-backdrop-filter: blur(4px);
 }
-.tab-btn.active { color: var(--white); border-bottom-color: var(--vivid-2); }
-.tab-panel { display: none; padding-top: 48px; }
-.tab-panel.active { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+.acct-btn:hover {
+border-color: rgba(245,240,235,.28);
+background: rgba(245,240,235,.04);
+transform: translateY(-2px);
+}
+.acct-btn.active {
+border-color: rgba(245,240,235,.42);
+background: rgba(245,240,235,.07);
+}
+.acct-dot {
+width: 5px; height: 5px; border-radius: 50%;
+opacity: 0; transform: scale(0);
+transition: all .22s; flex-shrink: 0;
+}
+.acct-btn.active .acct-dot { opacity: 1; transform: scale(1); }
+.acct-btn[data-type=“student”]  .acct-dot { background: var(–vivid-3); }
+.acct-btn[data-type=“creator”]  .acct-dot { background: var(–vivid-2); }
+.acct-btn[data-type=“partner”]  .acct-dot { background: var(–vivid-4); }
+.acct-btn[data-type=“business”] .acct-dot { background: var(–vivid-5); }
+.acct-label-wrap { display: flex; flex-direction: column; gap: 2px; }
+.acct-name { font-size: 13px; font-weight: 700; line-height: 1; color: var(–white-40); transition: color .2s; }
+.acct-btn.active .acct-name, .acct-btn:hover .acct-name { color: var(–white); }
+.acct-sub {
+font-family: ‘DM Mono’, monospace;
+font-size: 9px; letter-spacing: .14em; text-transform: uppercase;
+color: rgba(245,240,235,.28); font-style: italic; font-weight: 300;
+}
+
+/* Apply note */
+.apply-note {
+font-family: ‘DM Mono’, monospace;
+font-size: 10px; letter-spacing: .1em; line-height: 1.8;
+color: rgba(245,240,235,.26); font-style: italic;
+max-width: 480px; margin-bottom: 24px;
+display: none;
+}
+.apply-note.visible { display: block; }
+
+/* Tab / Apply panels */
+.tab-panel { display: none; }
+.tab-panel.active { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+.apply-panel { display: none; }
+.apply-panel.active { display: block; }
+
 .benefit-item {
-  border: 1px solid var(--white-10); border-radius: 4px; padding: 28px 22px;
-  transition: border-color .3s, transform .3s;
+border: 1px solid var(–white-10); border-radius: 6px; padding: 28px 22px;
+transition: border-color .3s, transform .3s;
 }
-.benefit-item:hover { border-color: var(--white-20); transform: translateY(-2px); }
+.benefit-item:hover { border-color: var(–white-20); transform: translateY(-2px); }
 .benefit-num {
-  font-family: 'Bebas Neue', sans-serif; font-size: 56px; line-height: 1;
-  background: var(--grad);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  margin-bottom: 12px;
+font-family: ‘Bebas Neue’, sans-serif; font-size: 54px; line-height: 1;
+background: var(–grad);
+-webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+margin-bottom: 12px;
 }
 .benefit-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
-.benefit-desc { font-size: 13px; color: var(--white-40); line-height: 1.6; }
+.benefit-desc { font-size: 13px; color: var(–white-40); line-height: 1.65; }
 
-/* ── HOW IT WORKS ── */
-#how { background: rgba(245,240,235,.014); border-top: 1px solid var(--white-10); border-bottom: 1px solid var(--white-10); }
+/* Apply card */
+.apply-card {
+border: 1px solid var(–white-10); border-radius: 8px; padding: 40px 36px;
+max-width: 500px; position: relative; overflow: hidden;
+}
+.apply-card::before {
+content: ‘’; position: absolute; inset: 0;
+background: radial-gradient(ellipse at top left, rgba(162,89,255,.055) 0%, transparent 65%);
+pointer-events: none;
+}
+.apply-card-title {
+font-family: ‘Bebas Neue’, sans-serif; font-size: 34px; letter-spacing: .03em; margin-bottom: 10px;
+}
+.apply-card-desc {
+font-family: ‘DM Mono’, monospace; font-size: 11px; letter-spacing: .09em;
+color: var(–white-40); line-height: 1.8; margin-bottom: 30px;
+}
+.apply-form-row {
+display: flex; border: 1px solid rgba(245,240,235,.12); border-radius: 4px;
+overflow: hidden; transition: border-color .3s; margin-bottom: 10px;
+}
+.apply-form-row:focus-within { border-color: rgba(245,240,235,.36); }
+.apply-form-row input, .apply-form-row textarea {
+flex: 1; background: rgba(245,240,235,.03); border: none; outline: none;
+padding: 13px 16px; font-family: ‘Syne’, sans-serif; font-size: 13px; color: var(–white); resize: none;
+}
+.apply-form-row input::placeholder, .apply-form-row textarea::placeholder { color: rgba(245,240,235,.2); }
+.apply-submit {
+width: 100%; background: var(–white); border: none; border-radius: 4px;
+padding: 14px 24px; font-family: ‘DM Mono’, monospace;
+font-size: 11px; letter-spacing: .2em; text-transform: uppercase; font-weight: 700;
+color: var(–black); cursor: pointer; transition: background .2s; margin-top: 6px;
+}
+.apply-submit:hover { background: var(–vivid-2); }
+.apply-fine {
+margin-top: 12px; font-family: ‘DM Mono’, monospace;
+font-size: 9px; letter-spacing: .1em; color: rgba(245,240,235,.18); font-style: italic;
+}
+.apply-success {
+display: none; margin-top: 14px;
+font-family: ‘DM Mono’, monospace; font-size: 11px; letter-spacing: .16em;
+color: var(–vivid-5);
+}
+
+/* HOW */
+#how {
+background: rgba(245,240,235,.012);
+border-top: 1px solid var(–white-10); border-bottom: 1px solid var(–white-10);
+}
 .steps-row {
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: 0; margin-top: 64px; position: relative;
+display: grid; grid-template-columns: repeat(4, 1fr);
+gap: 0; margin-top: 64px; position: relative;
 }
 .steps-row::before {
-  content: ''; position: absolute;
-  top: 28px; left: 12.5%; right: 12.5%; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--white-20), transparent);
+content: ‘’; position: absolute;
+top: 27px; left: 12.5%; right: 12.5%; height: 1px;
+background: linear-gradient(90deg, transparent, var(–white-20), transparent);
 }
-.step {
-  padding: 0 24px 0 0; text-align: left;
-}
-.step-num {
-  font-family: 'Bebas Neue', sans-serif; font-size: 64px; line-height: 1;
-  color: var(--white-10); margin-bottom: 20px;
-}
+.step { padding: 0 24px 0 0; }
 .step-circle {
-  width: 56px; height: 56px; border-radius: 50%;
-  border: 1px solid var(--white-20); background: var(--black);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 700; color: var(--white);
-  margin-bottom: 20px; position: relative; z-index: 1;
+width: 54px; height: 54px; border-radius: 50%;
+border: 1px solid var(–white-20); background: var(–black);
+display: flex; align-items: center; justify-content: center;
+font-family: ‘DM Mono’, monospace; font-size: 12px; font-weight: 700; color: var(–white);
+margin-bottom: 22px; position: relative; z-index: 1;
+transition: border-color .3s;
 }
-.step-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
-.step-desc { font-size: 13px; color: var(--white-40); line-height: 1.65; }
+.step:hover .step-circle { border-color: var(–white-40); }
+.step-title { font-size: 15px; font-weight: 700; margin-bottom: 9px; }
+.step-desc { font-size: 13px; color: var(–white-40); line-height: 1.65; }
 
-/* ── PRICING ── */
-#pricing { background: var(--black); }
-.pricing-intro { max-width: 520px; margin-top: 16px; }
+/* PRICING */
+#pricing { background: var(–black); }
+.pricing-intro { max-width: 500px; margin-top: 16px; }
 .plans-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
-  margin-top: 56px; max-width: 820px;
+display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+margin-top: 52px; max-width: 800px;
 }
 .plan-card {
-  border: 1px solid var(--white-10); border-radius: 6px;
-  padding: 40px 36px; position: relative; overflow: hidden;
-  transition: border-color .3s;
+border: 1px solid var(–white-10); border-radius: 8px;
+padding: 38px 34px; position: relative; overflow: hidden;
+transition: border-color .3s;
 }
 .plan-card.featured {
-  border-color: rgba(162,89,255,.4);
-  background: rgba(162,89,255,.04);
+border-color: rgba(162,89,255,.38);
+background: rgba(162,89,255,.035);
 }
 .plan-card.featured::before {
-  content: ''; position: absolute; inset: 0;
-  background: radial-gradient(ellipse at top left, rgba(162,89,255,.1) 0%, transparent 60%);
-  pointer-events: none;
+content: ‘’; position: absolute; inset: 0;
+background: radial-gradient(ellipse at top left, rgba(162,89,255,.09) 0%, transparent 60%);
+pointer-events: none;
 }
 .plan-badge {
-  position: absolute; top: 20px; right: 20px;
-  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .2em; text-transform: uppercase;
-  padding: 5px 12px; border-radius: 100px;
-  background: linear-gradient(90deg, var(--vivid-4), var(--vivid-1));
-  color: var(--white); font-weight: 700;
+position: absolute; top: 20px; right: 20px;
+font-family: ‘DM Mono’, monospace; font-size: 9px; letter-spacing: .2em; text-transform: uppercase;
+padding: 5px 12px; border-radius: 100px;
+background: linear-gradient(90deg, var(–vivid-4), var(–vivid-1));
+color: var(–white); font-weight: 700;
 }
 .plan-name {
-  font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: .04em;
-  margin-bottom: 8px; color: var(--white);
+font-family: ‘Bebas Neue’, sans-serif; font-size: 34px; letter-spacing: .04em;
+margin-bottom: 7px; color: var(–white);
 }
 .plan-tagline {
-  font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .15em; text-transform: uppercase;
-  color: var(--white-40); margin-bottom: 32px;
+font-family: ‘DM Mono’, monospace; font-size: 10px; letter-spacing: .15em; text-transform: uppercase;
+color: var(–white-40); margin-bottom: 28px;
 }
-.plan-price {
-  margin-bottom: 32px;
-}
+.plan-price { margin-bottom: 28px; }
 .price-amount {
-  font-family: 'Bebas Neue', sans-serif; font-size: 72px; line-height: 1;
-  letter-spacing: -.02em;
+font-family: ‘Bebas Neue’, sans-serif; font-size: 68px; line-height: 1; letter-spacing: -.02em;
 }
 .price-amount.gradient {
-  background: var(--grad);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+background: var(–grad);
+-webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+background-size: 300% 100%; animation: shimmer 5s linear infinite;
 }
 .price-per {
-  font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .1em;
-  color: var(--white-40); margin-left: 6px; vertical-align: middle;
+font-family: ‘DM Mono’, monospace; font-size: 11px; letter-spacing: .1em;
+color: var(–white-40); margin-left: 5px; vertical-align: middle;
 }
 .price-alt {
-  margin-top: 8px;
-  font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .1em;
-  color: var(--white-40);
+margin-top: 7px; font-family: ‘DM Mono’, monospace; font-size: 10px; letter-spacing: .1em; color: var(–white-40);
 }
 .price-alt .strikethrough { text-decoration: line-through; color: rgba(245,240,235,.2); }
-.price-alt .save { color: var(--vivid-5); margin-left: 6px; }
+.price-alt .save { color: var(–vivid-5); margin-left: 6px; }
 .plan-toggle {
-  display: flex; gap: 0; margin-bottom: 20px;
-  border: 1px solid var(--white-10); border-radius: 4px; overflow: hidden; width: fit-content;
+display: flex; gap: 0; margin-bottom: 20px;
+border: 1px solid var(–white-10); border-radius: 4px; overflow: hidden; width: fit-content;
 }
 .plan-toggle-btn {
-  background: none; border: none; cursor: pointer;
-  padding: 7px 18px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .15em; text-transform: uppercase;
-  color: var(--white-40); transition: all .2s;
+background: none; border: none; cursor: pointer;
+padding: 7px 18px; font-family: ‘DM Mono’, monospace; font-size: 10px; letter-spacing: .15em; text-transform: uppercase;
+color: var(–white-40); transition: all .2s;
 }
-.plan-toggle-btn.active { background: var(--white-10); color: var(--white); }
-.plan-features {
-  list-style: none; margin-bottom: 36px;
-}
+.plan-toggle-btn.active { background: var(–white-10); color: var(–white); }
+.plan-features { list-style: none; margin-bottom: 34px; }
 .plan-features li {
-  display: flex; align-items: flex-start; gap: 12px; padding: 10px 0;
-  border-bottom: 1px solid var(--white-06);
-  font-size: 13px; color: var(--white-40); line-height: 1.4;
+display: flex; align-items: flex-start; gap: 12px; padding: 10px 0;
+border-bottom: 1px solid var(–white-06);
+font-size: 13px; color: var(–white-40); line-height: 1.45;
 }
 .plan-features li:last-child { border-bottom: none; }
 .check {
-  flex-shrink: 0; width: 16px; height: 16px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center; margin-top: 1px;
+flex-shrink: 0; width: 16px; height: 16px; border-radius: 50%;
+display: flex; align-items: center; justify-content: center; margin-top: 1px;
 }
-.check.yes { background: rgba(0,229,176,.15); color: var(--vivid-5); font-size: 9px; }
-.check.no  { background: var(--white-06); color: rgba(245,240,235,.2); font-size: 9px; }
+.check.yes { background: rgba(0,229,176,.14); color: var(–vivid-5); font-size: 9px; }
+.check.no  { background: var(–white-06); color: rgba(245,240,235,.2); font-size: 9px; }
 .plan-btn {
-  display: block; text-align: center; text-decoration: none;
-  padding: 14px 24px; border-radius: 3px;
-  font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; font-weight: 700;
-  transition: all .2s;
+display: block; text-align: center; text-decoration: none;
+padding: 14px 24px; border-radius: 4px;
+font-family: ‘DM Mono’, monospace; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; font-weight: 700;
+transition: all .2s;
 }
-.plan-btn.solid { background: var(--white); color: var(--black); }
-.plan-btn.solid:hover { background: var(--vivid-2); }
-.plan-btn.outline { background: none; border: 1px solid rgba(162,89,255,.5); color: var(--vivid-4); }
-.plan-btn.outline:hover { background: rgba(162,89,255,.12); border-color: var(--vivid-4); }
+.plan-btn.solid { background: var(–white); color: var(–black); }
+.plan-btn.solid:hover { background: var(–vivid-2); }
+.plan-btn.outline { background: none; border: 1px solid rgba(162,89,255,.45); color: var(–vivid-4); }
+.plan-btn.outline:hover { background: rgba(162,89,255,.1); border-color: var(–vivid-4); }
+.passion-note {
+margin-top: 28px; max-width: 480px;
+font-family: ‘DM Mono’, monospace; font-size: 10px; letter-spacing: .1em; line-height: 1.8;
+color: rgba(245,240,235,.2); font-style: italic;
+}
 
-/* ── COMMUNITY STRIP ── */
-#community {
-  background: var(--black); 
-  border-top: 1px solid var(--white-10);
-}
+/* COMMUNITY */
+#community { background: var(–black); border-top: 1px solid var(–white-10); }
 .comm-inner {
-  display: grid; grid-template-columns: 1fr 1fr; gap: clamp(40px,6vw,100px);
-  align-items: center;
+display: grid; grid-template-columns: 1fr 1fr; gap: clamp(40px,6vw,96px);
+align-items: center;
 }
-.comm-right {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
-}
+.comm-right { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .stat-card {
-  border: 1px solid var(--white-10); border-radius: 4px; padding: 28px 22px;
+border: 1px solid var(–white-10); border-radius: 6px; padding: 26px 20px;
+transition: border-color .3s, transform .3s;
 }
+.stat-card:hover { border-color: var(–white-20); transform: translateY(-2px); }
 .stat-num {
-  font-family: 'Bebas Neue', sans-serif; font-size: 52px; line-height: 1;
-  background: var(--grad);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  margin-bottom: 6px;
+font-family: ‘Bebas Neue’, sans-serif; font-size: 48px; line-height: 1;
+background: var(–grad);
+-webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+margin-bottom: 6px;
 }
 .stat-label {
-  font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
-  color: var(--white-40);
+font-family: ‘DM Mono’, monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+color: var(–white-40);
 }
 
-/* ── CTA ── */
-#cta {
-  background: var(--black); text-align: center;
-  border-top: 1px solid var(--white-10);
-}
-.cta-inner { max-width: 700px; margin: 0 auto; }
+/* CTA */
+#cta { background: var(–black); text-align: center; border-top: 1px solid var(–white-10); }
+.cta-inner { max-width: 680px; margin: 0 auto; }
 .cta-super {
-  font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .3em; text-transform: uppercase;
-  color: var(--vivid-2); margin-bottom: 24px; display: block;
+font-family: ‘DM Mono’, monospace; font-size: 10px; letter-spacing: .32em; text-transform: uppercase;
+color: var(–vivid-2); margin-bottom: 22px; display: block;
 }
 .cta-headline {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(72px,12vw,160px); line-height: .88;
-  letter-spacing: -.01em; margin-bottom: 32px;
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: clamp(72px,12vw,158px); line-height: .88;
+letter-spacing: -.01em; margin-bottom: 28px;
 }
 .cta-headline span {
-  background: var(--grad);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  background-size: 300% 100%;
-  animation: shimmer 5s linear infinite;
+background: var(–grad);
+-webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+background-size: 300% 100%; animation: shimmer 5s linear infinite;
 }
-.cta-sub {
-  font-size: 16px; line-height: 1.65; color: var(--white-40);
-  margin-bottom: 44px;
-}
-.cta-sub em { color: var(--white); font-style: normal; font-weight: 700; }
-.cta-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+.cta-sub { font-size: 16px; line-height: 1.7; color: var(–white-40); margin-bottom: 40px; }
+.cta-sub em { color: var(–white); font-style: normal; font-weight: 700; }
+.cta-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
 
-/* ── FOOTER ── */
+/* FOOTER */
 footer {
-  position: relative; z-index: 1;
-  padding: 48px clamp(24px,5vw,64px);
-  border-top: 1px solid var(--white-10);
-  display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 24px;
+position: relative; z-index: 1;
+padding: 44px clamp(24px,5vw,64px);
+border-top: 1px solid var(–white-10);
+display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 22px;
 }
+.footer-left {}
 .footer-logo {
-  font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: .04em;
-  background: linear-gradient(135deg,var(--white) 40%,rgba(245,240,235,.3));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+font-family: ‘Bebas Neue’, sans-serif; font-size: 30px; letter-spacing: .04em;
+background: linear-gradient(135deg,var(–white) 40%,rgba(245,240,235,.3));
+-webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
 .footer-slogan {
-  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .2em; text-transform: uppercase;
-  color: rgba(245,240,235,.2); margin-top: 6px;
+font-family: ‘DM Mono’, monospace; font-size: 9px; letter-spacing: .2em; text-transform: uppercase;
+color: rgba(245,240,235,.18); margin-top: 5px;
+}
+.footer-passion {
+font-family: ‘DM Mono’, monospace; font-size: 9px; letter-spacing: .14em;
+color: rgba(245,240,235,.1); margin-top: 4px; font-style: italic;
 }
 .footer-links {
-  display: flex; gap: 28px; list-style: none; flex-wrap: wrap;
+display: flex; gap: 26px; list-style: none; flex-wrap: wrap; align-items: center;
 }
 .footer-links a {
-  font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .15em; text-transform: uppercase;
-  color: rgba(245,240,235,.2); text-decoration: none; transition: color .2s;
+font-family: ‘DM Mono’, monospace; font-size: 10px; letter-spacing: .15em; text-transform: uppercase;
+color: rgba(245,240,235,.2); text-decoration: none; transition: color .2s;
 }
-.footer-links a:hover { color: var(--white-40); }
+.footer-links a:hover { color: var(–white-40); }
 .footer-copy {
-  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .1em;
-  color: rgba(245,240,235,.12); text-align: right;
+font-family: ‘DM Mono’, monospace; font-size: 9px; letter-spacing: .1em;
+color: rgba(245,240,235,.1); text-align: right; line-height: 1.8;
 }
 
-/* ── VERT TEXT ── */
+/* VERT */
 .vert-text {
-  position: fixed; right: clamp(14px,2.5vw,36px); top: 50%;
-  transform: translateY(-50%) rotate(90deg); transform-origin: center;
-  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .35em; text-transform: uppercase;
-  color: rgba(245,240,235,.08); white-space: nowrap; pointer-events: none; z-index: 2;
+position: fixed; right: clamp(14px,2.5vw,36px); top: 50%;
+transform: translateY(-50%) rotate(90deg); transform-origin: center;
+font-family: ‘DM Mono’, monospace; font-size: 9px; letter-spacing: .35em; text-transform: uppercase;
+color: rgba(245,240,235,.07); white-space: nowrap; pointer-events: none; z-index: 2;
 }
 
-/* ── ANIMATIONS ── */
-@keyframes fadeUp { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
+/* ANIMATIONS */
+@keyframes fadeUp  { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
 @keyframes slideUp { from{transform:translateY(110%)} to{transform:translateY(0)} }
-
 .reveal {
-  opacity: 0; transform: translateY(28px);
-  transition: opacity .8s ease, transform .8s cubic-bezier(.16,1,.3,1);
+opacity: 0; transform: translateY(26px);
+transition: opacity .8s ease, transform .8s cubic-bezier(.16,1,.3,1);
 }
 .reveal.in-view { opacity: 1; transform: translateY(0); }
 .reveal-delay-1 { transition-delay: .1s; }
-.reveal-delay-2 { transition-delay: .2s; }
-.reveal-delay-3 { transition-delay: .3s; }
-.reveal-delay-4 { transition-delay: .4s; }
+.reveal-delay-2 { transition-delay: .22s; }
+.reveal-delay-3 { transition-delay: .34s; }
+.reveal-delay-4 { transition-delay: .46s; }
 
-/* ── RESPONSIVE ── */
+/* RESPONSIVE */
 @media (max-width: 900px) {
-  .nav-links { display: none; }
-  .nav-mobile-toggle { display: block; }
-  .what-grid, .comm-inner { grid-template-columns: 1fr; }
-  .what-right { grid-template-columns: 1fr 1fr; }
-  .tab-panel.active { grid-template-columns: 1fr 1fr; }
-  .steps-row { grid-template-columns: 1fr 1fr; gap: 40px; }
-  .steps-row::before { display: none; }
-  .plans-grid { grid-template-columns: 1fr; max-width: 480px; }
-  .comm-right { grid-template-columns: 1fr 1fr; }
+.nav-center { display: none; }
+.nav-passion { display: none; }
+.nav-mobile-toggle { display: block; }
+.what-grid, .comm-inner { grid-template-columns: 1fr; }
+.what-right { grid-template-columns: 1fr 1fr; }
+.tab-panel.active { grid-template-columns: 1fr 1fr; }
+.steps-row { grid-template-columns: 1fr 1fr; gap: 40px; }
+.steps-row::before { display: none; }
+.plans-grid { grid-template-columns: 1fr; max-width: 460px; }
+.comm-right { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 580px) {
-  .what-right { grid-template-columns: 1fr; }
-  .tab-panel.active { grid-template-columns: 1fr; }
-  .steps-row { grid-template-columns: 1fr; }
-  .comm-right { grid-template-columns: 1fr; }
-  .hero-actions { flex-direction: column; }
+.what-right { grid-template-columns: 1fr; }
+.tab-panel.active { grid-template-columns: 1fr; }
+.steps-row { grid-template-columns: 1fr; }
+.hero-actions { flex-direction: column; }
+.account-selector { gap: 8px; }
+.acct-sub { display: none; }
 }
 </style>
+
 </head>
 <body>
 
@@ -559,32 +632,35 @@ footer {
 </div>
 <span class="vert-text">Recognition · Feeling · Clarity · You</span>
 
-<!-- ── NAV ── -->
+<!-- NAV -->
+
 <nav>
   <div class="nav-logo">beVivid</div>
-  <ul class="nav-links">
+  <ul class="nav-center">
     <li><a href="#what">About</a></li>
     <li><a href="#foryou">Who's it for</a></li>
     <li><a href="#how">How it works</a></li>
     <li><a href="#pricing">Pricing</a></li>
-    <li><a href="#cta" class="nav-cta">Join Free</a></li>
   </ul>
+  <div class="nav-right">
+    <span class="nav-passion">passion project</span>
+    <a href="#cta" class="nav-cta">Join Free</a>
+  </div>
   <button class="nav-mobile-toggle" id="mobileToggle" aria-label="Menu">
     <span></span><span></span><span></span>
   </button>
 </nav>
 
-<!-- ── HERO ── -->
+<!-- HERO -->
+
 <section id="hero">
   <p class="hero-eyebrow">Be Vivid · Live Vivid</p>
   <div class="hero-headline">
     <span class="hero-line">Be</span>
-    <span class="hero-line">
-      <span class="grad-word" data-t="Vivid.">Vivid.</span>
-    </span>
+    <span class="hero-line"><span class="grad-word" data-t="Vivid.">Vivid.</span></span>
   </div>
   <p class="hero-sub">
-    A platform where <em>people who stand out</em> finally get recognized. Earn real trophies, awards &amp; certifications. Students unlock <em>scholarships</em>. Everyone builds a legacy worth showing.
+    A platform where <em>people who stand out</em> finally get recognized. Earn real trophies, awards &amp; certifications. Students unlock <em>scholarships</em>. Creators build a legacy worth showing.
   </p>
   <div class="hero-actions">
     <a href="#cta" class="btn-primary">Join for Free</a>
@@ -596,12 +672,14 @@ footer {
   </div>
 </section>
 
-<!-- ── MARQUEE ── -->
+<!-- MARQUEE -->
+
 <div class="marquee-wrap">
   <div class="marquee-track" id="marqueeTrack"></div>
 </div>
 
-<!-- ── WHAT IS BEVIVID ── -->
+<!-- WHAT -->
+
 <section id="what">
   <div class="section-pad">
     <span class="section-label reveal">What is beVivid</span>
@@ -609,11 +687,11 @@ footer {
       <div class="what-left">
         <div class="section-title reveal reveal-delay-1">More than<br>a profile.</div>
         <p class="section-body reveal reveal-delay-2" style="margin-top:28px;">
-          beVivid is the platform where <em>your impact is the currency</em>. Share your work, do good in the world, earn recognition that actually means something — real awards, real certifications, real trophies for real people.
+          beVivid is the platform where <em>your impact is the currency</em>. Share your work, earn recognition that actually means something — real awards, real certifications, real trophies for real people.
           <br><br>
-          Whether you're a student chasing <em>scholarships</em> or a creator building your legacy, beVivid is the space designed for the people who refuse to go unnoticed.
+          Whether you're a student chasing <em>scholarships</em> or a creator building your legacy, beVivid is the space designed for people who refuse to go unnoticed.
         </p>
-        <div style="margin-top:40px;" class="reveal reveal-delay-3">
+        <div style="margin-top:38px;" class="reveal reveal-delay-3">
           <a href="#how" class="btn-ghost">See how it works →</a>
         </div>
       </div>
@@ -637,10 +715,10 @@ footer {
           <span class="fc-tag" style="color:var(--vivid-4);border-color:rgba(162,89,255,.3);">Verify</span>
         </div>
         <div class="feature-card reveal reveal-delay-4" style="--card-glow:radial-gradient(ellipse at top left,rgba(0,229,176,.08),transparent 70%);">
-          <span class="fc-icon">🌍</span>
-          <div class="fc-title">Do Good</div>
-          <div class="fc-desc">Track your contributions to the world. beVivid rewards impact, not just impressions.</div>
-          <span class="fc-tag" style="color:var(--vivid-5);border-color:rgba(0,229,176,.3);">Community</span>
+          <span class="fc-icon">✦</span>
+          <div class="fc-title">Your Legacy</div>
+          <div class="fc-desc">Build a profile that travels with you — one that actually reflects who you are and what you've done.</div>
+          <span class="fc-tag" style="color:var(--vivid-5);border-color:rgba(0,229,176,.3);">Legacy</span>
         </div>
       </div>
     </div>
@@ -649,71 +727,135 @@ footer {
 
 <div class="divider"></div>
 
-<!-- ── FOR YOU ── -->
+<!-- FOR YOU -->
+
 <section id="foryou">
   <div class="section-pad">
     <span class="section-label reveal">Who is beVivid for</span>
     <div class="section-title reveal reveal-delay-1">Built for<br>every vivid<br>person.</div>
-    <div class="foryou-tabs reveal reveal-delay-2">
-      <button class="tab-btn active" onclick="setTab('students')">Students</button>
-      <button class="tab-btn" onclick="setTab('creators')">Creators</button>
-      <button class="tab-btn" onclick="setTab('doers')">Do-Gooders</button>
+
+```
+<div class="account-selector reveal reveal-delay-2">
+  <button class="acct-btn active" data-type="student" onclick="setAcct('student',this)">
+    <span class="acct-dot"></span>
+    <span class="acct-label-wrap">
+      <span class="acct-name">Student</span>
+      <span class="acct-sub">here to grow</span>
+    </span>
+  </button>
+  <button class="acct-btn" data-type="creator" onclick="setAcct('creator',this)">
+    <span class="acct-dot"></span>
+    <span class="acct-label-wrap">
+      <span class="acct-name">Creator</span>
+      <span class="acct-sub">here to express</span>
+    </span>
+  </button>
+  <button class="acct-btn" data-type="partner" onclick="setAcct('partner',this)">
+    <span class="acct-dot"></span>
+    <span class="acct-label-wrap">
+      <span class="acct-name">Partner</span>
+      <span class="acct-sub">apply to collaborate</span>
+    </span>
+  </button>
+  <button class="acct-btn" data-type="business" onclick="setAcct('business',this)">
+    <span class="acct-dot"></span>
+    <span class="acct-label-wrap">
+      <span class="acct-name">Business</span>
+      <span class="acct-sub">apply for access</span>
+    </span>
+  </button>
+</div>
+
+<p class="apply-note" id="applyNote"></p>
+
+<!-- Student -->
+<div class="tab-panel active" id="panel-student">
+  <div class="benefit-item reveal reveal-delay-1">
+    <div class="benefit-num">01</div>
+    <div class="benefit-title">Apply for Scholarships</div>
+    <div class="benefit-desc">Access scholarships funded through the beVivid community. Your profile speaks for you.</div>
+  </div>
+  <div class="benefit-item reveal reveal-delay-2">
+    <div class="benefit-num">02</div>
+    <div class="benefit-title">Earn Certifications</div>
+    <div class="benefit-desc">Complete skill challenges and earn certifications that hold real weight on your resume.</div>
+  </div>
+  <div class="benefit-item reveal reveal-delay-3">
+    <div class="benefit-num">03</div>
+    <div class="benefit-title">Build Your Vivid Profile</div>
+    <div class="benefit-desc">Showcase your work, achievements, and awards in one place that actually represents you.</div>
+  </div>
+</div>
+
+<!-- Creator -->
+<div class="tab-panel" id="panel-creator">
+  <div class="benefit-item reveal reveal-delay-1">
+    <div class="benefit-num">01</div>
+    <div class="benefit-title">Share Your Work</div>
+    <div class="benefit-desc">Post your creations to a community that appreciates originality and celebrates it openly.</div>
+  </div>
+  <div class="benefit-item reveal reveal-delay-2">
+    <div class="benefit-num">02</div>
+    <div class="benefit-title">Win Vivid Awards</div>
+    <div class="benefit-desc">Community-voted awards and platform trophies recognize the most vibrant work.</div>
+  </div>
+  <div class="benefit-item reveal reveal-delay-3">
+    <div class="benefit-num">03</div>
+    <div class="benefit-title">Grow Your Audience</div>
+    <div class="benefit-desc">Connect with others who get it — a platform built for people who leave impressions.</div>
+  </div>
+</div>
+
+<!-- Partner apply -->
+<div class="apply-panel" id="panel-partner">
+  <div class="apply-card">
+    <div class="apply-card-title">Partner Application</div>
+    <div class="apply-card-desc">
+      Looking to collaborate or co-build with beVivid? Every application is reviewed personally. This isn't automated — it's a real conversation.
     </div>
-    <div class="tab-panel active" id="tab-students">
-      <div class="benefit-item reveal reveal-delay-1">
-        <div class="benefit-num">01</div>
-        <div class="benefit-title">Apply for Scholarships</div>
-        <div class="benefit-desc">Access scholarships funded through the beVivid community. Your profile speaks for you.</div>
-      </div>
-      <div class="benefit-item reveal reveal-delay-2">
-        <div class="benefit-num">02</div>
-        <div class="benefit-title">Earn Certifications</div>
-        <div class="benefit-desc">Complete skill challenges and earn certifications that hold real weight on your resume.</div>
-      </div>
-      <div class="benefit-item reveal reveal-delay-3">
-        <div class="benefit-num">03</div>
-        <div class="benefit-title">Build Your Vivid Profile</div>
-        <div class="benefit-desc">Showcase your work, achievements, and awards in one place that actually represents you.</div>
-      </div>
+    <div class="apply-form-row">
+      <input type="text" id="partner-name" placeholder="Your name" />
     </div>
-    <div class="tab-panel" id="tab-creators">
-      <div class="benefit-item reveal reveal-delay-1">
-        <div class="benefit-num">01</div>
-        <div class="benefit-title">Share Your Work</div>
-        <div class="benefit-desc">Post your creations to a community that appreciates originality and celebrates it openly.</div>
-      </div>
-      <div class="benefit-item reveal reveal-delay-2">
-        <div class="benefit-num">02</div>
-        <div class="benefit-title">Win Vivid Awards</div>
-        <div class="benefit-desc">Community-voted awards and platform trophies recognize the most vibrant work.</div>
-      </div>
-      <div class="benefit-item reveal reveal-delay-3">
-        <div class="benefit-num">03</div>
-        <div class="benefit-title">Grow Your Audience</div>
-        <div class="benefit-desc">Connect with others who get it — a platform built for people who leave impressions.</div>
-      </div>
+    <div class="apply-form-row">
+      <input type="email" id="partner-email" placeholder="Your email" />
     </div>
-    <div class="tab-panel" id="tab-doers">
-      <div class="benefit-item reveal reveal-delay-1">
-        <div class="benefit-num">01</div>
-        <div class="benefit-title">Log Your Impact</div>
-        <div class="benefit-desc">Track volunteer hours, community projects, and good deeds — your impact, documented.</div>
-      </div>
-      <div class="benefit-item reveal reveal-delay-2">
-        <div class="benefit-num">02</div>
-        <div class="benefit-title">Do Good Badges</div>
-        <div class="benefit-desc">Earn exclusive Do Good badges and trophies that set you apart as someone who gives back.</div>
-      </div>
-      <div class="benefit-item reveal reveal-delay-3">
-        <div class="benefit-num">03</div>
-        <div class="benefit-title">Inspire Others</div>
-        <div class="benefit-desc">Your story of doing good becomes a blueprint for others in the community to follow.</div>
-      </div>
+    <div class="apply-form-row">
+      <textarea rows="3" id="partner-msg" placeholder="Tell us what you have in mind..."></textarea>
     </div>
+    <button class="apply-submit" onclick="submitApply('partner')">Send Application</button>
+    <p class="apply-fine">We'll reach out directly. No middlemen, no forms that go nowhere.</p>
+    <p class="apply-success" id="partner-success">✦ &nbsp;Application received. We'll be in touch.</p>
+  </div>
+</div>
+
+<!-- Business apply -->
+<div class="apply-panel" id="panel-business">
+  <div class="apply-card">
+    <div class="apply-card-title">Business Application</div>
+    <div class="apply-card-desc">
+      Brands and teams wanting a presence on beVivid go through here. We're selective — quality over quantity. Reviewed case-by-case.
+    </div>
+    <div class="apply-form-row">
+      <input type="text" id="business-name" placeholder="Business or brand name" />
+    </div>
+    <div class="apply-form-row">
+      <input type="email" id="business-email" placeholder="Contact email" />
+    </div>
+    <div class="apply-form-row">
+      <textarea rows="3" id="business-msg" placeholder="What are you looking to do on beVivid?"></textarea>
+    </div>
+    <button class="apply-submit" onclick="submitApply('business')">Send Application</button>
+    <p class="apply-fine">Reviewed personally. We'll reach out if it's a fit.</p>
+    <p class="apply-success" id="business-success">✦ &nbsp;Application received. We'll be in touch.</p>
+  </div>
+</div>
+```
+
   </div>
 </section>
 
-<!-- ── HOW IT WORKS ── -->
+<!-- HOW -->
+
 <section id="how">
   <div class="section-pad">
     <span class="section-label reveal">How it works</span>
@@ -727,7 +869,7 @@ footer {
       <div class="step reveal reveal-delay-2">
         <div class="step-circle">02</div>
         <div class="step-title">Show what you've got</div>
-        <div class="step-desc">Share your work, log your good deeds, apply for certifications and scholarships.</div>
+        <div class="step-desc">Share your work, apply for certifications and scholarships, and make your mark on the community.</div>
       </div>
       <div class="step reveal reveal-delay-3">
         <div class="step-circle">03</div>
@@ -743,17 +885,16 @@ footer {
   </div>
 </section>
 
-<!-- ── PRICING ── -->
+<!-- PRICING -->
+
 <section id="pricing">
   <div class="section-pad">
     <span class="section-label reveal">Pricing</span>
     <div class="section-title reveal reveal-delay-1">Start free.<br>Go vivid.</div>
-    <p class="section-body pricing-intro reveal reveal-delay-2" style="margin-top:20px;">
+    <p class="section-body pricing-intro reveal reveal-delay-2" style="margin-top:18px;">
       beVivid is <em>free to join</em> — always. Upgrade to beVivid+ for premium recognition, exclusive awards, and early access to everything coming next.
     </p>
     <div class="plans-grid">
-
-      <!-- FREE -->
       <div class="plan-card reveal reveal-delay-2">
         <div class="plan-name">beVivid</div>
         <div class="plan-tagline">Free forever</div>
@@ -765,7 +906,6 @@ footer {
           <li><span class="check yes">✓</span> Vivid Profile</li>
           <li><span class="check yes">✓</span> Share your work &amp; projects</li>
           <li><span class="check yes">✓</span> Earn community badges</li>
-          <li><span class="check yes">✓</span> Log Do Good activities</li>
           <li><span class="check yes">✓</span> Student scholarship access</li>
           <li><span class="check yes">✓</span> Community access</li>
           <li><span class="check no">—</span> Premium trophies &amp; awards</li>
@@ -775,56 +915,56 @@ footer {
         <a href="#cta" class="plan-btn solid">Get Started Free</a>
       </div>
 
-      <!-- PLUS -->
-      <div class="plan-card featured reveal reveal-delay-3">
-        <div class="plan-badge">Most Vivid</div>
-        <div class="plan-name" style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:300% 100%;animation:shimmer 5s linear infinite;">beVivid+</div>
-        <div class="plan-tagline">Premium recognition</div>
-
-        <!-- billing toggle -->
-        <div class="plan-toggle" id="billingToggle">
-          <button class="plan-toggle-btn active" onclick="setBilling('monthly')">Monthly</button>
-          <button class="plan-toggle-btn" onclick="setBilling('yearly')">Yearly</button>
-        </div>
-
-        <div class="plan-price" id="plusPrice">
-          <span class="price-amount gradient" id="priceAmt">$1.99</span>
-          <span class="price-per" id="pricePer">/ month</span>
-          <div class="price-alt" id="priceAlt" style="opacity:0;height:0;overflow:hidden;transition:opacity .3s">
-            <span class="strikethrough">$23.88 / yr</span>
-            <span class="save">Save $3.89 →</span>
-          </div>
-        </div>
-
-        <ul class="plan-features">
-          <li><span class="check yes">✓</span> Everything in free</li>
-          <li><span class="check yes">✓</span> Premium trophies &amp; awards</li>
-          <li><span class="check yes">✓</span> Priority certification review</li>
-          <li><span class="check yes">✓</span> Early feature access</li>
-          <li><span class="check yes">✓</span> Exclusive beVivid+ badge</li>
-          <li><span class="check yes">✓</span> Enhanced Do Good tracking</li>
-          <li><span class="check yes">✓</span> Scholarship priority boost</li>
-          <li><span class="check yes">✓</span> Supporter status on profile</li>
-          <li><span class="check yes">✓</span> Direct community impact</li>
-        </ul>
-        <a href="#cta" class="plan-btn outline">Upgrade to beVivid+</a>
-      </div>
-
+```
+  <div class="plan-card featured reveal reveal-delay-3">
+    <div class="plan-badge">Most Vivid</div>
+    <div class="plan-name" style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:300% 100%;animation:shimmer 5s linear infinite;">beVivid+</div>
+    <div class="plan-tagline">Premium recognition</div>
+    <div class="plan-toggle" id="billingToggle">
+      <button class="plan-toggle-btn active" onclick="setBilling('monthly')">Monthly</button>
+      <button class="plan-toggle-btn" onclick="setBilling('yearly')">Yearly</button>
     </div>
+    <div class="plan-price">
+      <span class="price-amount gradient" id="priceAmt">$1.99</span>
+      <span class="price-per" id="pricePer">/ month</span>
+      <div class="price-alt" id="priceAlt" style="opacity:0;height:0;overflow:hidden;transition:opacity .3s,height .3s">
+        <span class="strikethrough">$23.88 / yr</span>
+        <span class="save">Save $3.89 →</span>
+      </div>
+    </div>
+    <ul class="plan-features">
+      <li><span class="check yes">✓</span> Everything in free</li>
+      <li><span class="check yes">✓</span> Premium trophies &amp; awards</li>
+      <li><span class="check yes">✓</span> Priority certification review</li>
+      <li><span class="check yes">✓</span> Early feature access</li>
+      <li><span class="check yes">✓</span> Exclusive beVivid+ badge</li>
+      <li><span class="check yes">✓</span> Scholarship priority boost</li>
+      <li><span class="check yes">✓</span> Supporter status on profile</li>
+      <li><span class="check yes">✓</span> Direct community impact</li>
+    </ul>
+    <a href="#cta" class="plan-btn outline">Upgrade to beVivid+</a>
+  </div>
+</div>
+<p class="passion-note reveal reveal-delay-2">
+  beVivid is an independent passion project — not a corporation. Pricing is kept intentionally accessible because this platform is built for people, not investors.
+</p>
+```
+
   </div>
 </section>
 
-<!-- ── COMMUNITY ── -->
+<!-- COMMUNITY -->
+
 <section id="community">
   <div class="section-pad">
     <div class="comm-inner">
       <div class="comm-left">
         <span class="section-label reveal">The community</span>
         <div class="section-title reveal reveal-delay-1">Vivid people<br>move in<br>groups.</div>
-        <p class="section-body reveal reveal-delay-2" style="margin-top:28px;">
-          beVivid isn't just a profile. It's a movement. Join a community of people who <em>create, give back, and show up</em> — and get recognized for it. This is your people.
+        <p class="section-body reveal reveal-delay-2" style="margin-top:26px;">
+          beVivid isn't just a profile. It's a movement. Join a community of people who <em>create, show up, and leave impressions</em> — and get recognized for it. This is your people.
         </p>
-        <div style="margin-top:36px;" class="reveal reveal-delay-3">
+        <div style="margin-top:34px;" class="reveal reveal-delay-3">
           <a href="#cta" class="btn-primary">Join the Community</a>
         </div>
       </div>
@@ -839,7 +979,7 @@ footer {
         </div>
         <div class="stat-card reveal reveal-delay-3">
           <div class="stat-num">Real</div>
-          <div class="stat-label">Trophies & awards</div>
+          <div class="stat-label">Trophies &amp; awards</div>
         </div>
         <div class="stat-card reveal reveal-delay-4">
           <div class="stat-num">You</div>
@@ -850,7 +990,8 @@ footer {
   </div>
 </section>
 
-<!-- ── CTA ── -->
+<!-- CTA -->
+
 <section id="cta">
   <div class="section-pad">
     <div class="cta-inner">
@@ -859,7 +1000,7 @@ footer {
         <span>Live<br>Vivid.</span>
       </div>
       <p class="cta-sub reveal reveal-delay-2">
-        Join beVivid free. Earn recognition. Do good. <em>Be unforgettable.</em>
+        Join beVivid free. Earn recognition. <em>Be unforgettable.</em>
       </p>
       <div class="cta-actions reveal reveal-delay-3">
         <a href="#" class="btn-primary">Join for Free</a>
@@ -869,11 +1010,13 @@ footer {
   </div>
 </section>
 
-<!-- ── FOOTER ── -->
+<!-- FOOTER -->
+
 <footer>
-  <div>
+  <div class="footer-left">
     <div class="footer-logo">beVivid</div>
     <div class="footer-slogan">Be Vivid · Live Vivid</div>
+    <div class="footer-passion">an independent passion project</div>
   </div>
   <ul class="footer-links">
     <li><a href="#what">About</a></li>
@@ -886,90 +1029,120 @@ footer {
 </footer>
 
 <script>
-// ── MARQUEE POPULATE ──
+// MARQUEE
 const items = [
-  { text: 'Be Recognized', color: '#ff2d55' },
-  { text: 'Win Trophies', color: '#ff9500' },
+  { text: 'Be Recognized',       color: '#ff2d55' },
+  { text: 'Win Trophies',        color: '#ff9500' },
   { text: 'Earn Certifications', color: '#34aadc' },
-  { text: 'Do Good', color: '#00e5b0' },
-  { text: 'Get Scholarships', color: '#a259ff' },
-  { text: 'Share Your Work', color: '#ff2d55' },
-  { text: 'Live Vivid', color: '#ff9500' },
-  { text: 'Be Unforgettable', color: '#34aadc' },
-  { text: 'Join the Movement', color: '#00e5b0' },
-  { text: 'beVivid+', color: '#a259ff' },
+  { text: 'Get Scholarships',    color: '#a259ff' },
+  { text: 'Share Your Work',     color: '#ff2d55' },
+  { text: 'Live Vivid',          color: '#ff9500' },
+  { text: 'Be Unforgettable',    color: '#34aadc' },
+  { text: 'Join the Movement',   color: '#00e5b0' },
+  { text: 'beVivid+',            color: '#a259ff' },
+  { text: 'Your Legacy',         color: '#00e5b0' },
 ];
 const track = document.getElementById('marqueeTrack');
-const all = [...items, ...items, ...items];
-all.forEach(item => {
+[...items, ...items, ...items].forEach(item => {
   const el = document.createElement('div');
   el.className = 'marquee-item';
   el.innerHTML = `<span class="marquee-dot" style="background:${item.color}"></span>${item.text}`;
   track.appendChild(el);
 });
 
-// ── REVEAL ON SCROLL ──
+// SCROLL REVEAL
 const observer = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in-view'); });
-}, { threshold: 0.12 });
+}, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-// ── TABS ──
-function setTab(name) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  event.target.classList.add('active');
-  document.getElementById('tab-' + name).classList.add('active');
-  document.querySelectorAll('#tab-' + name + ' .reveal').forEach(el => el.classList.add('in-view'));
+// ACCOUNT TYPE
+const applyNotes = {
+  partner:  "Partner accounts are for people looking to collaborate or co-build with beVivid. Every application is reviewed personally — this isn't automated.",
+  business: "Business accounts are for brands or teams wanting a presence on beVivid. We're selective on purpose — reviewed case-by-case.",
+};
+function setAcct(type, btn) {
+  document.querySelectorAll('.acct-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.tab-panel, .apply-panel').forEach(p => p.classList.remove('active'));
+  const note = document.getElementById('applyNote');
+  if (type === 'partner' || type === 'business') {
+    document.getElementById('panel-' + type).classList.add('active');
+    note.textContent = applyNotes[type];
+    note.classList.add('visible');
+  } else {
+    document.getElementById('panel-' + type).classList.add('active');
+    note.textContent = ''; note.classList.remove('visible');
+    document.querySelectorAll('#panel-' + type + ' .reveal').forEach(el => el.classList.add('in-view'));
+  }
 }
 
-// ── BILLING TOGGLE ──
-let billing = 'monthly';
+// APPLY FORMS
+function submitApply(type) {
+  const name  = document.getElementById(type + '-name').value.trim();
+  const email = document.getElementById(type + '-email').value.trim();
+  if (!name || !email || !email.includes('@')) {
+    const bad = !name ? document.getElementById(type + '-name') : document.getElementById(type + '-email');
+    bad.style.outline = '1px solid var(--vivid-1)';
+    setTimeout(() => bad.style.outline = '', 900);
+    return;
+  }
+  // Wire to your preferred endpoint (Brevo, Formspree, mailto, etc.)
+  document.getElementById(type + '-success').style.display = 'block';
+  ['name','email','msg'].forEach(f => {
+    const el = document.getElementById(type + '-' + f);
+    if (el) el.value = '';
+  });
+}
+
+// BILLING
 function setBilling(b) {
-  billing = b;
-  document.querySelectorAll('.plan-toggle-btn').forEach((btn, i) => {
-    btn.classList.toggle('active', (i === 0 && b === 'monthly') || (i === 1 && b === 'yearly'));
+  document.querySelectorAll('.plan-toggle-btn').forEach((btn,i) => {
+    btn.classList.toggle('active', (i===0&&b==='monthly')||(i===1&&b==='yearly'));
   });
   const amt = document.getElementById('priceAmt');
   const per = document.getElementById('pricePer');
   const alt = document.getElementById('priceAlt');
   if (b === 'yearly') {
-    amt.textContent = '$19.99';
-    per.textContent = '/ year';
+    amt.textContent = '$19.99'; per.textContent = '/ year';
     alt.style.opacity = '1'; alt.style.height = 'auto';
   } else {
-    amt.textContent = '$1.99';
-    per.textContent = '/ month';
+    amt.textContent = '$1.99'; per.textContent = '/ month';
     alt.style.opacity = '0'; alt.style.height = '0';
   }
 }
 
-// ── ORB PARALLAX ──
+// ORB PARALLAX
 document.addEventListener('mousemove', e => {
   const orbs = document.querySelectorAll('.orb');
   const cx = (e.clientX / window.innerWidth - 0.5) * 2;
   const cy = (e.clientY / window.innerHeight - 0.5) * 2;
   orbs.forEach((o, i) => {
-    const d = (i + 1) * 14;
+    const d = (i + 1) * 13;
     o.style.transform = `translate(${cx * d}px, ${cy * d}px)`;
   });
 });
 
-// ── MOBILE NAV ──
+// MOBILE NAV
 document.getElementById('mobileToggle').addEventListener('click', () => {
-  const links = document.querySelector('.nav-links');
-  const open = links.style.display === 'flex';
+  const links = document.querySelector('.nav-center');
+  const open  = links.style.display === 'flex';
   links.style.display = open ? 'none' : 'flex';
   if (!open) {
-    links.style.flexDirection = 'column';
-    links.style.position = 'absolute';
-    links.style.top = '70px'; links.style.left = '0'; links.style.right = '0';
-    links.style.background = 'rgba(5,5,5,0.97)';
-    links.style.padding = '24px clamp(24px,5vw,64px) 32px';
-    links.style.borderBottom = '1px solid rgba(245,240,235,0.08)';
-    links.style.gap = '20px';
+    Object.assign(links.style, {
+      flexDirection:'column', position:'absolute',
+      top:'68px', left:'0', right:'0',
+      background:'rgba(5,5,5,0.97)',
+      padding:'24px clamp(24px,5vw,64px) 28px',
+      borderBottom:'1px solid rgba(245,240,235,0.08)',
+      gap:'18px',
+    });
   }
 });
+
+// Init first dot
+document.querySelector('.acct-btn[data-type="student"] .acct-dot').style.cssText = 'opacity:1;transform:scale(1)';
 </script>
+
 </body>
 </html>
