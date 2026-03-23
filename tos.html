@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Terms of Service — beVivid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --black: #050505;
+  --white: #f5f0eb;
+  --white-40: rgba(245,240,235,0.40);
+  --white-20: rgba(245,240,235,0.20);
+  --white-10: rgba(245,240,235,0.10);
+  --white-06: rgba(245,240,235,0.06);
+  --vivid-1: #ff2d55;
+  --vivid-2: #ff9500;
+  --vivid-3: #34aadc;
+  --vivid-4: #a259ff;
+  --vivid-5: #00e5b0;
+  --grad: linear-gradient(135deg, var(--vivid-1), var(--vivid-2), var(--vivid-4), var(--vivid-3));
+}
+html { scroll-behavior: smooth; }
+html, body {
+  width: 100%; background: var(--black); color: var(--white);
+  font-family: 'Syne', sans-serif; overflow-x: hidden;
+}
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.035; pointer-events: none; z-index: 999;
+  animation: grain .4s steps(1) infinite;
+}
+@keyframes grain {
+  0%{transform:translate(0,0)} 25%{transform:translate(-2px,1px)}
+  50%{transform:translate(1px,-1px)} 75%{transform:translate(-1px,2px)} 100%{transform:translate(2px,-2px)}
+}
+.orb-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.orb { position: absolute; border-radius: 50%; filter: blur(130px); opacity: 0; animation: orbf linear infinite; }
+.orb:nth-child(1) { width:500px;height:500px; background:radial-gradient(circle,var(--vivid-1),transparent 70%); top:-5%;left:-8%; animation-duration:28s; }
+.orb:nth-child(2) { width:380px;height:380px; background:radial-gradient(circle,var(--vivid-4),transparent 70%); bottom:5%;right:-5%; animation-duration:24s; animation-delay:-10s; }
+@keyframes orbf { 0%,100%{opacity:0;transform:scale(.85)} 50%{opacity:.1;transform:scale(1)} }
+
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px clamp(24px,5vw,64px);
+  background: rgba(5,5,5,0.7); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--white-10);
+}
+.nav-logo {
+  font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: .04em;
+  background: linear-gradient(135deg,var(--white) 40%,rgba(245,240,235,.4));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  text-decoration: none;
+}
+.nav-back {
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--white-40); text-decoration: none; transition: color .2s;
+}
+.nav-back:hover { color: var(--white); }
+.nav-back svg { transition: transform .2s; }
+.nav-back:hover svg { transform: translateX(-3px); }
+
+.doc-hero {
+  position: relative; z-index: 1;
+  padding: 140px clamp(24px,5vw,64px) 64px;
+  border-bottom: 1px solid var(--white-10);
+}
+.doc-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--vivid-2); border: 1px solid rgba(255,149,0,.25); border-radius: 100px;
+  padding: 6px 14px; margin-bottom: 24px;
+}
+.doc-chip-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--vivid-2); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+.doc-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(56px,10vw,140px); line-height: .88; letter-spacing: -.01em; margin-bottom: 32px;
+}
+.doc-title span {
+  background: var(--grad);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  background-size: 300% 100%; animation: shimmer 5s linear infinite;
+}
+@keyframes shimmer { 0%{background-position:0%50%} 100%{background-position:300%50%} }
+.doc-meta { display: flex; gap: 32px; flex-wrap: wrap; }
+.doc-meta-item { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .15em; text-transform: uppercase; }
+.doc-meta-item .label { color: rgba(245,240,235,.25); margin-bottom: 4px; }
+.doc-meta-item .value { color: var(--white-40); }
+
+.doc-layout {
+  position: relative; z-index: 1;
+  display: grid; grid-template-columns: 240px 1fr; gap: 0;
+  max-width: 1200px; margin: 0 auto;
+  padding: 0 clamp(24px,5vw,64px);
+}
+.doc-sidebar {
+  position: sticky; top: 80px; align-self: start;
+  padding: 48px 32px 48px 0; border-right: 1px solid var(--white-10);
+  height: calc(100vh - 80px); overflow-y: auto;
+}
+.doc-sidebar::-webkit-scrollbar { width: 2px; }
+.doc-sidebar::-webkit-scrollbar-thumb { background: var(--white-10); }
+.sidebar-label {
+  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .28em; text-transform: uppercase;
+  color: rgba(245,240,235,.2); margin-bottom: 16px; padding-left: 12px;
+}
+.sidebar-nav { list-style: none; }
+.sidebar-nav li { margin-bottom: 2px; }
+.sidebar-nav a {
+  display: block; padding: 7px 12px; border-radius: 3px;
+  font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .1em;
+  color: var(--white-40); text-decoration: none; transition: all .2s;
+  border-left: 2px solid transparent;
+}
+.sidebar-nav a:hover { color: var(--white); background: var(--white-06); }
+.sidebar-nav a.active { color: var(--vivid-2); border-left-color: var(--vivid-2); background: rgba(255,149,0,.06); }
+
+.doc-content { padding: 56px 0 100px 64px; max-width: 720px; }
+.doc-section { margin-bottom: 64px; scroll-margin-top: 100px; }
+.doc-section-num {
+  font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: .2em;
+  color: var(--vivid-2); margin-bottom: 10px; display: block;
+}
+.doc-section h2 {
+  font-family: 'Bebas Neue', sans-serif; font-size: clamp(32px,4vw,52px);
+  letter-spacing: .02em; line-height: 1; margin-bottom: 24px;
+}
+.doc-section p {
+  font-size: 15px; line-height: 1.8; color: var(--white-40); margin-bottom: 16px;
+}
+.doc-section p:last-child { margin-bottom: 0; }
+.doc-section p em { color: var(--white); font-style: normal; font-weight: 600; }
+.doc-section ul, .doc-section ol { margin: 16px 0; padding: 0; list-style: none; }
+.doc-section li {
+  display: flex; gap: 12px; align-items: flex-start;
+  font-size: 15px; line-height: 1.75; color: var(--white-40);
+  padding: 8px 0; border-bottom: 1px solid var(--white-06);
+}
+.doc-section li:last-child { border-bottom: none; }
+.li-bullet { flex-shrink:0; width:5px; height:5px; border-radius:50%; background:var(--vivid-2); margin-top:9px; }
+.li-num { flex-shrink:0; font-family:'DM Mono',monospace; font-size:10px; letter-spacing:.1em; color:var(--vivid-2); min-width:24px; margin-top:2px; }
+.highlight-box {
+  border: 1px solid rgba(255,149,0,.2); border-radius: 4px;
+  background: rgba(255,149,0,.04); padding: 24px 28px; margin: 24px 0;
+}
+.highlight-box p { margin-bottom: 0; }
+.highlight-box .hb-label {
+  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .25em; text-transform: uppercase;
+  color: var(--vivid-2); margin-bottom: 10px; display: block;
+}
+.warning-box {
+  border: 1px solid rgba(255,45,85,.2); border-radius: 4px;
+  background: rgba(255,45,85,.04); padding: 24px 28px; margin: 24px 0;
+}
+.warning-box .hb-label {
+  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .25em; text-transform: uppercase;
+  color: var(--vivid-1); margin-bottom: 10px; display: block;
+}
+.warning-box p { margin-bottom: 0; font-size: 15px; line-height: 1.8; color: var(--white-40); }
+.contact-block {
+  border: 1px solid var(--white-10); border-radius: 4px; padding: 28px;
+  margin-top: 24px; background: var(--white-06);
+}
+.contact-block .cb-label {
+  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .25em; text-transform: uppercase;
+  color: var(--white-40); margin-bottom: 12px; display: block;
+}
+.contact-block a { color: var(--vivid-2); text-decoration: none; font-weight: 600; }
+.contact-block a:hover { text-decoration: underline; }
+.doc-divider { height: 1px; background: var(--white-10); margin: 8px 0 64px; }
+
+footer {
+  position: relative; z-index: 1;
+  padding: 40px clamp(24px,5vw,64px);
+  border-top: 1px solid var(--white-10);
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;
+}
+.footer-logo {
+  font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: .04em;
+  background: linear-gradient(135deg,var(--white) 40%,rgba(245,240,235,.3));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.footer-links { display: flex; gap: 24px; list-style: none; flex-wrap: wrap; }
+.footer-links a {
+  font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .15em; text-transform: uppercase;
+  color: rgba(245,240,235,.2); text-decoration: none; transition: color .2s;
+}
+.footer-links a:hover { color: var(--white-40); }
+.footer-copy { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .1em; color: rgba(245,240,235,.12); }
+
+@media (max-width: 860px) {
+  .doc-layout { grid-template-columns: 1fr; }
+  .doc-sidebar { display: none; }
+  .doc-content { padding: 48px 0 80px; }
+}
+</style>
+</head>
+<body>
+
+<div class="orb-layer"><div class="orb"></div><div class="orb"></div></div>
+
+<nav>
+  <a href="bevivid-landing.html" class="nav-logo">beVivid</a>
+  <a href="bevivid-landing.html" class="nav-back">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Back to site
+  </a>
+</nav>
+
+<div class="doc-hero">
+  <div class="doc-chip"><span class="doc-chip-dot"></span>Legal Document</div>
+  <div class="doc-title">Terms of<br><span>Service.</span></div>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><div class="label">Effective Date</div><div class="value">January 1, 2025</div></div>
+    <div class="doc-meta-item"><div class="label">Last Updated</div><div class="value">January 1, 2025</div></div>
+    <div class="doc-meta-item"><div class="label">Applies To</div><div class="value">All beVivid users</div></div>
+  </div>
+</div>
+
+<div class="doc-layout">
+  <aside class="doc-sidebar">
+    <div class="sidebar-label">Contents</div>
+    <ul class="sidebar-nav" id="sidebarNav">
+      <li><a href="#t1" class="active">1. Acceptance of Terms</a></li>
+      <li><a href="#t2">2. Eligibility</a></li>
+      <li><a href="#t3">3. Your Account</a></li>
+      <li><a href="#t4">4. Acceptable Use</a></li>
+      <li><a href="#t5">5. Your Content</a></li>
+      <li><a href="#t6">6. Awards, Trophies & Certs</a></li>
+      <li><a href="#t7">7. Scholarships</a></li>
+      <li><a href="#t8">8. beVivid+ Subscription</a></li>
+      <li><a href="#t9">9. Intellectual Property</a></li>
+      <li><a href="#t10">10. Third-Party Services</a></li>
+      <li><a href="#t11">11. Disclaimers</a></li>
+      <li><a href="#t12">12. Limitation of Liability</a></li>
+      <li><a href="#t13">13. Indemnification</a></li>
+      <li><a href="#t14">14. Termination</a></li>
+      <li><a href="#t15">15. Governing Law</a></li>
+      <li><a href="#t16">16. Changes to Terms</a></li>
+      <li><a href="#t17">17. Contact</a></li>
+    </ul>
+  </aside>
+
+  <main class="doc-content">
+
+    <div class="doc-section" id="t1">
+      <span class="doc-section-num">01 — Acceptance</span>
+      <h2>Acceptance of Terms</h2>
+      <div class="highlight-box">
+        <span class="hb-label">Plain English</span>
+        <p>By using beVivid, you're agreeing to these Terms. If you don't agree, don't use the platform. That's it.</p>
+      </div>
+      <p>Welcome to beVivid. These Terms of Service ("Terms") are a binding legal agreement between you and beVivid ("beVivid," "we," "us," or "our") governing your use of the beVivid platform, including our website, mobile applications, and all related services (collectively, the "Platform").</p>
+      <p>By creating an account, accessing, or using the Platform, you confirm that you have read, understood, and agree to be bound by these Terms and our <a href="bevivid-privacy.html" style="color:var(--vivid-2);text-decoration:none;font-weight:600;">Privacy Policy</a>, which is incorporated by reference.</p>
+      <p>If you are using the Platform on behalf of an organization, you represent that you have the authority to bind that organization to these Terms.</p>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <div class="doc-section" id="t2">
+      <span class="doc-section-num">02 — Eligibility</span>
+      <h2>Who Can Use beVivid</h2>
+      <p>You must be at least <em>13 years old</em> to use the Platform. If you are between 13 and 17, you represent that you have your parent or guardian's permission to use beVivid, and that they have read and agreed to these Terms on your behalf.</p>
+      <p>Certain features — including purchasing beVivid+ subscriptions and submitting scholarship applications that involve financial awards — require you to be at least <em>18 years old</em>, or to have verifiable parental consent.</p>
+      <p>You may not use the Platform if you have previously been suspended or permanently removed from beVivid, or if applicable law prohibits you from doing so.</p>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <div class="doc-section" id="t3">
+      <span class="doc-section-num">03 — Your Account</span>
+      <h2>Your Account</h2>
+      <p>To access most features of beVivid, you'll need to create an account. When you do, you agree to:</p>
+      <ul>
+        <li><span class="li-bullet"></span>Provide accurate, current, and complete information during registration.</li>
+        <li><span class="li-bullet"></span>Maintain and promptly update your account information to keep it accurate.</li>
+        <li><span class="li-bullet"></span>Keep your password secure and confidential. You are responsible for all activity under your account.</li>
+        <li><span class="li-bullet"></span>Notify us immediately at <a href="mailto:support@bevivid.com" style="color:var(--vivid-2);text-decoration:none;">support@bevivid.com</a> if you suspect unauthorized use of your account.</li>
+        <li><span class="li-bullet"></span>Not share your account credentials with any other person.</li>
+      </ul>
+      <p>You may only create <em>one account per person</em>. Creating multiple accounts to circumvent suspensions or gain unfair advantages is prohibited.</p>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <div class="doc-section" id="t4">
+      <span class="doc-section-num">04 — Acceptable Use</span>
+      <h2>What You Can & Can't Do</h2>
+      <p>beVivid exists to celebrate real people doing real things. Keep it that way. You agree <em>not</em> to:</p>
+      <ul>
+        <li><span class="li-bullet"></span>Post false, misleading, or fabricated achievements, awards, work, or Do Good activities.</li>
+        <li><span class="li-bullet"></span>Impersonate any person or entity, or misrepresent your affiliation with any person or organization.</li>
+        <li><span class="li-bullet"></span>Upload or share content that is unlawful, harmful, threatening, abusive, harassing, defamatory, obscene, or otherwise objectionable.</li>
+        <li><span class="li-bullet"></span>Infringe upon the intellectual property rights, privacy rights, or any other rights of others.</li>
+        <li><span class="li-bullet"></span>Spam, mass-message, or solicit other users without their consent.</li>
+        <li><span class="li-bullet"></span>Use automated scripts, bots, scrapers, or crawlers to access the Platform without prior written consent.</li>
+        <li><span class="li-bullet"></span>Attempt to hack, probe, or compromise the security or integrity of the Platform.</li>
+        <li><span class="li-bullet"></span>Engage in any activity that disrupts or interferes with the Platform or its servers.</li>
+        <li><span class="li-bullet"></span>Use the Platform for any commercial solicitation or advertising without our written authorization.</li>
+        <li><span class="li-bullet"></span>Facilitate or encourage others to violate these Terms.</li>
+      </ul>
+      <p>We reserve the right to determine, in our sole discretion, what constitutes a violation of these standards. Violations may result in content removal, account suspension, or permanent termination.</p>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <div class="doc-section" id="t5">
+      <span class="doc-section-num">05 — Your Content</span>
+      <h2>Content You Post</h2>
+      <p>beVivid is a platform where you share your story. You retain ownership of the content you post ("Your Content"). By posting content on beVivid, you grant us a <em>non-exclusive, worldwide, royalty-free, sublicensable license</em> to use, reproduce, display, distribute, and promote Your Content on the Platform and in connection with marketing beVivid, to the extent necessary to operate and promote the service.</p>
+      <p>You represent and warrant that:</p>
+      <ul>
+        <li><span class="li-bullet"></span>You own Your Content or have the rights to post it.</li>
+        <li><span class="li-bullet"></span>Your Content does not violate the rights of any third party.</li>
+        <li><span class="li-bullet"></span>Your Content is accurate and not misleading — especially regarding achievements, certifications, and Do Good activities.</li>
+      </ul>
+      <p>We do not claim ownership of Your Content, and you may delete it at any time. When you delete content or your account, we will remove it from the Platform within 30 days, subject to our data retention policy.</p>
+      <p>beVivid reserves the right to remove any content that violates these Terms or that we determine, in our sole discretion, is harmful to the community.</p>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <div class="doc-section" id="t6">
+      <span class="doc-section-num">06 — Awards, Trophies & Certifications</span>
+      <h2>Recognition on beVivid</h2>
+      <p>beVivid trophies, awards, and certifications are earned through genuine activity, achievement, or community recognition on the Platform. By accepting any recognition, you confirm that your underlying activity or achievement is <em>authentic and accurate</em>.</p>
+      <ul>
+        <li><span class="li-bullet"></span>beVivid reserves the right to revoke any trophy, award, or certification if we determine it was obtained through false, misleading, or fraudulent means.</li>
+        <li><span class="li-bullet"></span>Certifications issued through beVivid reflect Platform-level validation only. We do not guarantee their acceptance by employers, academic institutions, or other third parties.</li>
+        <li><span class="li-bullet"></span>Award criteria and availability are subject to change. beVivid may introduce, modify, or discontinue awards at any time without notice.</li>
+        <li><span class="li-bullet"></span>beVivid+ subscribers may have access to exclusive premium awards and trophies not available to free members. These are tied to your active subscription.</li>
+      </ul>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <div class="doc-section" id="t7">
+      <span class="doc-section-num">07 — Scholarships</span>
+      <h2>Scholarships</h2>
+      <p>beVivid facilitates access to scholarships on behalf of itself and third-party scholarship sponsors. By applying for a scholarship through the Platform, you agree that:</p>
+      <ul>
+        <li><span class="li-bullet"></span>All information in your application is <em>accurate, truthful, and complete</em>. False representations may result in disqualification and account termination.</li>
+        <li><span class="li-bullet"></span>beVivid acts as a facilitator, not a guarantor. We do not guarantee that any user will receive a scholarship.</li>
+        <li><span class="li-bullet"></span>Scholarship decisions by beVivid or third-party sponsors are final.</li>
+        <li><span class="li-bullet"></span>Your application data may be shared with the relevant scholarship sponsor as described in our Privacy Policy.</li>
+        <li><span class="li-bullet"></span>Scholarship terms and eligibility criteria are specific to each opportunity and will be disclosed on the application.</li>
+      </ul>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <div class="doc-section" id="t8">
+      <span class="doc-section-num">08 — beVivid+ Subscription</span>
+      <h2>beVivid+ Subscription</h2>
+      <p>beVivid offers a premium subscription plan, <em>beVivid+</em>, with enhanced features. By subscribing, you agree to the following:</p>
+
+      <p><em>Billing:</em></p>
+      <ul>
+        <li><span class="li-bullet"></span>Monthly subscriptions are billed at <em>$1.99 per month</em>. Annual subscriptions are billed at <em>$19.99 per year</em> (a discount from the month-to-month rate of $23.88/year).</li>
+        <li><span class="li-bullet"></span>Subscriptions automatically renew at the end of each billing period unless cancelled before the renewal date.</li>
+        <li><span class="li-bullet"></span>Payment is processed through our third-party payment provider. By subscribing, you authorize recurring charges to your payment method.</li>
+        <li><span class="li-bullet"></span>Prices are in USD. We reserve the right to change subscription pricing with at least <em>30 days' notice</em> to existing subscribers.</li>
+      </ul>
+
+      <p><em>Cancellation & Refunds:</em></p>
+      <ul>
+        <li><span class="li-bullet"></span>You may cancel your beVivid+ subscription at any time through your account settings. Cancellation takes effect at the end of your current billing period.</li>
+        <li><span class="li-bullet"></span>We do not offer refunds for partial subscription periods, except where required by law.</li>
+        <li><span class="li-bullet"></span>Upon cancellation, your account reverts to the free tier and premium features become unavailable. Your profile, content, and earned recognition remain intact.</li>
+      </ul>
+
+      <div class="warning-box">
+        <span class="hb-label">Important</span>
+        <p>Cancelling beVivid+ does not delete your account. Your profile and free-tier benefits remain active. Only premium features tied to an active subscription will be paused.</p>
+      </div>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <div class="doc-section" id="t9">
+      <span class="doc-section-num">09 — Intellectual Property</span>
+      <h2>IP & Ownership</h2>
+      <p>The beVivid Platform, including its design, graphics, logos, award icons, text, and software, is owned by beVivid and protected by applicable intellectual property laws. You may not copy, reproduce, modify, distribute, or create derivative works from any part of the Platform without our express written permission.</p>
+      <p>The beVivid name, logo, and brand identity are trademarks of beVivid. Nothing in these Terms grants you the right to use any of our trademarks without prior written consent.</p>
+      <p>If you believe that any content on the Platform infringes your copyright, please contact us at <a href="mailto:legal@bevivid.com" style="color:var(--vivid-2);text-decoration:none;font-weight:600;">legal@bevivid.com</a> with a description of the allegedly infringing material and your contact information.</p>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <div class="doc-section" id="t10">
+      <span class="doc-section-num">10 — Third-Party Services</span>
+      <h2>Third-Party Services</h2>
+      <p>The Platform may contain links to or integrations with third-party websites, services, or platforms. These are provided for convenience only. beVivid does not endorse and is not responsible for the content, privacy practices, or terms of any third-party service.</p>
+      <p>Your use of any third-party service is governed by that service's terms and privacy policy, not ours. We encourage you to review the terms of any third-party service before using it.</p>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <div class="doc-section" id="t11">
+      <span class="doc-section-num">11 — Disclaimers</span>
+      <h2>Disclaimers</h2>
+      <p>The Platform is provided on an <em>"as is" and "as available" basis</em> without warranties of any kind, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, non-infringement, or uninterrupted access.</p>
+      <p>We do not warrant that the Platform will be error-free, secure, or continuously available. We may suspend or discontinue any part of the Platform at any time without notice.</p>
+      <p>Content posted by users does not represent the views or opinions of beVivid. We do not verify the accuracy of user-generated content.</p>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <div class="doc-section" id="t12">
+      <span class="doc-section-num">12 — Limitation of Liability</span>
+      <h2>Limitation of Liability</h2>
+      <p>To the maximum extent permitted by applicable law, beVivid, its officers, directors, employees, partners, and affiliates shall not be liable for any indirect, incidental, special, consequential, or punitive damages — including loss of data, loss of revenue, or loss of recognition — arising from your use of or inability to use the Platform.</p>
+      <p>Our total cumulative liability to you for any claim arising from your use of the Platform shall not exceed the amount you paid to beVivid in the <em>12 months preceding the claim</em>, or $100 USD, whichever is greater.</p>
+      <p>Some jurisdictions do not allow the exclusion of certain warranties or limitations on liability. In such jurisdictions, our liability is limited to the maximum extent permitted by law.</p>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <div class="doc-section" id="t13">
+      <span class="doc-section-num">13 — Indemnification</span>
+      <h2>Indemnification</h2>
+      <p>You agree to defend, indemnify, and hold harmless beVivid and its officers, directors, employees, and agents from any claims, damages, losses, liabilities, and expenses (including reasonable attorneys' fees) arising out of or related to:</p>
+      <ul>
+        <li><span class="li-bullet"></span>Your use of the Platform.</li>
+        <li><span class="li-bullet"></span>Your Content or any information you submit to the Platform.</li>
+        <li><span class="li-bullet"></span>Your violation of these Terms.</li>
+        <li><span class="li-bullet"></span>Your violation of any rights of a third party.</li>
+      </ul>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <div class="doc-section" id="t14">
+      <span class="doc-section-num">14 — Termination</span>
+      <h2>Termination</h2>
+      <p>You may delete your account at any time through your account settings. Upon deletion, your profile and content will be removed in accordance with our Privacy Policy.</p>
+      <p>beVivid reserves the right to suspend or permanently terminate your account, with or without notice, if we determine that you have violated these Terms, engaged in fraudulent activity, or otherwise acted in a manner harmful to the Platform or its community.</p>
+      <p>Upon termination, your right to access the Platform ceases immediately. Sections relating to intellectual property, disclaimers, limitation of liability, and governing law survive termination of these Terms.</p>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <div class="doc-section" id="t15">
+      <span class="doc-section-num">15 — Governing Law</span>
+      <h2>Governing Law</h2>
+      <p>These Terms are governed by and construed in accordance with the laws of the <em>United States</em>, without regard to its conflict of law provisions. For users outside the United States, local mandatory laws may also apply.</p>
+      <p>Any disputes arising from these Terms or your use of the Platform that cannot be resolved informally shall be submitted to binding arbitration under the rules of the American Arbitration Association, except that either party may seek injunctive or other equitable relief in a court of competent jurisdiction to protect its intellectual property rights.</p>
+      <p>You and beVivid agree that any dispute resolution will be conducted on an <em>individual basis only</em>, and not as a class, consolidated, or representative action.</p>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <div class="doc-section" id="t16">
+      <span class="doc-section-num">16 — Changes to Terms</span>
+      <h2>Updates to These Terms</h2>
+      <p>We may revise these Terms from time to time. When we do, we'll update the "Last Updated" date at the top of this page. For material changes, we'll notify you by email or via a prominent notice on the Platform at least <em>14 days before the change takes effect</em>.</p>
+      <p>Your continued use of the Platform after any changes constitutes your acceptance of the revised Terms. If you disagree with updated Terms, you should stop using the Platform and delete your account.</p>
+    </div>
+
+    <div class="doc-divider"></div>
+
+    <div class="doc-section" id="t17">
+      <span class="doc-section-num">17 — Contact</span>
+      <h2>Contact Us</h2>
+      <p>Questions about these Terms? Reach out — we're real people and we're happy to talk through anything.</p>
+      <div class="contact-block">
+        <span class="cb-label">Legal Contact</span>
+        <p style="font-size:15px;color:var(--white-40);line-height:1.8;">
+          <strong style="color:var(--white);">beVivid</strong><br>
+          General: <a href="mailto:support@bevivid.com">support@bevivid.com</a><br>
+          Legal: <a href="mailto:legal@bevivid.com">legal@bevivid.com</a><br>
+          Subject line: "Terms Question — [Your Name]"
+        </p>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer>
+  <div>
+    <div class="footer-logo">beVivid</div>
+    <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(245,240,235,.2);margin-top:6px;">Be Vivid · Live Vivid</div>
+  </div>
+  <ul class="footer-links">
+    <li><a href="bevivid-landing.html">Home</a></li>
+    <li><a href="bevivid-privacy.html">Privacy Policy</a></li>
+    <li><a href="bevivid-tos.html">Terms of Service</a></li>
+  </ul>
+  <div class="footer-copy">© 2025 beVivid. All rights reserved.</div>
+</footer>
+
+<script>
+const sections = document.querySelectorAll('.doc-section');
+const links = document.querySelectorAll('.sidebar-nav a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
+  links.forEach(l => { l.classList.toggle('active', l.getAttribute('href') === '#' + current); });
+});
+</script>
+</body>
+</html>
