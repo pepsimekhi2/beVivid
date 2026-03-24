@@ -98,7 +98,6 @@ const requestedHandle = params.get('handle');
 let activeUser = null;
 let viewingHandle = null;
 const audioState = { el: null, ctx: null, analyser: null, data: null, raf: null, playing: false };
-let searchUsersCache = null;
 
 function getCookie(name) { const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)')); return match ? decodeURIComponent(match[1]) : ''; }
 function decodeLayout(value) { return JSON.parse(decodeURIComponent(escape(atob(value)))); }
@@ -142,45 +141,48 @@ function renderSearchResults(users) {
     });
   });
 }
-async function fetchUsersForSearch() {
-  if (searchUsersCache) return searchUsersCache;
-  const response = await fetch(`${FIREBASE_DB_URL}/users.json`);
+function normalizeSearchQuery(value) {
+  return String(value || '').trim().toLowerCase();
+}
+function getSearchRank(user, query) {
+  const handle = normalizeSearchQuery(user.handle);
+  const displayName = normalizeSearchQuery(user.displayName);
+  const words = displayName.split(/\s+/).filter(Boolean);
+  if (handle.startsWith(query)) return 0;
+  if (words.some(word => word.startsWith(query))) return 1;
+  if (displayName.startsWith(query)) return 2;
+  if (handle.includes(query)) return 3;
+  if (displayName.includes(query)) return 4;
+  return 9;
+}
+async function queryUsersByPrefix(query) {
+  const response = await fetch(`${FIREBASE_DB_URL}/publicUserIndex.json?orderBy=%22%24key%22&limitToFirst=200`);
+  if (!response.ok) throw new Error('Could not read public search index.');
   const data = await response.json();
-  searchUsersCache = Object.values(data || {}).filter(user => user && user.handle);
-  return searchUsersCache;
+  return Object.values(data || {})
+    .filter(user => user && user.handle)
+    .map(user => ({
+      ...user,
+      _rank: getSearchRank(user, query)
+    }))
+    .filter(user => user._rank < 9)
+    .sort((a, b) => {
+      if (a._rank !== b._rank) return a._rank - b._rank;
+      return normalizeSearchQuery(a.handle).localeCompare(normalizeSearchQuery(b.handle));
+    })
+    .slice(0, 7);
 }
 async function handleSearchInput() {
-  const query = document.getElementById('searchHandle').value.trim().toLowerCase();
+  const query = normalizeSearchQuery(document.getElementById('searchHandle').value);
   if (!query) {
     closeSearchResults();
     return;
   }
   try {
-    const users = await fetchUsersForSearch();
-    const matches = users
-      .filter(user => {
-        const handle = (user.handle || '').toLowerCase();
-        const displayName = (user.displayName || '').toLowerCase().trim();
-        const nameParts = displayName.split(/\s+/).filter(Boolean);
-        return handle.startsWith(query) || nameParts.some(part => part.startsWith(query));
-      })
-      .sort((a, b) => {
-        const aHandle = (a.handle || '').toLowerCase();
-        const bHandle = (b.handle || '').toLowerCase();
-        const aName = (a.displayName || '').toLowerCase();
-        const bName = (b.displayName || '').toLowerCase();
-        const aHandleStarts = aHandle.startsWith(query) ? 0 : 1;
-        const bHandleStarts = bHandle.startsWith(query) ? 0 : 1;
-        if (aHandleStarts !== bHandleStarts) return aHandleStarts - bHandleStarts;
-        const aNameStarts = aName.startsWith(query) ? 0 : 1;
-        const bNameStarts = bName.startsWith(query) ? 0 : 1;
-        if (aNameStarts !== bNameStarts) return aNameStarts - bNameStarts;
-        return aHandle.localeCompare(bHandle);
-      })
-      .slice(0, 7);
+    const matches = await queryUsersByPrefix(query);
     renderSearchResults(matches);
   } catch (_) {
-    document.getElementById('searchResults').innerHTML = '<div class="search-empty">Could not load user search right now.</div>';
+    document.getElementById('searchResults').innerHTML = '<div class="search-empty">Search could not read the public profile index right now.</div>';
     document.getElementById('searchResults').classList.add('open');
   }
 }
