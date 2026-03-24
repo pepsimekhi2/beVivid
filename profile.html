@@ -18,13 +18,24 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: #34aadc; margin-bottom: 12px; }
 .title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(58px, 10vw, 120px); line-height: .88; margin: 0; }
 .sub { color: rgba(245,240,235,.46); max-width: 680px; line-height: 1.8; margin-top: 10px; }
-.profile-search-corner { position: fixed; top: 28px; right: 28px; z-index: 50; }
+.profile-search-corner { position: fixed; top: 88px; right: 28px; z-index: 60; width: min(420px, calc(100vw - 56px)); }
 .profile-tools { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 22px; }
-.search-form { display: flex; gap: 10px; flex-wrap: wrap; }
-.search-input { min-width: 260px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; border-radius: 999px; padding: 12px 16px; font: inherit; outline: none; }
+.search-form { display: flex; gap: 10px; flex-wrap: wrap; position: relative; }
+.search-input { min-width: 260px; border: 1px solid rgba(245,240,235,.12); background: rgba(10,10,10,.88); color: #f5f0eb; border-radius: 999px; padding: 12px 16px; font: inherit; outline: none; flex: 1; backdrop-filter: blur(14px); }
 .search-btn, .recognize-btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 18px; border-radius: 999px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer; }
 .recognize-btn { background: #f5f0eb; color: #050505; border-color: transparent; }
 .recognize-btn[disabled] { opacity: .6; cursor: not-allowed; }
+.search-results { display: none; position: absolute; top: calc(100% + 10px); left: 0; right: 0; border: 1px solid rgba(245,240,235,.1); border-radius: 18px; background: rgba(10,10,10,.96); backdrop-filter: blur(18px); overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,.35); }
+.search-results.open { display: block; }
+.search-result { display: flex; align-items: center; gap: 12px; width: 100%; border: 0; border-bottom: 1px solid rgba(245,240,235,.06); background: transparent; color: #f5f0eb; padding: 12px 14px; text-align: left; cursor: pointer; }
+.search-result:last-child { border-bottom: 0; }
+.search-result:hover { background: rgba(245,240,235,.05); }
+.search-avatar { width: 42px; height: 42px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg,#ff2d55,#34aadc); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: 'Bebas Neue', sans-serif; font-size: 20px; }
+.search-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.search-meta { min-width: 0; }
+.search-name { font-weight: 700; font-size: 14px; line-height: 1.2; }
+.search-handle { margin-top: 4px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: rgba(245,240,235,.42); }
+.search-empty { padding: 14px 16px; color: rgba(245,240,235,.48); font-size: 13px; line-height: 1.6; }
 .recognition-card { border: 1px solid rgba(245,240,235,.08); border-radius: 18px; padding: 14px 16px; background: rgba(245,240,235,.03); min-width: 210px; }
 .recognition-card small { display: block; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: rgba(245,240,235,.34); margin-bottom: 8px; }
 .recognition-card strong { font-size: 28px; line-height: 1; display: block; }
@@ -45,7 +56,7 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .audio-toggle { position: absolute; left: 20px; bottom: 20px; z-index: 4; border: 1px solid rgba(245,240,235,.12); background: rgba(5,5,5,.55); color: #f5f0eb; border-radius: 999px; padding: 12px 16px; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; backdrop-filter: blur(14px); }
 .audio-note { position: absolute; right: 20px; bottom: 22px; z-index: 4; color: rgba(245,240,235,.42); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
 .empty { padding: 26px; border-radius: 16px; border: 1px solid rgba(245,240,235,.08); background: rgba(245,240,235,.03); color: rgba(245,240,235,.56); line-height: 1.8; }
-@media (max-width: 760px) { .shell { padding: 18px; } .profile-search-corner { position: static; margin-bottom: 16px; } .profile-tools { flex-direction: column; align-items: stretch; } .search-form { width: 100%; } .search-input { min-width: 0; width: 100%; } .stage-wrap { padding: 10px; } .stage { width: 980px; min-height: 780px; } .audio-toggle { left: 12px; bottom: 12px; } .audio-note { left: 12px; right: auto; bottom: 58px; } }
+@media (max-width: 760px) { .shell { padding: 18px; } .profile-search-corner { position: static; width: 100%; margin-bottom: 16px; } .profile-tools { flex-direction: column; align-items: stretch; } .search-form { width: 100%; } .search-input { min-width: 0; width: 100%; } .search-btn { width: 100%; } .stage-wrap { padding: 10px; } .stage { width: 980px; min-height: 780px; } .audio-toggle { left: 12px; bottom: 12px; } .audio-note { left: 12px; right: auto; bottom: 58px; } }
 </style>
 </head>
 <body>
@@ -54,6 +65,7 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
     <form class="search-form" onsubmit="event.preventDefault(); searchProfiles();">
       <input class="search-input" id="searchHandle" type="text" placeholder="Find a user by handle" />
       <button class="search-btn" type="submit">Search User</button>
+      <div class="search-results" id="searchResults"></div>
     </form>
   </div>
   <div class="topbar">
@@ -85,6 +97,7 @@ const requestedHandle = params.get('handle');
 let activeUser = null;
 let viewingHandle = null;
 const audioState = { el: null, ctx: null, analyser: null, data: null, raf: null, playing: false };
+let searchUsersCache = null;
 
 function getCookie(name) { const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)')); return match ? decodeURIComponent(match[1]) : ''; }
 function decodeLayout(value) { return JSON.parse(decodeURIComponent(escape(atob(value)))); }
@@ -93,6 +106,65 @@ function escapeAttr(value) { return escapeHtml(value).replace(/'/g, '&#39;'); }
 function getSessionUser() { const raw = getCookie(AUTH_COOKIE_NAME); if (!raw) return null; try { return JSON.parse(raw); } catch (_) { return null; } }
 function todayKey() { return new Date().toISOString().slice(0, 10); }
 function setRecognitionStatus(message) { document.getElementById('recognitionStatus').textContent = message || ''; }
+function closeSearchResults() { document.getElementById('searchResults').classList.remove('open'); }
+function getProfilePreviewImage(user) {
+  if (user.profileImage) return user.profileImage;
+  if (!user.profileLayoutEncoded) return '';
+  try {
+    const layout = decodeLayout(user.profileLayoutEncoded);
+    const imageEl = (layout.elements || []).find(el => el.type === 'image' && el.url);
+    return imageEl ? imageEl.url : '';
+  } catch (_) {
+    return '';
+  }
+}
+function renderSearchResults(users) {
+  const box = document.getElementById('searchResults');
+  if (!users.length) {
+    box.innerHTML = '<div class="search-empty">No matching profiles yet.</div>';
+    box.classList.add('open');
+    return;
+  }
+  box.innerHTML = users.map(user => {
+    const avatar = getProfilePreviewImage(user);
+    const avatarMarkup = avatar
+      ? `<div class="search-avatar"><img src="${escapeAttr(avatar)}" alt=""></div>`
+      : `<div class="search-avatar">${escapeHtml((user.displayName || user.handle || '?').charAt(0).toUpperCase())}</div>`;
+    return `<button class="search-result" type="button" data-handle="${escapeAttr(user.handle || '')}">${avatarMarkup}<div class="search-meta"><div class="search-name">${escapeHtml(user.displayName || 'Unknown User')}</div><div class="search-handle">@${escapeHtml(user.handle || '')}</div></div></button>`;
+  }).join('');
+  box.classList.add('open');
+  box.querySelectorAll('.search-result').forEach(button => {
+    button.addEventListener('click', () => {
+      const handle = button.dataset.handle;
+      if (!handle) return;
+      window.location.href = `/profile?handle=${encodeURIComponent(handle)}`;
+    });
+  });
+}
+async function fetchUsersForSearch() {
+  if (searchUsersCache) return searchUsersCache;
+  const response = await fetch(`${FIREBASE_DB_URL}/users.json`);
+  const data = await response.json();
+  searchUsersCache = Object.values(data || {}).filter(user => user && user.handle);
+  return searchUsersCache;
+}
+async function handleSearchInput() {
+  const query = document.getElementById('searchHandle').value.trim().toLowerCase();
+  if (!query) {
+    closeSearchResults();
+    return;
+  }
+  try {
+    const users = await fetchUsersForSearch();
+    const matches = users
+      .filter(user => (user.handle || '').toLowerCase().includes(query) || (user.displayName || '').toLowerCase().includes(query))
+      .slice(0, 6);
+    renderSearchResults(matches);
+  } catch (_) {
+    document.getElementById('searchResults').innerHTML = '<div class="search-empty">Could not load user search right now.</div>';
+    document.getElementById('searchResults').classList.add('open');
+  }
+}
 function withAlpha(color, alpha) {
   const hex = /^#[0-9a-fA-F]{6}$/.test(String(color || '').trim()) ? color : '#161616';
   const r = parseInt(hex.slice(1, 3), 16);
@@ -353,6 +425,10 @@ async function loadProfile() {
 }
 
 loadProfile();
+document.getElementById('searchHandle').addEventListener('input', handleSearchInput);
+document.addEventListener('click', event => {
+  if (!event.target.closest('.search-form')) closeSearchResults();
+});
 </script>
 </body>
 </html>
