@@ -209,6 +209,9 @@ function engagementPercent(post) {
 function canSeePostAnalytics(post) {
   return Boolean(state.currentUser && state.currentUser.handle && post.authorHandle === state.currentUser.handle);
 }
+function canDeletePost(post) {
+  return Boolean(state.currentUser && state.currentUser.handle && post.authorHandle === state.currentUser.handle);
+}
 
 async function fetchJson(path) {
   const response = await fetch(getPath(path));
@@ -318,6 +321,27 @@ async function toggleLike(postId) {
     renderAnalytics();
   } catch (error) {
     setComposerStatus(error.message || 'Could not update the like.');
+  }
+}
+
+async function deletePost(postId) {
+  const post = state.posts.find(item => item.id === postId);
+  if (!post || !canDeletePost(post)) return;
+  if (!window.confirm('Delete this post? This cannot be undone.')) return;
+  try {
+    await Promise.all([
+      saveJson(`communityPosts/${postId}`, 'PUT', null),
+      saveJson(`postComments/${postId}`, 'PUT', null),
+      saveJson(`postLikes/${postId}`, 'PUT', null),
+      saveJson(`postReach/${postId}`, 'PUT', null)
+    ]);
+    state.posts = state.posts.filter(item => item.id !== postId);
+    renderFeed();
+    renderAnalytics();
+    updateTopStats();
+    setComposerStatus('Post deleted.');
+  } catch (error) {
+    setComposerStatus(error.message || 'Could not delete this post right now.');
   }
 }
 
@@ -447,6 +471,7 @@ function renderFeed() {
     const followLabel = state.following[post.authorHandle] ? 'Following' : 'Follow';
     const likeLabel = state.likedPosts[post.id] ? 'Liked' : 'Like';
     const ownerAnalytics = canSeePostAnalytics(post);
+    const ownerDelete = canDeletePost(post);
     return `
       <article class="post-card" id="post-${escapeAttr(post.id)}">
         <div class="post-header">
@@ -469,6 +494,7 @@ function renderFeed() {
           <button class="tag-btn ${state.likedPosts[post.id] ? 'active' : ''}" type="button" onclick="toggleLike('${escapeAttr(post.id)}')">${escapeHtml(likeLabel)} ${escapeHtml(String(post.likeCount || 0))}</button>
           <button class="tag-btn" type="button" onclick="toggleComments('${escapeAttr(post.id)}')">Comments ${escapeHtml(String(post.commentCount || 0))}</button>
           ${ownerAnalytics ? `<button class="tag-btn" type="button" onclick="togglePostAnalytics('${escapeAttr(post.id)}')">Analytics</button>` : ''}
+          ${ownerDelete ? `<button class="tag-btn" type="button" onclick="deletePost('${escapeAttr(post.id)}')">Delete</button>` : ''}
         </div>
         ${ownerAnalytics ? `
           <div class="post-analytics" id="analytics-${escapeAttr(post.id)}">
