@@ -136,9 +136,9 @@ function defaultLayout(user) {
     background: '#121212',
     accent: '#ff2d55',
     elements: [
-      { id: makeId(), type: 'text', x: 60, y: 130, w: 420, h: 180, text: `${user.displayName || 'Your Name'}\n@${user.handle || 'handle'}\nBuild something unforgettable.`, bg: '#111111', color: '#f5f0eb', fontFamily: 'Bebas Neue', fontSize: 42, radius: 24, opacity: 1, rotation: 0, align: 'left' },
-      { id: makeId(), type: 'text', x: 60, y: 340, w: 360, h: 180, text: user.bio || 'Write your bio here. Add projects, what you make, what you love, and what you want people to remember.', bg: 'rgba(255,255,255,0.02)', color: '#d6d1cb', fontFamily: 'Syne', fontSize: 18, radius: 20, opacity: 1, rotation: 0, align: 'left' },
-      { id: makeId(), type: 'shape', x: 520, y: 160, w: 280, h: 280, text: '', bg: '#ff2d55', color: '#ffffff', fontFamily: 'Syne', fontSize: 16, radius: 140, opacity: .9, rotation: 0, align: 'left' }
+      { id: makeId(), type: 'text', x: 60, y: 130, w: 420, h: 180, text: `${user.displayName || 'Your Name'}\n@${user.handle || 'handle'}\nBuild something unforgettable.`, bg: '#111111', color: '#f5f0eb', fontFamily: 'Bebas Neue', fontSize: 42, radius: 24, opacity: 1, rotation: 0, align: 'left', z: 3 },
+      { id: makeId(), type: 'text', x: 60, y: 340, w: 360, h: 180, text: user.bio || 'Write your bio here. Add projects, what you make, what you love, and what you want people to remember.', bg: 'rgba(255,255,255,0.02)', color: '#d6d1cb', fontFamily: 'Syne', fontSize: 18, radius: 20, opacity: 1, rotation: 0, align: 'left', z: 4 },
+      { id: makeId(), type: 'shape', x: 520, y: 160, w: 280, h: 280, text: '', bg: '#ff2d55', color: '#ffffff', fontFamily: 'Syne', fontSize: 16, radius: 140, opacity: .9, rotation: 0, align: 'left', z: 1 }
     ]
   };
 }
@@ -164,11 +164,11 @@ function renderCanvas() {
     banner.innerHTML = `<div class="song-copy"><small>Profile Song</small><strong>${escapeHtml(state.profileData.songLabel || 'Now playing')}</strong></div><div class="song-embed">${getEmbedMarkup(state.profileData.songUrl, 'song')}</div>`;
     canvas.appendChild(banner);
   }
-  state.profileData.elements.forEach(el => {
+  state.profileData.elements.slice().sort((a, b) => (a.z || 0) - (b.z || 0)).forEach(el => {
     const node = document.createElement('div');
     node.className = 'designer-el' + (el.id === state.selectedId ? ' selected' : '');
     node.style.left = `${el.x}px`; node.style.top = `${el.y}px`; node.style.width = `${el.w}px`; node.style.height = `${el.h}px`;
-    node.style.borderRadius = `${el.radius || 0}px`; node.style.opacity = String(el.opacity ?? 1); node.style.transform = `rotate(${el.rotation || 0}deg)`; node.style.background = el.bg || 'rgba(255,255,255,0.04)';
+    node.style.borderRadius = `${el.radius || 0}px`; node.style.opacity = String(el.opacity ?? 1); node.style.transform = `rotate(${el.rotation || 0}deg)`; node.style.background = el.bg || 'rgba(255,255,255,0.04)'; node.style.zIndex = String(el.z || 1);
     node.dataset.id = el.id; node.addEventListener('mousedown', startDrag); node.addEventListener('click', () => selectElement(el.id));
     const inner = document.createElement('div'); inner.className = 'inner';
     if (el.type === 'text' || el.type === 'shape') { inner.className += ' text-block'; inner.style.color = el.color || '#f5f0eb'; inner.style.fontFamily = el.fontFamily || 'Syne'; inner.style.fontSize = `${el.fontSize || 24}px`; inner.style.textAlign = el.align || 'left'; inner.textContent = el.text || ''; }
@@ -214,6 +214,9 @@ function renderInspector() {
       <div class="field"><label>Text Color</label><input id="insColor" type="color" value="${toColorValue(el.color, '#f5f0eb')}"></div>
     </div>
     <div class="field"><label>Font Family</label><select id="insFont">${FONTS.map(font => `<option value="${escapeAttr(font)}"${(el.fontFamily || 'Syne') === font ? ' selected' : ''}>${escapeHtml(font)}</option>`).join('')}</select></div>
+    <div class="field"><label>Layer</label><div class="chip">z-index ${el.z || 1}</div></div>
+    <div class="two"><button class="mini-btn" type="button" onclick="bringForward()">Bring Forward</button><button class="mini-btn" type="button" onclick="sendBackward()">Send Backward</button></div>
+    <div class="two"><button class="mini-btn" type="button" onclick="bringToFront()">To Front</button><button class="mini-btn" type="button" onclick="sendToBack()">To Back</button></div>
     <div class="two"><button class="mini-btn" type="button" onclick="duplicateSelected()">Duplicate</button><button class="mini-btn" type="button" onclick="removeSelected()">Delete</button></div>
   `;
   bindInspectorEvents(el);
@@ -253,13 +256,20 @@ function bindInspectorEvents(el) {
 
 function selectElement(id) { state.selectedId = id; renderCanvas(); renderInspector(); }
 function addElement(type) {
-  const el = { id: makeId(), type, x: 120 + state.profileData.elements.length * 16, y: 120 + state.profileData.elements.length * 16, w: 280, h: type === 'text' ? 180 : 220, text: type === 'text' ? 'New text block' : '', url: '', bg: type === 'shape' ? '#a259ff' : '#161616', color: '#f5f0eb', fontFamily: 'Syne', fontSize: 20, radius: 18, opacity: 1, rotation: 0, align: 'left' };
+  const el = { id: makeId(), type, x: 120 + state.profileData.elements.length * 16, y: 120 + state.profileData.elements.length * 16, w: 280, h: type === 'text' ? 180 : 220, text: type === 'text' ? 'New text block' : '', url: '', bg: type === 'shape' ? '#a259ff' : '#161616', color: '#f5f0eb', fontFamily: 'Syne', fontSize: 20, radius: 18, opacity: 1, rotation: 0, align: 'left', z: (Math.max(0, ...state.profileData.elements.map(item => item.z || 0)) + 1) };
   if (type === 'spotify') el.url = 'https://open.spotify.com/embed/track/11dFghVXANMlKmJXsNCbNl';
   if (type === 'soundcloud') el.url = 'https://soundcloud.com/forss/flickermood';
   state.profileData.elements.push(el); selectElement(el.id);
 }
 function removeSelected() { if (!state.selectedId) return; state.profileData.elements = state.profileData.elements.filter(el => el.id !== state.selectedId); state.selectedId = null; renderCanvas(); renderInspector(); }
 function duplicateSelected() { const el = getSelectedElement(); if (!el) return; const copy = JSON.parse(JSON.stringify(el)); copy.id = makeId(); copy.x += 20; copy.y += 20; state.profileData.elements.push(copy); selectElement(copy.id); }
+function normalizeLayers() {
+  state.profileData.elements.sort((a, b) => (a.z || 0) - (b.z || 0)).forEach((el, index) => { el.z = index + 1; });
+}
+function bringForward() { const el = getSelectedElement(); if (!el) return; el.z = (el.z || 1) + 1; normalizeLayers(); renderCanvas(); renderInspector(); }
+function sendBackward() { const el = getSelectedElement(); if (!el) return; el.z = Math.max(1, (el.z || 1) - 1); normalizeLayers(); renderCanvas(); renderInspector(); }
+function bringToFront() { const el = getSelectedElement(); if (!el) return; el.z = Math.max(0, ...state.profileData.elements.map(item => item.z || 0)) + 1; normalizeLayers(); renderCanvas(); renderInspector(); }
+function sendToBack() { const el = getSelectedElement(); if (!el) return; el.z = 0; normalizeLayers(); renderCanvas(); renderInspector(); }
 function startDrag(event) { if (event.target.classList.contains('resize-handle')) return; const el = state.profileData.elements.find(item => item.id === event.currentTarget.dataset.id); if (!el) return; state.selectedId = el.id; state.drag = { mode: 'move', id: el.id, startX: event.clientX, startY: event.clientY, x: el.x, y: el.y }; renderCanvas(); renderInspector(); event.preventDefault(); }
 function startResize(event) { const el = state.profileData.elements.find(item => item.id === event.currentTarget.dataset.id); if (!el) return; state.selectedId = el.id; state.drag = { mode: 'resize', id: el.id, startX: event.clientX, startY: event.clientY, w: el.w, h: el.h }; renderCanvas(); renderInspector(); event.preventDefault(); event.stopPropagation(); }
 window.addEventListener('mousemove', event => {
