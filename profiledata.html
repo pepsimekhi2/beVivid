@@ -11,7 +11,7 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; min-height: 100%; background: #050505; color: #f5f0eb; font-family: 'Syne', sans-serif; }
 body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opacity: .04; background-image: radial-gradient(circle at 20% 20%, rgba(255,45,85,.22), transparent 25%), radial-gradient(circle at 80% 0%, rgba(52,170,220,.22), transparent 28%), radial-gradient(circle at 50% 100%, rgba(0,229,176,.16), transparent 25%); }
-.shell { position: relative; z-index: 1; min-height: 100vh; display: grid; grid-template-columns: 280px minmax(0,1fr) 320px; }
+.shell { position: relative; z-index: 1; min-height: 100vh; display: grid; grid-template-columns: 280px minmax(0,1fr) 320px; max-width: 1800px; margin: 0 auto; }
 .sidebar, .inspector { background: rgba(9,9,9,.92); backdrop-filter: blur(18px); border-right: 1px solid rgba(245,240,235,.08); }
 .inspector { border-right: 0; border-left: 1px solid rgba(245,240,235,.08); }
 .panel { padding: 24px; }
@@ -26,12 +26,12 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .ghost-btn, .mini-btn { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
 .tool-name { display: block; font-weight: 700; font-size: 14px; }
 .tool-desc { display: block; margin-top: 5px; color: rgba(245,240,235,.4); font-size: 12px; line-height: 1.5; }
-.main { min-width: 0; padding: 24px; }
-.topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+.main { min-width: 0; padding: 24px; display: flex; flex-direction: column; align-items: center; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; width: min(100%, 1320px); }
 .chip-row { display: flex; flex-wrap: wrap; gap: 10px; }
 .chip { border: 1px solid rgba(245,240,235,.1); border-radius: 999px; padding: 10px 14px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: rgba(245,240,235,.56); background: rgba(245,240,235,.03); }
-.workspace { border: 1px solid rgba(245,240,235,.08); border-radius: 22px; padding: 18px; background: rgba(245,240,235,.02); }
-.canvas-shell { overflow: auto; border-radius: 18px; background: rgba(0,0,0,.3); padding: 18px; min-height: calc(100vh - 180px); }
+.workspace { border: 1px solid rgba(245,240,235,.08); border-radius: 22px; padding: 18px; background: rgba(245,240,235,.02); width: min(100%, 1320px); }
+.canvas-shell { overflow: auto; border-radius: 18px; background: rgba(0,0,0,.3); padding: 18px; min-height: calc(100vh - 180px); display: flex; justify-content: center; }
 .canvas { position: relative; width: 1200px; height: 900px; border-radius: 24px; overflow: hidden; background: linear-gradient(135deg, #111 0%, #181818 40%, #0b0b0b 100%); border: 1px solid rgba(245,240,235,.08); box-shadow: 0 30px 100px rgba(0,0,0,.35); }
 .canvas::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; }
 .designer-el { position: absolute; overflow: hidden; cursor: move; border: 1px solid transparent; transition: border-color .15s, box-shadow .15s; user-select: none; }
@@ -40,6 +40,11 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .resize-handle { position: absolute; width: 16px; height: 16px; right: 6px; bottom: 6px; border-radius: 4px; background: #ff9500; cursor: nwse-resize; }
 .text-block { padding: 18px; white-space: pre-wrap; line-height: 1.45; }
 .image-block img, .embed-block iframe { width: 100%; height: 100%; border: 0; display: block; }
+.spotify-card { width: 100%; height: 100%; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; background: linear-gradient(135deg,#1db954,#111111 72%); color: #ffffff; }
+.spotify-card small { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; opacity: .7; }
+.spotify-card strong { font-size: 22px; line-height: 1.1; }
+.spotify-card span { font-size: 13px; line-height: 1.6; opacity: .85; }
+.spotify-card a { display: inline-flex; width: fit-content; margin-top: 12px; padding: 10px 14px; border-radius: 999px; background: rgba(255,255,255,.16); color: #fff; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
 .song-banner { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 20px 26px; border-bottom: 1px solid rgba(245,240,235,.08); position: absolute; top: 0; left: 0; right: 0; z-index: 2; background: linear-gradient(90deg, rgba(5,5,5,.84), rgba(5,5,5,.46)); backdrop-filter: blur(18px); }
 .song-copy small { display: block; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: rgba(245,240,235,.42); margin-bottom: 8px; }
 .song-copy strong { display: block; font-size: 24px; }
@@ -146,13 +151,19 @@ function defaultLayout(user) {
 function getEmbedUrl(type, url) {
   const raw = String(url || '').trim();
   if (!raw) return '';
-  if (raw.includes('open.spotify.com')) return raw.replace('/track/', '/embed/track/').replace('/album/', '/embed/album/').replace('/playlist/', '/embed/playlist/').replace('/episode/', '/embed/episode/');
-  if (raw.includes('spotify.com/embed')) return raw;
+  if (type === 'spotify' || type === 'song') return raw;
   if (type === 'soundcloud' && raw.includes('soundcloud.com') && !raw.includes('w.soundcloud.com')) return `https://w.soundcloud.com/player/?url=${encodeURIComponent(raw)}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=false&show_user=true&show_reposts=false&visual=true`;
   return raw;
 }
 
-function getEmbedMarkup(url, type) { const src = getEmbedUrl(type, url); return src ? `<iframe src="${escapeAttr(src)}" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>` : ''; }
+function getEmbedMarkup(url, type) {
+  const src = getEmbedUrl(type, url);
+  if (!src) return '';
+  if (type === 'spotify' || type === 'song') {
+    return `<div class="spotify-card"><small>Spotify</small><strong>Open on Spotify</strong><span>Using a direct link here avoids Spotify embed 429 rate-limit errors.</span><a href="${escapeAttr(src)}" target="_blank" rel="noreferrer">Play</a></div>`;
+  }
+  return `<iframe src="${escapeAttr(src)}" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
+}
 
 function renderCanvas() {
   const canvas = document.getElementById('canvas');
