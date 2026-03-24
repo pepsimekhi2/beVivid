@@ -5,6 +5,26 @@
     {
       "source": "/",
       "destination": "/site.html"
+    },
+    {
+      "source": "/community",
+      "destination": "/community.html"
+    },
+    {
+      "source": "/profile",
+      "destination": "/profile.html"
+    },
+    {
+      "source": "/profiledata",
+      "destination": "/profiledata.html"
+    },
+    {
+      "source": "/privacy",
+      "destination": "/privacy.html"
+    },
+    {
+      "source": "/tos",
+      "destination": "/tos.html"
     }
   ]
 }
