@@ -287,6 +287,12 @@ async function loadCommunityPosts(handle) {
 function canSeeProfilePostAnalytics() {
   return Boolean(activeUser && viewingUser && activeUser.handle === viewingUser.handle);
 }
+function getProfilePostEngagement(post) {
+  const likes = Number(post.stats?.likeCount || 0);
+  const comments = Number(post.stats?.commentCount || 0);
+  const reach = Math.max(1, Number(post.stats?.reachCount || 0));
+  return Math.round(((likes + comments) / reach) * 100);
+}
 function toggleProfilePostAnalytics(id) {
   const box = document.getElementById(`profile-post-analytics-${id}`);
   if (box) box.style.display = box.style.display === 'none' ? 'flex' : 'none';
@@ -317,15 +323,9 @@ function renderProfilePosts(posts) {
         <span class="mini-chip">${escapeHtml(String(post.stats?.commentCount || 0))} comments</span>
         ${canSeeProfilePostAnalytics() ? `<button class="search-btn social-action" type="button" onclick="toggleProfilePostAnalytics('${escapeAttr(post.id)}')">Analytics</button>` : ''}
       </div>
-      ${canSeeProfilePostAnalytics() ? `<div class="mini-post-meta" id="profile-post-analytics-${escapeAttr(post.id)}" style="display:none;"><span class="mini-chip">${escapeHtml(String(post.stats?.impressionCount || 0))} impressions</span><span class="mini-chip">${escapeHtml(String(post.stats?.reachCount || 0))} reach</span><span class="mini-chip">${escapeHtml(String((Math.round(((Number(post.stats?.likeCount || 0) + Number(post.stats?.commentCount || 0)) / Math.max(1, Number(post.stats?.reachCount || 0))) * 100))) || 0))}% engagement</span></div>` : ''}
+      ${canSeeProfilePostAnalytics() ? `<div class="mini-post-meta" id="profile-post-analytics-${escapeAttr(post.id)}" style="display:none;"><span class="mini-chip">${escapeHtml(String(post.stats?.impressionCount || 0))} impressions</span><span class="mini-chip">${escapeHtml(String(post.stats?.reachCount || 0))} reach</span><span class="mini-chip">${escapeHtml(String(getProfilePostEngagement(post)))}% engagement</span></div>` : ''}
     </article>
   `).join('');
-  if (canSeeProfilePostAnalytics()) {
-    posts.slice(0, 8).forEach(post => {
-      const row = document.getElementById(`profile-post-analytics-${post.id}`);
-      if (row) row.classList.remove('open');
-    });
-  }
 }
 function renderSocialStats(posts, social) {
   const totalLikes = posts.reduce((sum, post) => sum + Number(post.stats?.likeCount || 0), 0);
