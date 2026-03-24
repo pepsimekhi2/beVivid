@@ -155,6 +155,7 @@ function makeId() { return 'el_' + Math.random().toString(36).slice(2, 9); }
 function clamp(num, min, max) { return Math.min(max, Math.max(min, num)); }
 function normalizeSession() { const raw = getCookie(AUTH_COOKIE_NAME); if (!raw) return null; try { return JSON.parse(raw); } catch (_) { return null; } }
 function getUserPath(handle) { return `${FIREBASE_DB_URL}/users/${encodeURIComponent(handle)}.json`; }
+function getPublicIndexPath(handle) { return `${FIREBASE_DB_URL}/publicUserIndex/${encodeURIComponent(handle)}.json`; }
 function getSelectedElement() { return state.profileData.elements.find(el => el.id === state.selectedId) || null; }
 function escapeHtml(value) { return String(value || '').replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch])); }
 function escapeAttr(value) { return escapeHtml(value).replace(/'/g, '&#39;'); }
@@ -181,6 +182,10 @@ function getPatternStyle(pattern, accent) {
   if (pattern === 'waves') return { image: `radial-gradient(circle at 0 100%, ${accent}66, transparent 34%), radial-gradient(circle at 100% 0, ${accent}44, transparent 28%), radial-gradient(circle at 50% 50%, ${accent}22, transparent 38%)`, size: 'cover' };
   if (pattern === 'none') return { image: 'none', size: 'auto' };
   return { image: `linear-gradient(${accent}55 1px, transparent 1px), linear-gradient(90deg, ${accent}55 1px, transparent 1px)`, size: '40px 40px' };
+}
+function getProfilePreviewImage(layout) {
+  const imageBlock = ((layout && layout.elements) || []).find(el => el.type === 'image' && el.url);
+  return imageBlock ? imageBlock.url : '';
 }
 
 function defaultLayout(user) {
@@ -491,14 +496,30 @@ async function saveProfileLayout() {
   setSavingOverlay(true);
   setStatus('Saving your profile...', '');
   try {
+    const encodedLayout = encodeLayout(state.profileData);
     const response = await fetch(getUserPath(state.user.handle), {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ profileLayoutEncoded: encodeLayout(state.profileData), profileUpdatedAt: Date.now(), profileSongLabel: state.profileData.songLabel || '', profileSongAudio: state.profileData.songAudio || '' })
+      body: JSON.stringify({ profileLayoutEncoded: encodedLayout, profileUpdatedAt: Date.now(), profileSongLabel: state.profileData.songLabel || '', profileSongAudio: state.profileData.songAudio || '' })
     });
     if (!response.ok) {
       const message = await response.text();
       setStatus(message || 'Could not save your profile right now.', 'err');
+      return;
+    }
+    const publicIndexResponse = await fetch(getPublicIndexPath(state.user.handle), {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        handle: state.user.handle,
+        displayName: state.user.displayName || state.user.handle,
+        profileImage: getProfilePreviewImage(state.profileData),
+        updatedAt: Date.now()
+      })
+    });
+    if (!publicIndexResponse.ok) {
+      const message = await publicIndexResponse.text();
+      setStatus(message || 'Could not update your public search preview right now.', 'err');
       return;
     }
     setStatus('Saved. Your profile is up to date.', 'ok');
