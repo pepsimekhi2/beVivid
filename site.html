@@ -1195,6 +1195,10 @@ function normalizeHandle(handle) {
   return String(handle || '').replace(/[^a-z0-9_]/gi, '').toLowerCase();
 }
 
+function getPublicIndexPath(handle) {
+  return `${FIREBASE_DB_URL}/publicUserIndex/${encodeURIComponent(handle)}.json`;
+}
+
 function showAccountPane(mode) {
   document.getElementById('account-login-pane').classList.toggle('active', mode === 'login');
   document.getElementById('account-profile-pane').classList.toggle('active', mode === 'profile');
@@ -1305,26 +1309,46 @@ async function postJson(url, payload) {
 }
 
 async function saveSignupToFirebase(payload) {
+  const userRecord = {
+    displayName: payload.displayName,
+    handle: payload.handle,
+    email: payload.email,
+    passwordHash: payload.passwordHash,
+    accountType: payload.accountType || '',
+    bio: payload.bio || '',
+    interests: (payload.interests || []).join(', '),
+    createdAt: Date.now()
+  };
+
   const response = await fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(payload.handle)}.json`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({
-      displayName: payload.displayName,
-      handle: payload.handle,
-      email: payload.email,
-      passwordHash: payload.passwordHash,
-      accountType: payload.accountType || '',
-      bio: payload.bio || '',
-      interests: (payload.interests || []).join(', '),
-      createdAt: Date.now()
-    })
+    body: JSON.stringify(userRecord)
   });
 
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(errorText || 'Firebase could not save this signup.');
+  }
+
+  const publicIndexResponse = await fetch(getPublicIndexPath(payload.handle), {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      handle: payload.handle,
+      displayName: payload.displayName,
+      profileImage: payload.profileImage || '',
+      updatedAt: Date.now()
+    })
+  });
+
+  if (!publicIndexResponse.ok) {
+    const errorText = await publicIndexResponse.text();
+    throw new Error(errorText || 'The public profile index could not be updated.');
   }
 
   return response.json();
