@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>beVivid Profile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;500;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; background: #050505; color: #f5f0eb; font-family: 'Syne', sans-serif; }
+body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opacity: .05; background-image: radial-gradient(circle at 20% 20%, rgba(255,45,85,.18), transparent 24%), radial-gradient(circle at 80% 10%, rgba(52,170,220,.18), transparent 26%), radial-gradient(circle at 50% 100%, rgba(0,229,176,.14), transparent 25%); }
+.shell { position: relative; z-index: 1; min-height: 100vh; padding: 28px; }
+.topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+.back, .studio { display: inline-flex; align-items: center; justify-content: center; padding: 12px 18px; border-radius: 999px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; }
+.header { margin-bottom: 20px; }
+.eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: #34aadc; margin-bottom: 12px; }
+.title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(58px, 10vw, 120px); line-height: .88; margin: 0; }
+.sub { color: rgba(245,240,235,.46); max-width: 680px; line-height: 1.8; margin-top: 10px; }
+.stage-wrap { overflow: auto; border: 1px solid rgba(245,240,235,.08); border-radius: 28px; padding: 20px; background: rgba(245,240,235,.02); }
+.stage { position: relative; width: 1200px; min-height: 900px; border-radius: 24px; overflow: hidden; border: 1px solid rgba(245,240,235,.08); background: #111; box-shadow: 0 30px 90px rgba(0,0,0,.35); }
+.stage::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; }
+.el { position: absolute; overflow: hidden; }
+.text-block { padding: 18px; white-space: pre-wrap; line-height: 1.45; }
+.image-block img, .embed-block iframe { width: 100%; height: 100%; border: 0; display: block; }
+.song-banner { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 20px 26px; border-bottom: 1px solid rgba(245,240,235,.08); position: absolute; top: 0; left: 0; right: 0; z-index: 2; background: linear-gradient(90deg, rgba(5,5,5,.84), rgba(5,5,5,.46)); backdrop-filter: blur(18px); }
+.song-copy small { display: block; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: rgba(245,240,235,.42); margin-bottom: 8px; }
+.song-copy strong { display: block; font-size: 24px; }
+.song-embed { width: 360px; max-width: 48%; min-height: 80px; }
+.song-embed iframe { width: 100%; height: 80px; border: 0; border-radius: 12px; }
+.empty { padding: 26px; border-radius: 16px; border: 1px solid rgba(245,240,235,.08); background: rgba(245,240,235,.03); color: rgba(245,240,235,.56); line-height: 1.8; }
+@media (max-width: 760px) { .shell { padding: 18px; } .song-banner { flex-direction: column; align-items: flex-start; } .song-embed { width: 100%; max-width: 100%; } }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="topbar">
+    <a class="back" href="/">Back To beVivid</a>
+    <a class="studio" id="studioLink" href="/profiledata">Open Studio</a>
+  </div>
+  <div class="header">
+    <div class="eyebrow">Profile</div>
+    <h1 class="title" id="profileTitle">Loading...</h1>
+    <div class="sub" id="profileSub">Pulling the latest profile layout from Firebase.</div>
+  </div>
+  <div class="stage-wrap"><div class="stage" id="stage"></div></div>
+</div>
+
+<script>
+const FIREBASE_DB_URL = 'https://bevivid-73a69-default-rtdb.firebaseio.com';
+const AUTH_COOKIE_NAME = 'bevivid_session';
+const params = new URLSearchParams(window.location.search);
+const requestedHandle = params.get('handle');
+
+function getCookie(name) { const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)')); return match ? decodeURIComponent(match[1]) : ''; }
+function decodeLayout(value) { return JSON.parse(decodeURIComponent(escape(atob(value)))); }
+function escapeHtml(value) { return String(value || '').replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch])); }
+function escapeAttr(value) { return escapeHtml(value).replace(/'/g, '&#39;'); }
+function getEmbedUrl(type, url) {
+  const raw = String(url || '').trim();
+  if (!raw) return '';
+  if (raw.includes('open.spotify.com')) return raw.replace('/track/', '/embed/track/').replace('/album/', '/embed/album/').replace('/playlist/', '/embed/playlist/').replace('/episode/', '/embed/episode/');
+  if (raw.includes('spotify.com/embed')) return raw;
+  if (type === 'soundcloud' && raw.includes('soundcloud.com') && !raw.includes('w.soundcloud.com')) return `https://w.soundcloud.com/player/?url=${encodeURIComponent(raw)}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=false&show_user=true&show_reposts=false&visual=true`;
+  return raw;
+}
+function getEmbedMarkup(url, type) { const src = getEmbedUrl(type, url); return src ? `<iframe src="${escapeAttr(src)}" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>` : ''; }
+
+async function loadProfile() {
+  let handle = requestedHandle;
+  if (!handle) {
+    const raw = getCookie(AUTH_COOKIE_NAME);
+    if (raw) { try { handle = JSON.parse(raw).handle; } catch (_) {} }
+  }
+  if (!handle) {
+    document.getElementById('profileTitle').textContent = 'No handle selected';
+    document.getElementById('profileSub').textContent = 'Open this page with ?handle=yourhandle or sign in first.';
+    document.getElementById('stage').innerHTML = '<div class="empty">No profile handle was provided.</div>';
+    return;
+  }
+
+  document.getElementById('studioLink').href = `/profiledata?handle=${encodeURIComponent(handle)}`;
+  const response = await fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(handle)}.json`);
+  const user = await response.json();
+  if (!user) {
+    document.getElementById('profileTitle').textContent = 'Profile not found';
+    document.getElementById('profileSub').textContent = 'That handle does not exist in Firebase yet.';
+    document.getElementById('stage').innerHTML = '<div class="empty">This profile has not been created yet.</div>';
+    return;
+  }
+
+  document.getElementById('profileTitle').textContent = user.displayName || '@' + handle;
+  document.getElementById('profileSub').textContent = '@' + (user.handle || handle) + '  |  ' + (user.bio || 'This vivid profile is still being shaped.');
+
+  const stage = document.getElementById('stage');
+  if (!user.profileLayoutEncoded) {
+    stage.innerHTML = '<div class="empty">This user has not published any profile layout yet.</div>';
+    return;
+  }
+
+  const layout = decodeLayout(user.profileLayoutEncoded);
+  stage.style.background = `radial-gradient(circle at 20% 10%, ${(layout.accent || '#ff2d55')}22, transparent 26%), ${layout.background || '#111111'}`;
+  stage.innerHTML = '';
+
+  if (layout.songUrl) {
+    const banner = document.createElement('div');
+    banner.className = 'song-banner';
+    banner.innerHTML = `<div class="song-copy"><small>Profile Song</small><strong>${escapeHtml(layout.songLabel || 'Now playing')}</strong></div><div class="song-embed">${getEmbedMarkup(layout.songUrl, 'song')}</div>`;
+    stage.appendChild(banner);
+  }
+
+  (layout.elements || []).forEach(el => {
+    const node = document.createElement('div');
+    node.className = 'el';
+    node.style.left = `${el.x}px`;
+    node.style.top = `${el.y}px`;
+    node.style.width = `${el.w}px`;
+    node.style.height = `${el.h}px`;
+    node.style.borderRadius = `${el.radius || 0}px`;
+    node.style.opacity = String(el.opacity ?? 1);
+    node.style.transform = `rotate(${el.rotation || 0}deg)`;
+    node.style.background = el.bg || 'rgba(255,255,255,0.03)';
+
+    if (el.type === 'text' || el.type === 'shape') {
+      node.className += ' text-block';
+      node.style.color = el.color || '#f5f0eb';
+      node.style.fontFamily = el.fontFamily || 'Syne';
+      node.style.fontSize = `${el.fontSize || 20}px`;
+      node.style.textAlign = el.align || 'left';
+      node.textContent = el.text || '';
+    } else if (el.type === 'image') {
+      node.className += ' image-block';
+      node.innerHTML = el.url ? `<img src="${escapeAttr(el.url)}" alt="">` : '';
+    } else {
+      node.className += ' embed-block';
+      node.innerHTML = getEmbedMarkup(el.url, el.type);
+    }
+
+    stage.appendChild(node);
+  });
+}
+
+loadProfile();
+</script>
+</body>
+</html>
