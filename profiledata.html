@@ -59,11 +59,26 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .status.ok { color: #92ffd9; }
 .status.err { color: #ff9eb4; }
 .empty { color: rgba(245,240,235,.36); font-size: 14px; line-height: 1.7; }
+.studio-lock { position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(5,5,5,.96); }
+.studio-lock.open { display: flex; }
+.studio-lock-card { max-width: 520px; border: 1px solid rgba(245,240,235,.12); border-radius: 20px; background: linear-gradient(180deg, rgba(18,18,18,.98), rgba(8,8,8,.98)); padding: 28px; box-shadow: 0 30px 80px rgba(0,0,0,.45); }
+.studio-lock-card h2 { font-family: 'Bebas Neue', sans-serif; font-size: 52px; line-height: .9; margin: 0 0 12px; }
+.studio-lock-card p { color: rgba(245,240,235,.58); line-height: 1.8; margin: 0 0 18px; }
+.studio-lock-card a { display: inline-flex; align-items: center; justify-content: center; padding: 12px 18px; border-radius: 999px; border: 1px solid rgba(245,240,235,.14); background: rgba(245,240,235,.05); color: #f5f0eb; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; }
 @media (max-width: 1180px) { .shell { grid-template-columns: 1fr; } .sidebar, .inspector { border: 0; } .main { order: -1; } .sidebar, .inspector, .main { width: 100%; } }
 @media (max-width: 760px) { .main, .panel { padding: 16px; } .topbar { flex-direction: column; align-items: flex-start; } .canvas-shell { min-height: 58vh; padding: 8px; } .workspace { padding: 10px; } .canvas { width: 980px; height: 780px; } .two { grid-template-columns: 1fr; } .audio-toggle { left: 12px; bottom: 12px; } .audio-hint { left: 12px; right: auto; bottom: 58px; } }
 </style>
 </head>
 <body>
+<div class="studio-lock" id="studioLock">
+  <div class="studio-lock-card">
+    <div class="eyebrow">Profile Studio</div>
+    <h2>Desktop only.</h2>
+    <p>Your device is not compatible with beVivid Profile Studio right now. Profile Studio is currently a PC-exclusive experience.</p>
+    <p>Mobile editing will come in the future.</p>
+    <a href="/">Back To beVivid</a>
+  </div>
+</div>
 <div class="shell">
   <aside class="sidebar"><div class="panel">
     <div class="eyebrow">Profile Studio</div>
@@ -89,12 +104,6 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
     <div class="topbar">
       <div>
         <div class="eyebrow">Live Preview</div>
-        <div class="chip-row">
-          <div class="chip" id="chipUser">No user loaded</div>
-          <div class="chip">Drag + resize</div>
-          <div class="chip">Audio Visualizer + SoundCloud</div>
-          <div class="chip">Saved as encoded JSON</div>
-        </div>
       </div>
       <div class="chip-row"><div class="chip" id="layoutCount">0 blocks</div></div>
     </div>
@@ -410,7 +419,6 @@ document.getElementById('canvasAccent').addEventListener('input', e => { state.p
 async function loadUserAndLayout() {
   state.user = normalizeSession();
   if (!state.user || !state.user.handle) { setStatus('No signed-in user was found in this browser. Log in on the homepage first.', 'err'); renderCanvas(); renderInspector(); return; }
-  document.getElementById('chipUser').textContent = '@' + state.user.handle;
   try {
     const response = await fetch(getUserPath(state.user.handle));
     const user = await response.json();
@@ -435,6 +443,10 @@ async function saveProfileLayout() {
   });
   if (!response.ok) { const message = await response.text(); setStatus(message || 'Could not save profile data.', 'err'); return; }
   setStatus('Saved. Your encoded profile JSON is now stored under this user in Firebase.', 'ok');
+}
+
+if (window.matchMedia('(max-width: 900px)').matches || /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)) {
+  document.getElementById('studioLock').classList.add('open');
 }
 
 loadUserAndLayout();
