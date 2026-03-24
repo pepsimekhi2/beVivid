@@ -34,7 +34,7 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .canvas-shell { overflow: auto; border-radius: 20px; background: radial-gradient(circle at top, rgba(255,45,85,.08), transparent 42%), rgba(0,0,0,.32); padding: 18px; min-height: calc(100vh - 180px); display: flex; justify-content: center; }
 .canvas { position: relative; width: 1200px; height: 900px; border-radius: 26px; overflow: hidden; background: linear-gradient(135deg, #111 0%, #181818 40%, #0b0b0b 100%); border: 1px solid rgba(245,240,235,.08); box-shadow: 0 30px 100px rgba(0,0,0,.35); }
 .canvas::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; }
-.pattern-layer { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: .22; }
+.pattern-layer { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: .42; mix-blend-mode: screen; }
 .designer-el { position: absolute; overflow: hidden; cursor: move; border: 1px solid transparent; transition: border-color .15s, box-shadow .15s; user-select: none; }
 .designer-el.selected { border-color: #ff9500; box-shadow: 0 0 0 1px rgba(255,149,0,.4), 0 14px 28px rgba(0,0,0,.28); }
 .designer-el .inner { width: 100%; height: 100%; overflow: hidden; }
@@ -52,7 +52,9 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .audio-hint { position: absolute; right: 20px; bottom: 22px; z-index: 4; color: rgba(245,240,235,.42); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
 .field { margin-bottom: 14px; }
 .field label { display: block; margin-bottom: 7px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: rgba(245,240,235,.4); }
-.field input, .field textarea, .field select { width: 100%; border: 1px solid rgba(245,240,235,.1); background: rgba(245,240,235,.03); color: #f5f0eb; border-radius: 10px; padding: 12px 13px; font: inherit; outline: none; }
+.field input, .field textarea, .field select { width: 100%; border: 1px solid rgba(245,240,235,.1); background: rgba(14,14,14,.96); color: #f5f0eb; border-radius: 10px; padding: 12px 13px; font: inherit; outline: none; }
+.field select { appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: linear-gradient(45deg, transparent 50%, #f5f0eb 50%), linear-gradient(135deg, #f5f0eb 50%, transparent 50%), linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04)); background-position: calc(100% - 18px) calc(50% - 3px), calc(100% - 12px) calc(50% - 3px), 0 0; background-size: 6px 6px, 6px 6px, 100% 100%; background-repeat: no-repeat; padding-right: 36px; }
+.field select option { background: #121212; color: #f5f0eb; }
 .field textarea { min-height: 110px; resize: vertical; }
 .field input[type="range"] { padding: 0; }
 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -159,11 +161,11 @@ function getContrastColor(color) {
   return luminance > 0.66 ? '#141414' : '#f2e9e2';
 }
 function getPatternStyle(pattern, accent) {
-  if (pattern === 'dots') return `radial-gradient(${accent}44 1px, transparent 1px) 0 0 / 22px 22px`;
-  if (pattern === 'stripes') return `repeating-linear-gradient(135deg, ${accent}22 0 10px, transparent 10px 24px)`;
-  if (pattern === 'waves') return `radial-gradient(circle at 0 100%, ${accent}28, transparent 32%), radial-gradient(circle at 100% 0, ${accent}18, transparent 26%)`;
-  if (pattern === 'none') return 'none';
-  return `linear-gradient(${accent}18 1px, transparent 1px), linear-gradient(90deg, ${accent}18 1px, transparent 1px)`;
+  if (pattern === 'dots') return { image: `radial-gradient(${accent}88 1.6px, transparent 1.6px)`, size: '22px 22px' };
+  if (pattern === 'stripes') return { image: `repeating-linear-gradient(135deg, ${accent}55 0 10px, transparent 10px 24px)`, size: 'auto' };
+  if (pattern === 'waves') return { image: `radial-gradient(circle at 0 100%, ${accent}66, transparent 34%), radial-gradient(circle at 100% 0, ${accent}44, transparent 28%), radial-gradient(circle at 50% 50%, ${accent}22, transparent 38%)`, size: 'cover' };
+  if (pattern === 'none') return { image: 'none', size: 'auto' };
+  return { image: `linear-gradient(${accent}55 1px, transparent 1px), linear-gradient(90deg, ${accent}55 1px, transparent 1px)`, size: '40px 40px' };
 }
 
 function defaultLayout(user) {
@@ -280,8 +282,10 @@ function renderCanvas() {
   canvas.style.background = `radial-gradient(circle at 20% 10%, ${state.profileData.accent}22, transparent 26%), ${state.profileData.background}`;
   const pattern = document.createElement('div');
   pattern.className = 'pattern-layer';
-  pattern.style.backgroundImage = getPatternStyle(state.profileData.pattern, state.profileData.accent);
-  pattern.style.backgroundSize = state.profileData.pattern === 'grid' ? '40px 40px' : 'auto';
+  const patternStyle = getPatternStyle(state.profileData.pattern, state.profileData.accent);
+  pattern.style.backgroundImage = patternStyle.image;
+  pattern.style.backgroundSize = patternStyle.size;
+  pattern.style.backgroundRepeat = state.profileData.pattern === 'waves' ? 'no-repeat' : 'repeat';
   canvas.appendChild(pattern);
   const viz = document.createElement('canvas');
   viz.className = 'visualizer-bg';
