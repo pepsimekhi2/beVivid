@@ -11,26 +11,42 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; min-height: 100%; background: #050505; color: #f5f0eb; font-family: 'Syne', sans-serif; }
 body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opacity: .05; background-image: radial-gradient(circle at 20% 20%, rgba(255,45,85,.18), transparent 24%), radial-gradient(circle at 80% 10%, rgba(52,170,220,.18), transparent 26%), radial-gradient(circle at 50% 100%, rgba(0,229,176,.14), transparent 25%); }
-.shell { position: relative; z-index: 1; min-height: 100vh; padding: 28px; }
+.shell { position: relative; z-index: 1; min-height: 100vh; padding: 28px; max-width: 1560px; margin: 0 auto; }
 .topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
 .back, .studio { display: inline-flex; align-items: center; justify-content: center; padding: 12px 18px; border-radius: 999px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; }
-.header { margin-bottom: 20px; }
+.header { margin: 0 auto 20px; max-width: 1280px; width: 100%; }
 .eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: #34aadc; margin-bottom: 12px; }
 .title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(58px, 10vw, 120px); line-height: .88; margin: 0; }
 .sub { color: rgba(245,240,235,.46); max-width: 680px; line-height: 1.8; margin-top: 10px; }
-.stage-wrap { overflow: auto; border: 1px solid rgba(245,240,235,.08); border-radius: 28px; padding: 20px; background: rgba(245,240,235,.02); }
+.profile-tools { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 22px; }
+.search-form { display: flex; gap: 10px; flex-wrap: wrap; }
+.search-input { min-width: 260px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; border-radius: 999px; padding: 12px 16px; font: inherit; outline: none; }
+.search-btn, .recognize-btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 18px; border-radius: 999px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer; }
+.recognize-btn { background: #f5f0eb; color: #050505; border-color: transparent; }
+.recognize-btn[disabled] { opacity: .6; cursor: not-allowed; }
+.recognition-card { border: 1px solid rgba(245,240,235,.08); border-radius: 18px; padding: 14px 16px; background: rgba(245,240,235,.03); min-width: 210px; }
+.recognition-card small { display: block; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: rgba(245,240,235,.34); margin-bottom: 8px; }
+.recognition-card strong { font-size: 28px; line-height: 1; display: block; }
+.recognition-card span { display: block; margin-top: 8px; color: rgba(245,240,235,.56); font-size: 13px; line-height: 1.5; }
+.profile-note { color: rgba(245,240,235,.5); font-size: 13px; line-height: 1.6; }
+.stage-wrap { overflow: auto; border: 1px solid rgba(245,240,235,.08); border-radius: 28px; padding: 20px; background: rgba(245,240,235,.02); display: flex; justify-content: center; }
 .stage { position: relative; width: 1200px; min-height: 900px; border-radius: 24px; overflow: hidden; border: 1px solid rgba(245,240,235,.08); background: #111; box-shadow: 0 30px 90px rgba(0,0,0,.35); }
 .stage::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; }
 .el { position: absolute; overflow: hidden; }
 .text-block { padding: 18px; white-space: pre-wrap; line-height: 1.45; }
 .image-block img, .embed-block iframe { width: 100%; height: 100%; border: 0; display: block; }
+.spotify-card { width: 100%; height: 100%; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; background: linear-gradient(135deg,#1db954,#111111 72%); color: #ffffff; }
+.spotify-card small { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; opacity: .7; }
+.spotify-card strong { font-size: 22px; line-height: 1.1; }
+.spotify-card span { font-size: 13px; line-height: 1.6; opacity: .85; }
+.spotify-card a { display: inline-flex; width: fit-content; margin-top: 12px; padding: 10px 14px; border-radius: 999px; background: rgba(255,255,255,.16); color: #fff; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
 .song-banner { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 20px 26px; border-bottom: 1px solid rgba(245,240,235,.08); position: absolute; top: 0; left: 0; right: 0; z-index: 2; background: linear-gradient(90deg, rgba(5,5,5,.84), rgba(5,5,5,.46)); backdrop-filter: blur(18px); }
 .song-copy small { display: block; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: rgba(245,240,235,.42); margin-bottom: 8px; }
 .song-copy strong { display: block; font-size: 24px; }
 .song-embed { width: 360px; max-width: 48%; min-height: 80px; }
 .song-embed iframe { width: 100%; height: 80px; border: 0; border-radius: 12px; }
 .empty { padding: 26px; border-radius: 16px; border: 1px solid rgba(245,240,235,.08); background: rgba(245,240,235,.03); color: rgba(245,240,235,.56); line-height: 1.8; }
-@media (max-width: 760px) { .shell { padding: 18px; } .song-banner { flex-direction: column; align-items: flex-start; } .song-embed { width: 100%; max-width: 100%; } }
+@media (max-width: 760px) { .shell { padding: 18px; } .song-banner { flex-direction: column; align-items: flex-start; } .song-embed { width: 100%; max-width: 100%; } .profile-tools { flex-direction: column; align-items: stretch; } .search-form { width: 100%; } .search-input { min-width: 0; width: 100%; } }
 </style>
 </head>
 <body>
@@ -43,6 +59,19 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
     <div class="eyebrow">Profile</div>
     <h1 class="title" id="profileTitle">Loading...</h1>
     <div class="sub" id="profileSub">Pulling the latest profile layout from Firebase.</div>
+    <div class="profile-tools">
+      <form class="search-form" onsubmit="event.preventDefault(); searchProfiles();">
+        <input class="search-input" id="searchHandle" type="text" placeholder="Find a user by handle" />
+        <button class="search-btn" type="submit">Search User</button>
+      </form>
+      <div class="recognition-card">
+        <small>Recognition Points</small>
+        <strong id="recognitionPoints">0</strong>
+        <span id="recognitionMeta">Lifetime appreciation from the community.</span>
+      </div>
+      <button class="recognize-btn" id="recognizeBtn" onclick="grantRecognition()">Grant Recognition</button>
+    </div>
+    <div class="profile-note" id="recognitionStatus"></div>
   </div>
   <div class="stage-wrap"><div class="stage" id="stage"></div></div>
 </div>
@@ -52,26 +81,105 @@ const FIREBASE_DB_URL = 'https://bevivid-73a69-default-rtdb.firebaseio.com';
 const AUTH_COOKIE_NAME = 'bevivid_session';
 const params = new URLSearchParams(window.location.search);
 const requestedHandle = params.get('handle');
+let activeUser = null;
+let viewingHandle = null;
 
 function getCookie(name) { const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)')); return match ? decodeURIComponent(match[1]) : ''; }
 function decodeLayout(value) { return JSON.parse(decodeURIComponent(escape(atob(value)))); }
 function escapeHtml(value) { return String(value || '').replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch])); }
 function escapeAttr(value) { return escapeHtml(value).replace(/'/g, '&#39;'); }
+function getSessionUser() { const raw = getCookie(AUTH_COOKIE_NAME); if (!raw) return null; try { return JSON.parse(raw); } catch (_) { return null; } }
+function todayKey() { return new Date().toISOString().slice(0, 10); }
+function setRecognitionStatus(message) { document.getElementById('recognitionStatus').textContent = message || ''; }
+function updateRecognitionUi(user) {
+  document.getElementById('recognitionPoints').textContent = String(user.recognitionPoints || 0);
+  const btn = document.getElementById('recognizeBtn');
+  const viewer = activeUser;
+  const log = (user.recognitionLog && user.recognitionLog[todayKey()]) || {};
+  if (!viewer || !viewer.handle) {
+    btn.disabled = true;
+    btn.textContent = 'Log In To Recognize';
+    setRecognitionStatus('Sign in first to give one recognition point per day.');
+    return;
+  }
+  if (viewer.handle === (user.handle || viewingHandle)) {
+    btn.disabled = true;
+    btn.textContent = 'Your Profile';
+    setRecognitionStatus('You cannot give recognition to yourself.');
+    return;
+  }
+  if (log[viewer.handle]) {
+    btn.disabled = true;
+    btn.textContent = 'Already Given Today';
+    setRecognitionStatus('You already gave this profile a recognition point today.');
+    return;
+  }
+  btn.disabled = false;
+  btn.textContent = 'Grant Recognition';
+  setRecognitionStatus('You can grant this profile one lifetime recognition point today.');
+}
 function getEmbedUrl(type, url) {
   const raw = String(url || '').trim();
   if (!raw) return '';
-  if (raw.includes('open.spotify.com')) return raw.replace('/track/', '/embed/track/').replace('/album/', '/embed/album/').replace('/playlist/', '/embed/playlist/').replace('/episode/', '/embed/episode/');
-  if (raw.includes('spotify.com/embed')) return raw;
+  if (type === 'spotify' || type === 'song') return raw;
   if (type === 'soundcloud' && raw.includes('soundcloud.com') && !raw.includes('w.soundcloud.com')) return `https://w.soundcloud.com/player/?url=${encodeURIComponent(raw)}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=false&show_user=true&show_reposts=false&visual=true`;
   return raw;
 }
-function getEmbedMarkup(url, type) { const src = getEmbedUrl(type, url); return src ? `<iframe src="${escapeAttr(src)}" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>` : ''; }
+function getEmbedMarkup(url, type) {
+  const src = getEmbedUrl(type, url);
+  if (!src) return '';
+  if (type === 'spotify' || type === 'song') {
+    return `<div class="spotify-card"><small>Spotify</small><strong>Open on Spotify</strong><span>Spotify embeds can return 429s, so this profile uses a direct play link instead.</span><a href="${escapeAttr(src)}" target="_blank" rel="noreferrer">Play</a></div>`;
+  }
+  return `<iframe src="${escapeAttr(src)}" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
+}
+
+function searchProfiles() {
+  const handle = document.getElementById('searchHandle').value.trim().replace(/[^a-z0-9_]/gi, '').toLowerCase();
+  if (!handle) return;
+  window.location.href = `/profile?handle=${encodeURIComponent(handle)}`;
+}
+
+async function grantRecognition() {
+  if (!activeUser || !activeUser.handle || !viewingHandle) return;
+  const btn = document.getElementById('recognizeBtn');
+  btn.disabled = true;
+  btn.textContent = 'Granting...';
+  try {
+    const response = await fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(viewingHandle)}.json`);
+    const user = await response.json();
+    if (!user) throw new Error('Profile not found.');
+    if ((user.handle || viewingHandle) === activeUser.handle) throw new Error('You cannot recognize yourself.');
+    const day = todayKey();
+    const dayLog = Object.assign({}, (user.recognitionLog && user.recognitionLog[day]) || {});
+    if (dayLog[activeUser.handle]) throw new Error('You already gave this user recognition today.');
+    dayLog[activeUser.handle] = true;
+    const patch = {
+      recognitionPoints: Number(user.recognitionPoints || 0) + 1,
+      recognitionLog: Object.assign({}, user.recognitionLog || {}, { [day]: dayLog })
+    };
+    const save = await fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(viewingHandle)}.json`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(patch)
+    });
+    if (!save.ok) throw new Error('Firebase blocked the recognition update.');
+    user.recognitionPoints = patch.recognitionPoints;
+    user.recognitionLog = patch.recognitionLog;
+    updateRecognitionUi(user);
+    setRecognitionStatus('Recognition granted. That point stays on their profile for life.');
+  } catch (error) {
+    setRecognitionStatus(error.message || 'Could not grant recognition.');
+    btn.disabled = false;
+    btn.textContent = 'Grant Recognition';
+  }
+}
 
 async function loadProfile() {
+  activeUser = getSessionUser();
   let handle = requestedHandle;
   if (!handle) {
-    const raw = getCookie(AUTH_COOKIE_NAME);
-    if (raw) { try { handle = JSON.parse(raw).handle; } catch (_) {} }
+    if (activeUser) handle = activeUser.handle;
   }
   if (!handle) {
     document.getElementById('profileTitle').textContent = 'No handle selected';
@@ -80,6 +188,8 @@ async function loadProfile() {
     return;
   }
 
+  viewingHandle = handle;
+  document.getElementById('searchHandle').value = handle;
   document.getElementById('studioLink').href = `/profiledata?handle=${encodeURIComponent(handle)}`;
   const response = await fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(handle)}.json`);
   const user = await response.json();
@@ -87,11 +197,16 @@ async function loadProfile() {
     document.getElementById('profileTitle').textContent = 'Profile not found';
     document.getElementById('profileSub').textContent = 'That handle does not exist in Firebase yet.';
     document.getElementById('stage').innerHTML = '<div class="empty">This profile has not been created yet.</div>';
+    document.getElementById('recognitionPoints').textContent = '0';
+    document.getElementById('recognizeBtn').disabled = true;
+    document.getElementById('recognizeBtn').textContent = 'Unavailable';
+    setRecognitionStatus('Search for another handle or create this profile first.');
     return;
   }
 
   document.getElementById('profileTitle').textContent = user.displayName || '@' + handle;
   document.getElementById('profileSub').textContent = '@' + (user.handle || handle) + '  |  ' + (user.bio || 'This vivid profile is still being shaped.');
+  updateRecognitionUi(user);
 
   const stage = document.getElementById('stage');
   if (!user.profileLayoutEncoded) {
