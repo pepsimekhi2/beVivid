@@ -48,6 +48,12 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .tag-btn.active { background: rgba(255,149,0,.15); border-color: rgba(255,149,0,.35); color: #ffd7a1; }
 .comments { display: none; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(245,240,235,.08); }
 .comments.open { display: block; }
+.post-analytics { display: none; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(245,240,235,.08); }
+.post-analytics.open { display: block; }
+.post-analytics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.post-analytics-card { border: 1px solid rgba(245,240,235,.08); border-radius: 16px; padding: 14px; background: rgba(5,5,5,.34); }
+.post-analytics-card small { display: block; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: rgba(245,240,235,.38); margin-bottom: 8px; }
+.post-analytics-card strong { display: block; font-size: 24px; line-height: 1; }
 .comment-list { display: grid; gap: 10px; margin-bottom: 12px; }
 .comment-card { border: 1px solid rgba(245,240,235,.06); border-radius: 16px; padding: 12px 14px; background: rgba(5,5,5,.34); }
 .comment-head { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
@@ -69,7 +75,7 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .status { margin-top: 12px; color: rgba(245,240,235,.5); line-height: 1.7; font-size: 13px; }
 .empty { padding: 22px; color: rgba(245,240,235,.56); line-height: 1.8; }
 @media (max-width: 1080px) { .hero, .layout { grid-template-columns: 1fr; } .hero-stats { grid-template-columns: 1fr; } }
-@media (max-width: 720px) { .shell { padding: 18px; } .composer-tools, .post-actions, .comment-row { flex-direction: column; align-items: stretch; } .title { font-size: 72px; } }
+@media (max-width: 720px) { .shell { padding: 18px; } .composer-tools, .post-actions, .comment-row { flex-direction: column; align-items: stretch; } .post-analytics-grid { grid-template-columns: 1fr; } .title { font-size: 72px; } }
 </style>
 </head>
 <body>
@@ -199,6 +205,9 @@ function engagementPercent(post) {
   const reach = Math.max(1, Number(post.reachCount || 0));
   const total = Number(post.likeCount || 0) + Number(post.commentCount || 0);
   return `${Math.round((total / reach) * 100)}%`;
+}
+function canSeePostAnalytics(post) {
+  return Boolean(state.currentUser && state.currentUser.handle && post.authorHandle === state.currentUser.handle);
 }
 
 async function fetchJson(path) {
@@ -339,6 +348,11 @@ function toggleComments(postId) {
   box.classList.toggle('open');
   if (box.classList.contains('open')) loadComments(postId);
 }
+function togglePostAnalytics(postId) {
+  const box = document.getElementById(`analytics-${postId}`);
+  if (!box) return;
+  box.classList.toggle('open');
+}
 
 async function loadComments(postId) {
   const post = state.posts.find(item => item.id === postId);
@@ -432,6 +446,7 @@ function renderFeed() {
     const canFollow = state.currentUser && state.currentUser.handle && state.currentUser.handle !== post.authorHandle;
     const followLabel = state.following[post.authorHandle] ? 'Following' : 'Follow';
     const likeLabel = state.likedPosts[post.id] ? 'Liked' : 'Like';
+    const ownerAnalytics = canSeePostAnalytics(post);
     return `
       <article class="post-card" id="post-${escapeAttr(post.id)}">
         <div class="post-header">
@@ -453,10 +468,17 @@ function renderFeed() {
         <div class="post-actions">
           <button class="tag-btn ${state.likedPosts[post.id] ? 'active' : ''}" type="button" onclick="toggleLike('${escapeAttr(post.id)}')">${escapeHtml(likeLabel)} ${escapeHtml(String(post.likeCount || 0))}</button>
           <button class="tag-btn" type="button" onclick="toggleComments('${escapeAttr(post.id)}')">Comments ${escapeHtml(String(post.commentCount || 0))}</button>
-          <span class="tag-btn">Impressions ${escapeHtml(String(post.impressionCount || 0))}</span>
-          <span class="tag-btn">Reach ${escapeHtml(String(post.reachCount || 0))}</span>
-          <span class="tag-btn">Engagement ${escapeHtml(engagementPercent(post))}</span>
+          ${ownerAnalytics ? `<button class="tag-btn" type="button" onclick="togglePostAnalytics('${escapeAttr(post.id)}')">Analytics</button>` : ''}
         </div>
+        ${ownerAnalytics ? `
+          <div class="post-analytics" id="analytics-${escapeAttr(post.id)}">
+            <div class="post-analytics-grid">
+              <div class="post-analytics-card"><small>Impressions</small><strong>${escapeHtml(String(post.impressionCount || 0))}</strong></div>
+              <div class="post-analytics-card"><small>Reach</small><strong>${escapeHtml(String(post.reachCount || 0))}</strong></div>
+              <div class="post-analytics-card"><small>Engagement</small><strong>${escapeHtml(engagementPercent(post))}</strong></div>
+            </div>
+          </div>
+        ` : ''}
         <div class="comments" id="comments-${escapeAttr(post.id)}">
           <div class="comment-list" id="comment-list-${escapeAttr(post.id)}"></div>
           <div class="comment-row">
@@ -506,8 +528,21 @@ function updateTopStats() {
 }
 
 async function loadFeed() {
-  const response = await fetch(`${FIREBASE_DB_URL}/communityPosts.json?orderBy=%22createdAt%22&limitToLast=30`);
-  const data = response.ok ? await response.json() : null;
+  let data = null;
+  try {
+    const response = await fetch(`${FIREBASE_DB_URL}/communityPosts.json?orderBy=%22createdAt%22&limitToLast=30`);
+    data = response.ok ? await response.json() : null;
+  } catch (_) {
+    data = null;
+  }
+  if (!data) {
+    try {
+      const fallback = await fetchJson('communityPosts');
+      data = fallback || null;
+    } catch (_) {
+      data = null;
+    }
+  }
   state.posts = Object.values(data || {}).filter(Boolean).sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0)).slice(0, 30);
   renderFeed();
   renderAnalytics();
@@ -535,7 +570,14 @@ function renderSearchResults(users) {
 }
 
 async function queryUsers(query) {
-  const data = await fetchJson('publicUserIndex').catch(() => null);
+  let data = null;
+  try {
+    const response = await fetch(`${FIREBASE_DB_URL}/publicUserIndex.json?orderBy=%22%24key%22&limitToFirst=200`);
+    data = response.ok ? await response.json() : null;
+  } catch (_) {
+    data = null;
+  }
+  if (!data) data = await fetchJson('publicUserIndex').catch(() => null);
   return Object.values(data || {})
     .filter(Boolean)
     .map(user => {
@@ -561,8 +603,13 @@ async function handleSearchInput() {
     box.classList.remove('open');
     return;
   }
-  const users = await queryUsers(query);
-  renderSearchResults(users);
+  try {
+    const users = await queryUsers(query);
+    renderSearchResults(users);
+  } catch (_) {
+    box.innerHTML = '<div class="empty" style="border:0; border-radius:0; background:transparent; padding:14px 16px;">Search could not load right now.</div>';
+    box.classList.add('open');
+  }
 }
 
 document.getElementById('composerImage').addEventListener('change', async event => {
