@@ -69,6 +69,14 @@ nav {
 .nav-passion { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: rgba(245,240,235,.18); border: 1px solid rgba(245,240,235,.08); padding: 6px 12px; border-radius: 100px; }
 .nav-cta { background: #f5f0eb; color: #050505; padding: 9px 20px; border-radius: 3px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; font-weight: 700; text-decoration: none; transition: background .2s; white-space: nowrap; cursor: pointer; border: none; }
 .nav-cta:hover { background: #ff9500; }
+.nav-secondary { background: transparent; color: rgba(245,240,235,.72); border: 1px solid rgba(245,240,235,.16); }
+.nav-secondary:hover { background: rgba(245,240,235,.08); color: #f5f0eb; }
+.nav-profile-btn { display: none; align-items: center; gap: 10px; background: rgba(245,240,235,.04); color: #f5f0eb; border: 1px solid rgba(245,240,235,.12); border-radius: 999px; padding: 7px 12px 7px 8px; cursor: pointer; }
+.nav-profile-btn.visible { display: inline-flex; }
+.nav-profile-avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg,#ff2d55,#34aadc); color: #f5f0eb; display: inline-flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: .04em; }
+.nav-profile-meta { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.2; }
+.nav-profile-name { font-size: 11px; font-weight: 700; }
+.nav-profile-handle { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: .14em; text-transform: uppercase; color: rgba(245,240,235,.42); }
 .nav-mobile-toggle { display: none; background: none; border: none; cursor: pointer; padding: 4px; }
 .nav-mobile-toggle span { display: block; width: 22px; height: 1.5px; background: rgba(245,240,235,0.40); margin: 5px 0; }
 
@@ -236,6 +244,40 @@ footer { position: relative; z-index: 1; padding: 44px clamp(24px,5vw,64px); bor
 .footer-links a:hover { color: rgba(245,240,235,0.40); }
 .footer-copy { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .1em; color: rgba(245,240,235,.1); text-align: right; line-height: 1.8; }
 
+/* ACCOUNT */
+#account-overlay { position: fixed; inset: 0; z-index: 410; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(5,5,5,.72); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+#account-overlay.open { display: flex; }
+.account-panel { width: min(520px, 100%); border: 1px solid rgba(245,240,235,.12); background: linear-gradient(180deg,rgba(18,18,18,.98),rgba(8,8,8,.98)); border-radius: 14px; box-shadow: 0 30px 80px rgba(0,0,0,.45); overflow: hidden; }
+.account-top { padding: 28px 28px 18px; border-bottom: 1px solid rgba(245,240,235,.08); display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.account-kicker { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: #34aadc; margin-bottom: 12px; }
+.account-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(34px,5vw,48px); line-height: .92; }
+.account-close { background: none; border: none; color: rgba(245,240,235,.34); font-size: 28px; cursor: pointer; line-height: 1; }
+.account-close:hover { color: #f5f0eb; }
+.account-body { padding: 24px 28px 30px; }
+.account-pane { display: none; }
+.account-pane.active { display: block; }
+.account-desc { color: rgba(245,240,235,.46); line-height: 1.75; margin-bottom: 18px; font-size: 14px; }
+.account-group { margin-bottom: 14px; }
+.account-label { display: block; margin-bottom: 8px; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: rgba(245,240,235,.34); }
+.account-input { width: 100%; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; border-radius: 6px; outline: none; padding: 14px 16px; font-family: 'Syne', sans-serif; font-size: 14px; }
+.account-input:focus { border-color: rgba(245,240,235,.28); }
+.account-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 18px; }
+.account-btn { background: #f5f0eb; color: #050505; border: none; border-radius: 999px; padding: 12px 22px; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; font-weight: 700; }
+.account-btn:hover { background: #ff9500; }
+.account-btn.ghost { background: transparent; color: rgba(245,240,235,.56); border: 1px solid rgba(245,240,235,.16); }
+.account-btn.ghost:hover { background: rgba(245,240,235,.06); color: #f5f0eb; }
+.account-error { display: none; margin-top: 12px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .08em; line-height: 1.7; color: #ff8fa7; }
+.account-error.show { display: block; }
+.profile-card { border: 1px solid rgba(245,240,235,.1); border-radius: 10px; padding: 18px; background: rgba(245,240,235,.03); }
+.profile-head { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.profile-avatar { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg,#ff2d55,#34aadc); display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 28px; }
+.profile-name { font-size: 22px; font-weight: 700; line-height: 1.1; }
+.profile-handle { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: rgba(245,240,235,.34); margin-top: 5px; }
+.profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+.profile-stat { border: 1px solid rgba(245,240,235,.08); border-radius: 8px; padding: 12px; background: rgba(0,0,0,.16); }
+.profile-stat-label { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: .18em; text-transform: uppercase; color: rgba(245,240,235,.26); margin-bottom: 8px; }
+.profile-stat-value { color: rgba(245,240,235,.9); font-size: 13px; line-height: 1.5; word-break: break-word; }
+
 /* VERT TEXT */
 .vert-text { position: fixed; right: clamp(14px,2.5vw,36px); top: 50%; transform: translateY(-50%) rotate(90deg); transform-origin: center; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .35em; text-transform: uppercase; color: rgba(245,240,235,.07); white-space: nowrap; pointer-events: none; z-index: 2; }
 
@@ -400,6 +442,8 @@ footer { position: relative; z-index: 1; padding: 44px clamp(24px,5vw,64px); bor
   .nav-center { display: none; }
   .nav-passion { display: none; }
   .nav-mobile-toggle { display: block; }
+  .nav-right { gap: 8px; }
+  .nav-profile-meta { display: none; }
   .what-grid, .comm-inner { grid-template-columns: 1fr; }
   .what-right { grid-template-columns: 1fr 1fr; }
   .tab-panel.active { grid-template-columns: 1fr 1fr; }
@@ -415,10 +459,12 @@ footer { position: relative; z-index: 1; padding: 44px clamp(24px,5vw,64px); bor
   .ob-panel { border-radius: 8px; max-height: 92vh; max-height: 92dvh; }
   #onboarding-overlay { padding: 16px; }
   .ob-right { padding: 24px 18px 48px; }
+  .account-top, .account-body { padding-left: 20px; padding-right: 20px; }
   .what-right { grid-template-columns: 1fr; }
   .tab-panel.active { grid-template-columns: 1fr; }
   .steps-row { grid-template-columns: 1fr; }
   .hero-actions { flex-direction: column; }
+  .profile-grid { grid-template-columns: 1fr; }
   .account-selector { gap: 8px; }
   .acct-sub { display: none; }
 }
@@ -443,6 +489,14 @@ footer { position: relative; z-index: 1; padding: 44px clamp(24px,5vw,64px); bor
   </ul>
   <div class="nav-right">
     <span class="nav-passion">passion project</span>
+    <button class="nav-cta nav-secondary" id="navLoginBtn" onclick="openAccountModal('login')">Log In</button>
+    <button class="nav-profile-btn" id="navProfileBtn" onclick="openAccountModal('profile')">
+      <span class="nav-profile-avatar" id="navProfileAvatar">?</span>
+      <span class="nav-profile-meta">
+        <span class="nav-profile-name" id="navProfileName">Profile</span>
+        <span class="nav-profile-handle" id="navProfileHandle">@you</span>
+      </span>
+    </button>
     <button class="nav-cta" onclick="openOnboarding()">Join Free</button>
   </div>
   <button class="nav-mobile-toggle" id="mobileToggle" aria-label="Menu">
@@ -707,6 +761,73 @@ footer { position: relative; z-index: 1; padding: 44px clamp(24px,5vw,64px); bor
   <div class="footer-copy">© 2025 beVivid<br>All rights reserved.</div>
 </footer>
 
+<div id="account-overlay" role="dialog" aria-modal="true">
+  <div class="account-panel">
+    <div class="account-top">
+      <div>
+        <div class="account-kicker" id="accountKicker">Member Access</div>
+        <div class="account-title" id="accountTitle">Log in to<br>beVivid.</div>
+      </div>
+      <button class="account-close" onclick="closeAccountModal()" aria-label="Close">×</button>
+    </div>
+    <div class="account-body">
+      <div class="account-pane active" id="account-login-pane">
+        <p class="account-desc">Use the handle and password you signed up with. Once you're in, your profile stays saved in this browser.</p>
+        <div class="account-group">
+          <label class="account-label" for="login-handle">Handle</label>
+          <input class="account-input" type="text" id="login-handle" placeholder="yourhandle" />
+        </div>
+        <div class="account-group">
+          <label class="account-label" for="login-password">Password</label>
+          <input class="account-input" type="password" id="login-password" placeholder="Your password" />
+        </div>
+        <p class="account-error" id="login-error"></p>
+        <div class="account-actions">
+          <button class="account-btn" onclick="loginUser(this)">Log In</button>
+          <button class="account-btn ghost" onclick="closeAccountModal()">Cancel</button>
+        </div>
+      </div>
+
+      <div class="account-pane" id="account-profile-pane">
+        <p class="account-desc">You're signed in on this browser. Your vivid profile snapshot lives right here until you log out.</p>
+        <div class="profile-card">
+          <div class="profile-head">
+            <div class="profile-avatar" id="profileAvatar">?</div>
+            <div>
+              <div class="profile-name" id="profileName">Your Name</div>
+              <div class="profile-handle" id="profileHandle">@handle</div>
+            </div>
+          </div>
+          <div class="profile-grid">
+            <div class="profile-stat">
+              <div class="profile-stat-label">Email</div>
+              <div class="profile-stat-value" id="profileEmail">you@example.com</div>
+            </div>
+            <div class="profile-stat">
+              <div class="profile-stat-label">Account Type</div>
+              <div class="profile-stat-value" id="profileType">Member</div>
+            </div>
+            <div class="profile-stat">
+              <div class="profile-stat-label">Bio</div>
+              <div class="profile-stat-value" id="profileBio">No bio yet.</div>
+            </div>
+            <div class="profile-stat">
+              <div class="profile-stat-label">Interests</div>
+              <div class="profile-stat-value" id="profileInterests">Still choosing your vibe.</div>
+            </div>
+          </div>
+        </div>
+        <div class="account-actions">
+          <button class="account-btn ghost" onclick="openProfileStudio()">Profile Studio</button>
+          <button class="account-btn ghost" onclick="logoutUser()">Log Out</button>
+          <button class="account-btn ghost" onclick="viewPublicProfile()">View Profile</button>
+          <button class="account-btn" onclick="closeAccountModal()">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ONBOARDING OVERLAY -->
 <div id="onboarding-overlay" role="dialog" aria-modal="true">
   <div class="ob-backdrop" id="obBackdrop"></div>
@@ -782,6 +903,11 @@ footer { position: relative; z-index: 1; padding: 44px clamp(24px,5vw,64px); bor
           <label class="ob-label">Email</label>
           <div class="ob-input-row"><input type="email" id="ob-email" placeholder="you@example.com" /></div>
           <p class="ob-field-err" id="ob-email-err">Please enter a valid email.</p>
+        </div>
+        <div class="ob-form-group">
+          <label class="ob-label">Password</label>
+          <div class="ob-input-row"><input type="password" id="ob-password" placeholder="At least 8 characters" /></div>
+          <p class="ob-field-err" id="ob-password-err">Use at least 8 characters with a letter and a number.</p>
         </div>
         <div class="ob-btn-row" style="margin-top:8px;">
           <button class="ob-btn-primary" onclick="obValidateStep2()">Continue →</button>
@@ -999,7 +1125,12 @@ function setAcct(type, btn) {
 
 /* APPLY FORMS */
 const RECAPTCHA_SITE_KEY = '6LfyVJUsAAAAAFZ7eNAF8r2b58PUyZ_2hW56gKHh';
+const FIREBASE_DB_URL = 'https://bevivid-73a69-default-rtdb.firebaseio.com';
+const AUTH_COOKIE_NAME = 'bevivid_session';
 const recaptchaWidgets = {};
+let currentUser = null;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const PASSWORD_PATTERN = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
 
 function setInlineError(id, message) {
   const el = document.getElementById(id);
@@ -1046,6 +1177,112 @@ function splitNameParts(fullName) {
   };
 }
 
+function setCookie(name, value, days) {
+  const expires = new Date(Date.now() + days * 86400000).toUTCString();
+  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
+}
+
+function getCookie(name) {
+  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : '';
+}
+
+function deleteCookie(name) {
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax`;
+}
+
+function normalizeHandle(handle) {
+  return String(handle || '').replace(/[^a-z0-9_]/gi, '').toLowerCase();
+}
+
+function showAccountPane(mode) {
+  document.getElementById('account-login-pane').classList.toggle('active', mode === 'login');
+  document.getElementById('account-profile-pane').classList.toggle('active', mode === 'profile');
+  document.getElementById('accountKicker').textContent = mode === 'profile' ? 'Your Profile' : 'Member Access';
+  document.getElementById('accountTitle').innerHTML = mode === 'profile' ? 'Your vivid<br>profile.' : 'Log in to<br>beVivid.';
+}
+
+function setCurrentUser(user, persist = true) {
+  currentUser = user;
+
+  const loginBtn = document.getElementById('navLoginBtn');
+  const profileBtn = document.getElementById('navProfileBtn');
+  const joinBtn = document.querySelector('.nav-right .nav-cta:not(.nav-secondary)');
+
+  if (user) {
+    if (persist) setCookie(AUTH_COOKIE_NAME, JSON.stringify(user), 30);
+    loginBtn.style.display = 'none';
+    profileBtn.classList.add('visible');
+    joinBtn.textContent = 'Profile';
+    joinBtn.onclick = () => openAccountModal('profile');
+    document.getElementById('navProfileAvatar').textContent = (user.displayName || '?').charAt(0).toUpperCase();
+    document.getElementById('navProfileName').textContent = user.displayName || 'Member';
+    document.getElementById('navProfileHandle').textContent = '@' + (user.handle || 'member');
+    document.getElementById('profileAvatar').textContent = (user.displayName || '?').charAt(0).toUpperCase();
+    document.getElementById('profileName').textContent = user.displayName || 'Member';
+    document.getElementById('profileHandle').textContent = '@' + (user.handle || 'member');
+    document.getElementById('profileEmail').textContent = user.email || 'No email saved';
+    document.getElementById('profileType').textContent = user.accountType || 'Member';
+    document.getElementById('profileBio').textContent = user.bio || 'No bio yet.';
+    document.getElementById('profileInterests').textContent = user.interests || 'Still choosing your vibe.';
+  } else {
+    deleteCookie(AUTH_COOKIE_NAME);
+    loginBtn.style.display = 'inline-flex';
+    profileBtn.classList.remove('visible');
+    joinBtn.textContent = 'Join Free';
+    joinBtn.onclick = () => openOnboarding();
+  }
+}
+
+function hydrateSessionFromCookie() {
+  const raw = getCookie(AUTH_COOKIE_NAME);
+  if (!raw) return;
+  try {
+    setCurrentUser(JSON.parse(raw), false);
+  } catch (_) {
+    deleteCookie(AUTH_COOKIE_NAME);
+  }
+}
+
+function openAccountModal(mode = 'login') {
+  const overlay = document.getElementById('account-overlay');
+  showAccountPane(mode === 'profile' && currentUser ? 'profile' : 'login');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeAccountModal() {
+  document.getElementById('account-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function logoutUser() {
+  setCurrentUser(null, false);
+  closeAccountModal();
+}
+
+function openProfileStudio() {
+  if (!currentUser || !currentUser.handle) return;
+  window.location.href = `/profiledata?handle=${encodeURIComponent(currentUser.handle)}`;
+}
+
+function viewPublicProfile() {
+  if (!currentUser || !currentUser.handle) return;
+  window.location.href = `/profile?handle=${encodeURIComponent(currentUser.handle)}`;
+}
+
+async function fetchUserByHandle(handle) {
+  const response = await fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(handle)}.json`);
+  if (!response.ok) throw new Error('Could not reach your profile right now.');
+  return response.json();
+}
+
+async function hashPassword(password) {
+  const data = new TextEncoder().encode(password);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(digest)).map(byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
 async function postJson(url, payload) {
   const response = await fetch(url, {
     method: 'POST',
@@ -1065,6 +1302,76 @@ async function postJson(url, payload) {
   }
 
   return data;
+}
+
+async function saveSignupToFirebase(payload) {
+  const response = await fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(payload.handle)}.json`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      displayName: payload.displayName,
+      handle: payload.handle,
+      email: payload.email,
+      passwordHash: payload.passwordHash,
+      accountType: payload.accountType || '',
+      bio: payload.bio || '',
+      interests: (payload.interests || []).join(', '),
+      createdAt: Date.now()
+    })
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || 'Firebase could not save this signup.');
+  }
+
+  return response.json();
+}
+
+async function loginUser(button) {
+  const handle = normalizeHandle(document.getElementById('login-handle').value.trim());
+  const password = document.getElementById('login-password').value;
+  setInlineError('login-error', '');
+
+  if (!handle || !password) {
+    setInlineError('login-error', 'Enter the handle and password you used when you joined.');
+    return;
+  }
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = 'Checking...';
+  }
+
+  try {
+    const user = await fetchUserByHandle(handle);
+    if (!user) throw new Error('No profile was found for that handle.');
+    const passwordHash = await hashPassword(password);
+    if (!user.passwordHash || user.passwordHash !== passwordHash) {
+      throw new Error('That password does not match the saved profile for this handle.');
+    }
+
+    setCurrentUser({
+      displayName: user.displayName || user.handle || handle,
+      handle: user.handle || handle,
+      email: user.email || '',
+      accountType: user.accountType || 'Member',
+      bio: user.bio || '',
+      interests: user.interests || ''
+    });
+    document.getElementById('login-handle').value = '';
+    document.getElementById('login-password').value = '';
+    showAccountPane('profile');
+  } catch (error) {
+    setInlineError('login-error', error.message);
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.textContent = 'Log In';
+    }
+  }
 }
 
 async function submitApply(type, button) {
@@ -1174,7 +1481,7 @@ const OB_TYPE_META = {
   business: { color: '#00e5b0', borderColor: 'rgba(0,229,176,.3)' },
 };
 const OB_CONFETTI_COLORS = ['#ff2d55','#ff9500','#34aadc','#a259ff','#00e5b0'];
-const ob = { step: 0, accountType: null, displayName: '', handle: '', email: '', bio: '', avatarDataURL: null, interests: [], initialized: false };
+const ob = { step: 0, accountType: null, displayName: '', handle: '', email: '', password: '', bio: '', avatarDataURL: null, interests: [], initialized: false };
 
 function openOnboarding() {
   const overlay = document.getElementById('onboarding-overlay');
@@ -1334,13 +1641,16 @@ function obValidateStep2() {
   const name   = document.getElementById('ob-displayName').value.trim();
   const handle = document.getElementById('ob-handle').value.trim();
   const email  = document.getElementById('ob-email').value.trim();
+  const password = document.getElementById('ob-password').value;
   let ok = true;
   document.getElementById('ob-name-err').classList.toggle('show', !name); if (!name) ok = false;
   document.getElementById('ob-handle-err').classList.toggle('show', !handle); if (!handle) ok = false;
-  const eOk = email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const eOk = email && EMAIL_PATTERN.test(email);
   document.getElementById('ob-email-err').classList.toggle('show', !eOk); if (!eOk) ok = false;
+  const pOk = PASSWORD_PATTERN.test(password);
+  document.getElementById('ob-password-err').classList.toggle('show', !pOk); if (!pOk) ok = false;
   if (!ok) return;
-  ob.displayName = name; ob.handle = handle; ob.email = email;
+  ob.displayName = name; ob.handle = handle; ob.email = email; ob.password = password;
   document.getElementById('obAvInitial').textContent = name.charAt(0).toUpperCase();
   obNext();
 }
@@ -1387,13 +1697,23 @@ async function obGoVivid(button) {
   }
 
   try {
-    await postJson('/api/signup', {
+    const passwordHash = await hashPassword(ob.password);
+    await saveSignupToFirebase({
       displayName: ob.displayName,
-      handle: ob.handle,
+      handle: normalizeHandle(ob.handle),
       email: ob.email,
+      passwordHash,
       accountType: ob.accountType,
       bio: ob.bio || document.getElementById('ob-bio').value.trim(),
       interests: ob.interests
+    });
+    setCurrentUser({
+      displayName: ob.displayName,
+      handle: normalizeHandle(ob.handle),
+      email: ob.email,
+      accountType: ob.accountType,
+      bio: ob.bio || document.getElementById('ob-bio').value.trim(),
+      interests: ob.interests.join(', ')
     });
     obGoTo(6);
   } catch (error) {
@@ -1407,6 +1727,10 @@ async function obGoVivid(button) {
 }
 
 document.addEventListener('DOMContentLoaded', initRecaptchaWidgets);
+document.addEventListener('DOMContentLoaded', hydrateSessionFromCookie);
+document.getElementById('account-overlay').addEventListener('click', e => {
+  if (e.target.id === 'account-overlay') closeAccountModal();
+});
 </script>
 </body>
 </html>
