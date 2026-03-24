@@ -18,6 +18,7 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: #34aadc; margin-bottom: 12px; }
 .title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(58px, 10vw, 120px); line-height: .88; margin: 0; }
 .sub { color: rgba(245,240,235,.46); max-width: 680px; line-height: 1.8; margin-top: 10px; }
+.profile-search-corner { position: fixed; top: 28px; right: 28px; z-index: 50; }
 .profile-tools { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 22px; }
 .search-form { display: flex; gap: 10px; flex-wrap: wrap; }
 .search-input { min-width: 260px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; border-radius: 999px; padding: 12px 16px; font: inherit; outline: none; }
@@ -44,11 +45,17 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .audio-toggle { position: absolute; left: 20px; bottom: 20px; z-index: 4; border: 1px solid rgba(245,240,235,.12); background: rgba(5,5,5,.55); color: #f5f0eb; border-radius: 999px; padding: 12px 16px; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; backdrop-filter: blur(14px); }
 .audio-note { position: absolute; right: 20px; bottom: 22px; z-index: 4; color: rgba(245,240,235,.42); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
 .empty { padding: 26px; border-radius: 16px; border: 1px solid rgba(245,240,235,.08); background: rgba(245,240,235,.03); color: rgba(245,240,235,.56); line-height: 1.8; }
-@media (max-width: 760px) { .shell { padding: 18px; } .profile-tools { flex-direction: column; align-items: stretch; } .search-form { width: 100%; } .search-input { min-width: 0; width: 100%; } .stage-wrap { padding: 10px; } .stage { width: 980px; min-height: 780px; } .audio-toggle { left: 12px; bottom: 12px; } .audio-note { left: 12px; right: auto; bottom: 58px; } }
+@media (max-width: 760px) { .shell { padding: 18px; } .profile-search-corner { position: static; margin-bottom: 16px; } .profile-tools { flex-direction: column; align-items: stretch; } .search-form { width: 100%; } .search-input { min-width: 0; width: 100%; } .stage-wrap { padding: 10px; } .stage { width: 980px; min-height: 780px; } .audio-toggle { left: 12px; bottom: 12px; } .audio-note { left: 12px; right: auto; bottom: 58px; } }
 </style>
 </head>
 <body>
 <div class="shell">
+  <div class="profile-search-corner">
+    <form class="search-form" onsubmit="event.preventDefault(); searchProfiles();">
+      <input class="search-input" id="searchHandle" type="text" placeholder="Find a user by handle" />
+      <button class="search-btn" type="submit">Search User</button>
+    </form>
+  </div>
   <div class="topbar">
     <a class="back" href="/">Back To beVivid</a>
     <a class="studio" id="studioLink" href="/profiledata">Open Studio</a>
@@ -58,10 +65,6 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
     <h1 class="title" id="profileTitle">Loading...</h1>
     <div class="sub" id="profileSub">Pulling the latest profile layout from Firebase.</div>
     <div class="profile-tools">
-      <form class="search-form" onsubmit="event.preventDefault(); searchProfiles();">
-        <input class="search-input" id="searchHandle" type="text" placeholder="Find a user by handle" />
-        <button class="search-btn" type="submit">Search User</button>
-      </form>
       <div class="recognition-card">
         <small>Recognition Points</small>
         <strong id="recognitionPoints">0</strong>
