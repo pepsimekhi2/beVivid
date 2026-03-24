@@ -62,6 +62,13 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .status.ok { color: #92ffd9; }
 .status.err { color: #ff9eb4; }
 .empty { color: rgba(245,240,235,.36); font-size: 14px; line-height: 1.7; }
+.studio-loading { position: fixed; inset: 0; z-index: 9998; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(5,5,5,.78); backdrop-filter: blur(14px); }
+.studio-loading.open { display: flex; }
+.studio-loading-card { min-width: 260px; max-width: 420px; border: 1px solid rgba(245,240,235,.12); border-radius: 22px; background: linear-gradient(180deg, rgba(18,18,18,.98), rgba(8,8,8,.98)); padding: 28px; text-align: center; box-shadow: 0 30px 80px rgba(0,0,0,.45); }
+.studio-spinner { width: 52px; height: 52px; margin: 0 auto 18px; border-radius: 50%; border: 3px solid rgba(245,240,235,.12); border-top-color: #ff9500; border-right-color: #34aadc; animation: studioSpin 1s linear infinite; }
+.studio-loading-title { font-family: 'Bebas Neue', sans-serif; font-size: 42px; line-height: .9; margin: 0 0 10px; }
+.studio-loading-copy { color: rgba(245,240,235,.58); line-height: 1.7; margin: 0; }
+@keyframes studioSpin { to { transform: rotate(360deg); } }
 .studio-lock { position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(5,5,5,.96); }
 .studio-lock.open { display: flex; }
 .studio-lock-card { max-width: 520px; border: 1px solid rgba(245,240,235,.12); border-radius: 20px; background: linear-gradient(180deg, rgba(18,18,18,.98), rgba(8,8,8,.98)); padding: 28px; box-shadow: 0 30px 80px rgba(0,0,0,.45); }
@@ -73,6 +80,13 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 </style>
 </head>
 <body>
+<div class="studio-loading" id="studioLoading">
+  <div class="studio-loading-card">
+    <div class="studio-spinner"></div>
+    <h2 class="studio-loading-title">Saving your page...</h2>
+    <p class="studio-loading-copy">Hold tight while your latest changes are being applied.</p>
+  </div>
+</div>
 <div class="studio-lock" id="studioLock">
   <div class="studio-lock-card">
     <div class="eyebrow">Profile Studio</div>
@@ -134,6 +148,7 @@ const state = { user: null, profileData: { songLabel: '', songAudio: '', backgro
 
 function getCookie(name) { const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)')); return match ? decodeURIComponent(match[1]) : ''; }
 function setStatus(message, type) { const box = document.getElementById('studioStatus'); box.textContent = message; box.className = 'status' + (type ? ' ' + type : ''); }
+function setSavingOverlay(open) { document.getElementById('studioLoading').classList.toggle('open', open); }
 function encodeLayout(data) { return btoa(unescape(encodeURIComponent(JSON.stringify(data)))); }
 function decodeLayout(value) { return JSON.parse(decodeURIComponent(escape(atob(value)))); }
 function makeId() { return 'el_' + Math.random().toString(36).slice(2, 9); }
@@ -473,14 +488,23 @@ async function loadUserAndLayout() {
 
 async function saveProfileLayout() {
   if (!state.user || !state.user.handle) { setStatus('You need to log in on the homepage before saving.', 'err'); return; }
-  setStatus('Saving profile layout to Firebase...');
-  const response = await fetch(getUserPath(state.user.handle), {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ profileLayoutEncoded: encodeLayout(state.profileData), profileUpdatedAt: Date.now(), profileSongLabel: state.profileData.songLabel || '', profileSongAudio: state.profileData.songAudio || '' })
-  });
-  if (!response.ok) { const message = await response.text(); setStatus(message || 'Could not save profile data.', 'err'); return; }
-  setStatus('Saved. Your encoded profile JSON is now stored under this user in Firebase.', 'ok');
+  setSavingOverlay(true);
+  setStatus('Saving your profile...', '');
+  try {
+    const response = await fetch(getUserPath(state.user.handle), {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ profileLayoutEncoded: encodeLayout(state.profileData), profileUpdatedAt: Date.now(), profileSongLabel: state.profileData.songLabel || '', profileSongAudio: state.profileData.songAudio || '' })
+    });
+    if (!response.ok) {
+      const message = await response.text();
+      setStatus(message || 'Could not save your profile right now.', 'err');
+      return;
+    }
+    setStatus('Saved. Your profile is up to date.', 'ok');
+  } finally {
+    setSavingOverlay(false);
+  }
 }
 
 if (window.matchMedia('(max-width: 900px)').matches || /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)) {
