@@ -39,17 +39,16 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .designer-el .inner { width: 100%; height: 100%; overflow: hidden; }
 .resize-handle { position: absolute; width: 16px; height: 16px; right: 6px; bottom: 6px; border-radius: 4px; background: #ff9500; cursor: nwse-resize; }
 .text-block { padding: 18px; white-space: pre-wrap; line-height: 1.45; }
-.image-block img, .embed-block iframe { width: 100%; height: 100%; border: 0; display: block; }
+.image-block img, .embed-block iframe { width: 100%; height: 100%; border: 0; display: block; object-fit: cover; position: relative; z-index: 1; }
 .spotify-card { width: 100%; height: 100%; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; background: linear-gradient(135deg,#1db954,#111111 72%); color: #ffffff; }
 .spotify-card small { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; opacity: .7; }
 .spotify-card strong { font-size: 22px; line-height: 1.1; }
 .spotify-card span { font-size: 13px; line-height: 1.6; opacity: .85; }
 .spotify-card a { display: inline-flex; width: fit-content; margin-top: 12px; padding: 10px 14px; border-radius: 999px; background: rgba(255,255,255,.16); color: #fff; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
-.song-banner { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 20px 26px; border-bottom: 1px solid rgba(245,240,235,.08); position: absolute; top: 0; left: 0; right: 0; z-index: 2; background: linear-gradient(90deg, rgba(5,5,5,.84), rgba(5,5,5,.46)); backdrop-filter: blur(18px); }
-.song-copy small { display: block; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: rgba(245,240,235,.42); margin-bottom: 8px; }
-.song-copy strong { display: block; font-size: 24px; }
-.song-embed { width: 360px; max-width: 48%; min-height: 80px; }
-.song-embed iframe { width: 100%; height: 80px; border: 0; border-radius: 12px; }
+.visualizer-bg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: .9; }
+.audio-toggle { position: absolute; left: 20px; bottom: 20px; z-index: 4; border: 1px solid rgba(245,240,235,.12); background: rgba(5,5,5,.55); color: #f5f0eb; border-radius: 999px; padding: 12px 16px; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; backdrop-filter: blur(14px); }
+.audio-toggle.hidden { display: none; }
+.audio-hint { position: absolute; right: 20px; bottom: 22px; z-index: 4; color: rgba(245,240,235,.42); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
 .field { margin-bottom: 14px; }
 .field label { display: block; margin-bottom: 7px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: rgba(245,240,235,.4); }
 .field input, .field textarea, .field select { width: 100%; border: 1px solid rgba(245,240,235,.1); background: rgba(245,240,235,.03); color: #f5f0eb; border-radius: 10px; padding: 12px 13px; font: inherit; outline: none; }
@@ -60,8 +59,8 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .status.ok { color: #92ffd9; }
 .status.err { color: #ff9eb4; }
 .empty { color: rgba(245,240,235,.36); font-size: 14px; line-height: 1.7; }
-@media (max-width: 1180px) { .shell { grid-template-columns: 1fr; } .sidebar, .inspector { border: 0; } .main { order: -1; } }
-@media (max-width: 760px) { .main, .panel { padding: 18px; } .topbar { flex-direction: column; align-items: flex-start; } .canvas-shell { min-height: 60vh; } .song-banner { flex-direction: column; align-items: flex-start; } .song-embed { max-width: 100%; width: 100%; } .two { grid-template-columns: 1fr; } }
+@media (max-width: 1180px) { .shell { grid-template-columns: 1fr; } .sidebar, .inspector { border: 0; } .main { order: -1; } .sidebar, .inspector, .main { width: 100%; } }
+@media (max-width: 760px) { .main, .panel { padding: 16px; } .topbar { flex-direction: column; align-items: flex-start; } .canvas-shell { min-height: 58vh; padding: 8px; } .workspace { padding: 10px; } .canvas { width: 980px; height: 780px; } .two { grid-template-columns: 1fr; } .audio-toggle { left: 12px; bottom: 12px; } .audio-hint { left: 12px; right: auto; bottom: 58px; } }
 </style>
 </head>
 <body>
@@ -73,7 +72,7 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
     <div class="stack">
       <button class="tool-btn" onclick="addElement('text')"><span class="tool-name">Text Block</span><span class="tool-desc">Headlines, bios, manifesto, lists and notes.</span></button>
       <button class="tool-btn" onclick="addElement('image')"><span class="tool-name">Image Card</span><span class="tool-desc">Upload your own image or paste a URL and shape it however you want.</span></button>
-      <button class="tool-btn" onclick="addElement('spotify')"><span class="tool-name">Spotify Embed</span><span class="tool-desc">Albums, tracks, playlists, podcasts.</span></button>
+      <button class="tool-btn" onclick="addElement('spotify')"><span class="tool-name">Music Link Card</span><span class="tool-desc">A clean external music card when you want a clickable link.</span></button>
       <button class="tool-btn" onclick="addElement('soundcloud')"><span class="tool-name">SoundCloud Embed</span><span class="tool-desc">Tracks, mixes, reposts and audio drops.</span></button>
       <button class="tool-btn" onclick="addElement('shape')"><span class="tool-name">Shape / Glow</span><span class="tool-desc">Mood panels, dividers, neon blobs, background accents.</span></button>
     </div>
@@ -93,7 +92,7 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
         <div class="chip-row">
           <div class="chip" id="chipUser">No user loaded</div>
           <div class="chip">Drag + resize</div>
-          <div class="chip">Spotify + SoundCloud</div>
+          <div class="chip">Audio Visualizer + SoundCloud</div>
           <div class="chip">Saved as encoded JSON</div>
         </div>
       </div>
@@ -105,7 +104,7 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
   <aside class="inspector"><div class="panel">
     <div class="eyebrow">Inspector</div>
     <div class="field"><label for="profileSongLabel">Profile Song Label</label><input id="profileSongLabel" type="text" placeholder="Now playing on my page" /></div>
-    <div class="field"><label for="profileSongUrl">Profile Song Embed URL</label><input id="profileSongUrl" type="text" placeholder="Spotify or SoundCloud embed URL" /></div>
+    <div class="field"><label for="profileSongUpload">Upload MP3 / WAV</label><input id="profileSongUpload" type="file" accept=".mp3,.wav,audio/mpeg,audio/wav,audio/x-wav" /></div>
     <div class="field"><label for="canvasBg">Canvas Background</label><input id="canvasBg" type="color" value="#121212" /></div>
     <div class="field"><label for="canvasAccent">Canvas Accent</label><input id="canvasAccent" type="color" value="#ff2d55" /></div>
     <div id="selectionInspector" class="empty">Select a block to edit its content, font, colors, size, spacing, and embed URL.</div>
@@ -118,7 +117,7 @@ const AUTH_COOKIE_NAME = 'bevivid_session';
 const CANVAS_W = 1200;
 const CANVAS_H = 900;
 const FONTS = ['Syne', 'Bebas Neue', 'DM Mono', 'Georgia', 'Times New Roman', 'Courier New', 'Trebuchet MS'];
-const state = { user: null, profileData: { songLabel: '', songUrl: '', background: '#121212', accent: '#ff2d55', elements: [] }, selectedId: null, drag: null };
+const state = { user: null, profileData: { songLabel: '', songAudio: '', background: '#121212', accent: '#ff2d55', elements: [] }, selectedId: null, drag: null, audio: { el: null, ctx: null, analyser: null, data: null, raf: null, playing: false } };
 
 function getCookie(name) { const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)')); return match ? decodeURIComponent(match[1]) : ''; }
 function setStatus(message, type) { const box = document.getElementById('studioStatus'); box.textContent = message; box.className = 'status' + (type ? ' ' + type : ''); }
@@ -133,11 +132,18 @@ function escapeHtml(value) { return String(value || '').replace(/[&<>"]/g, ch =>
 function escapeAttr(value) { return escapeHtml(value).replace(/'/g, '&#39;'); }
 function toColorValue(input, fallback) { const value = String(input || '').trim(); return /^#[0-9a-fA-F]{6}$/.test(value) ? value : fallback; }
 function goToPublicProfile() { if (!state.user || !state.user.handle) return; window.location.href = `/profile?handle=${encodeURIComponent(state.user.handle)}`; }
+function withAlpha(color, alpha) {
+  const hex = toColorValue(color, '#161616');
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
 
 function defaultLayout(user) {
   return {
     songLabel: 'Profile song',
-    songUrl: '',
+    songAudio: '',
     background: '#121212',
     accent: '#ff2d55',
     elements: [
@@ -151,7 +157,7 @@ function defaultLayout(user) {
 function getEmbedUrl(type, url) {
   const raw = String(url || '').trim();
   if (!raw) return '';
-  if (type === 'spotify' || type === 'song') return raw;
+  if (type === 'spotify') return raw;
   if (type === 'soundcloud' && raw.includes('soundcloud.com') && !raw.includes('w.soundcloud.com')) return `https://w.soundcloud.com/player/?url=${encodeURIComponent(raw)}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=false&show_user=true&show_reposts=false&visual=true`;
   return raw;
 }
@@ -159,27 +165,116 @@ function getEmbedUrl(type, url) {
 function getEmbedMarkup(url, type) {
   const src = getEmbedUrl(type, url);
   if (!src) return '';
-  if (type === 'spotify' || type === 'song') {
+  if (type === 'spotify') {
     return `<div class="spotify-card"><small>Spotify</small><strong>Open on Spotify</strong><span>Using a direct link here avoids Spotify embed 429 rate-limit errors.</span><a href="${escapeAttr(src)}" target="_blank" rel="noreferrer">Play</a></div>`;
   }
   return `<iframe src="${escapeAttr(src)}" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
+}
+
+function drawVisualizer(canvas) {
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const width = canvas.clientWidth;
+  const height = canvas.clientHeight;
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  const bars = 54;
+  const gap = width / bars;
+  const audio = state.audio;
+
+  function frame() {
+    ctx.clearRect(0, 0, width, height);
+    const gradient = ctx.createLinearGradient(0, height, width, 0);
+    gradient.addColorStop(0, `${state.profileData.accent}00`);
+    gradient.addColorStop(0.4, `${state.profileData.accent}55`);
+    gradient.addColorStop(1, `${state.profileData.accent}10`);
+    ctx.fillStyle = gradient;
+
+    let values = new Array(bars).fill(0).map((_, i) => 0.25 + Math.sin((Date.now() / 420) + i * 0.35) * 0.12);
+    if (audio.analyser && audio.data) {
+      audio.analyser.getByteFrequencyData(audio.data);
+      values = values.map((_, i) => (audio.data[Math.min(audio.data.length - 1, i * 2)] || 0) / 255);
+    }
+
+    values.forEach((value, i) => {
+      const barHeight = Math.max(20, value * (height * 0.65));
+      const x = i * gap;
+      const y = height - barHeight;
+      ctx.fillRect(x + 3, y, Math.max(6, gap - 6), barHeight);
+    });
+
+    audio.raf = requestAnimationFrame(frame);
+  }
+
+  if (audio.raf) cancelAnimationFrame(audio.raf);
+  frame();
+}
+
+function setupAudioPlayback(src) {
+  if (!src) return;
+  if (!state.audio.el) {
+    state.audio.el = new Audio();
+    state.audio.el.loop = true;
+    state.audio.el.crossOrigin = 'anonymous';
+  }
+  state.audio.el.src = src;
+  state.audio.el.load();
+}
+
+async function toggleProfileAudio() {
+  if (!state.profileData.songAudio) return;
+  if (!state.audio.el) setupAudioPlayback(state.profileData.songAudio);
+  if (!state.audio.ctx) {
+    state.audio.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const source = state.audio.ctx.createMediaElementSource(state.audio.el);
+    state.audio.analyser = state.audio.ctx.createAnalyser();
+    state.audio.analyser.fftSize = 128;
+    state.audio.data = new Uint8Array(state.audio.analyser.frequencyBinCount);
+    source.connect(state.audio.analyser);
+    state.audio.analyser.connect(state.audio.ctx.destination);
+  }
+  if (state.audio.ctx.state === 'suspended') await state.audio.ctx.resume();
+  if (state.audio.playing) {
+    state.audio.el.pause();
+    state.audio.playing = false;
+  } else {
+    await state.audio.el.play();
+    state.audio.playing = true;
+  }
+  const btn = document.getElementById('audioToggle');
+  if (btn) btn.textContent = state.audio.playing ? 'Pause Audio' : 'Play Audio';
 }
 
 function renderCanvas() {
   const canvas = document.getElementById('canvas');
   canvas.innerHTML = '';
   canvas.style.background = `radial-gradient(circle at 20% 10%, ${state.profileData.accent}22, transparent 26%), ${state.profileData.background}`;
-  if (state.profileData.songUrl) {
-    const banner = document.createElement('div');
-    banner.className = 'song-banner';
-    banner.innerHTML = `<div class="song-copy"><small>Profile Song</small><strong>${escapeHtml(state.profileData.songLabel || 'Now playing')}</strong></div><div class="song-embed">${getEmbedMarkup(state.profileData.songUrl, 'song')}</div>`;
-    canvas.appendChild(banner);
+  const viz = document.createElement('canvas');
+  viz.className = 'visualizer-bg';
+  canvas.appendChild(viz);
+  drawVisualizer(viz);
+
+  if (state.profileData.songAudio) {
+    setupAudioPlayback(state.profileData.songAudio);
+    const btn = document.createElement('button');
+    btn.className = 'audio-toggle';
+    btn.id = 'audioToggle';
+    btn.textContent = state.audio.playing ? 'Pause Audio' : 'Play Audio';
+    btn.onclick = toggleProfileAudio;
+    canvas.appendChild(btn);
+
+    const hint = document.createElement('div');
+    hint.className = 'audio-hint';
+    hint.textContent = state.profileData.songLabel || 'Profile song ready';
+    canvas.appendChild(hint);
   }
   state.profileData.elements.slice().sort((a, b) => (a.z || 0) - (b.z || 0)).forEach(el => {
     const node = document.createElement('div');
     node.className = 'designer-el' + (el.id === state.selectedId ? ' selected' : '');
     node.style.left = `${el.x}px`; node.style.top = `${el.y}px`; node.style.width = `${el.w}px`; node.style.height = `${el.h}px`;
-    node.style.borderRadius = `${el.radius || 0}px`; node.style.opacity = String(el.opacity ?? 1); node.style.transform = `rotate(${el.rotation || 0}deg)`; node.style.background = el.bg || 'rgba(255,255,255,0.04)'; node.style.zIndex = String(el.z || 1);
+    node.style.borderRadius = `${el.radius || 0}px`; node.style.opacity = String(el.opacity ?? 1); node.style.transform = `rotate(${el.rotation || 0}deg)`; node.style.background = el.type === 'image' ? withAlpha(el.bg || '#161616', el.bgAlpha ?? 0.28) : (el.bg || 'rgba(255,255,255,0.04)'); node.style.zIndex = String(el.z || 1);
     node.dataset.id = el.id; node.addEventListener('mousedown', startDrag); node.addEventListener('click', () => selectElement(el.id));
     const inner = document.createElement('div'); inner.className = 'inner';
     if (el.type === 'text' || el.type === 'shape') { inner.className += ' text-block'; inner.style.color = el.color || '#f5f0eb'; inner.style.fontFamily = el.fontFamily || 'Syne'; inner.style.fontSize = `${el.fontSize || 24}px`; inner.style.textAlign = el.align || 'left'; inner.textContent = el.text || ''; }
@@ -196,18 +291,18 @@ function renderInspector() {
   const box = document.getElementById('selectionInspector');
   const el = getSelectedElement();
   document.getElementById('profileSongLabel').value = state.profileData.songLabel || '';
-  document.getElementById('profileSongUrl').value = state.profileData.songUrl || '';
   document.getElementById('canvasBg').value = toColorValue(state.profileData.background, '#121212');
   document.getElementById('canvasAccent').value = toColorValue(state.profileData.accent, '#ff2d55');
   if (!el) { box.className = 'empty'; box.innerHTML = 'Select a block to edit its content, font, colors, size, spacing, and embed URL.'; return; }
   const textField = el.type === 'text' || el.type === 'shape' ? `<div class="field"><label>Text</label><textarea id="insText">${escapeHtml(el.text || '')}</textarea></div>` : '';
   const urlField = el.type === 'image' || el.type === 'spotify' || el.type === 'soundcloud' ? `<div class="field"><label>Media / Embed URL</label><input id="insUrl" type="text" value="${escapeAttr(el.url || '')}"></div>` : '';
   const uploadField = el.type === 'image' ? `<div class="field"><label>Upload Image</label><input id="insUpload" type="file" accept="image/*"></div>` : '';
+  const imageBgField = el.type === 'image' ? `<div class="field"><label>Image Background Transparency</label><input id="insImageBgAlpha" type="range" min="0" max="100" value="${Math.round((el.bgAlpha ?? 0.3) * 100)}"></div>` : '';
   const alignField = el.type === 'text' ? `<div class="field"><label>Alignment</label><select id="insAlign"><option value="left"${el.align === 'left' ? ' selected' : ''}>Left</option><option value="center"${el.align === 'center' ? ' selected' : ''}>Center</option><option value="right"${el.align === 'right' ? ' selected' : ''}>Right</option></select></div>` : '';
   box.className = '';
   box.innerHTML = `
     <div class="field"><label>Selected Block</label><div class="chip">${escapeHtml(el.type)}</div></div>
-    ${textField}${urlField}${uploadField}${alignField}
+    ${textField}${urlField}${uploadField}${imageBgField}${alignField}
     <div class="two">
       <div class="field"><label>Width</label><input id="insW" type="range" min="80" max="900" value="${el.w}"></div>
       <div class="field"><label>Height</label><input id="insH" type="range" min="80" max="700" value="${el.h}"></div>
@@ -237,7 +332,7 @@ function bindInspectorEvents(el) {
   const map = {
     insText: v => el.text = v, insUrl: v => el.url = v, insAlign: v => el.align = v, insW: v => el.w = Number(v), insH: v => el.h = Number(v),
     insSize: v => el.fontSize = Number(v), insRadius: v => el.radius = Number(v), insOpacity: v => el.opacity = Number(v) / 100,
-    insRotate: v => el.rotation = Number(v), insBg: v => el.bg = v, insColor: v => el.color = v, insFont: v => el.fontFamily = v
+    insRotate: v => el.rotation = Number(v), insBg: v => el.bg = v, insColor: v => el.color = v, insFont: v => el.fontFamily = v, insImageBgAlpha: v => el.bgAlpha = Number(v) / 100
   };
   Object.keys(map).forEach(id => {
     const node = document.getElementById(id);
@@ -267,7 +362,7 @@ function bindInspectorEvents(el) {
 
 function selectElement(id) { state.selectedId = id; renderCanvas(); renderInspector(); }
 function addElement(type) {
-  const el = { id: makeId(), type, x: 120 + state.profileData.elements.length * 16, y: 120 + state.profileData.elements.length * 16, w: 280, h: type === 'text' ? 180 : 220, text: type === 'text' ? 'New text block' : '', url: '', bg: type === 'shape' ? '#a259ff' : '#161616', color: '#f5f0eb', fontFamily: 'Syne', fontSize: 20, radius: 18, opacity: 1, rotation: 0, align: 'left', z: (Math.max(0, ...state.profileData.elements.map(item => item.z || 0)) + 1) };
+  const el = { id: makeId(), type, x: 120 + state.profileData.elements.length * 16, y: 120 + state.profileData.elements.length * 16, w: 280, h: type === 'text' ? 180 : 220, text: type === 'text' ? 'New text block' : '', url: '', bg: type === 'shape' ? '#a259ff' : '#161616', bgAlpha: type === 'image' ? 0.28 : 1, color: '#f5f0eb', fontFamily: 'Syne', fontSize: 20, radius: 18, opacity: 1, rotation: 0, align: 'left', z: (Math.max(0, ...state.profileData.elements.map(item => item.z || 0)) + 1) };
   if (type === 'spotify') el.url = 'https://open.spotify.com/embed/track/11dFghVXANMlKmJXsNCbNl';
   if (type === 'soundcloud') el.url = 'https://soundcloud.com/forss/flickermood';
   state.profileData.elements.push(el); selectElement(el.id);
@@ -287,13 +382,28 @@ window.addEventListener('mousemove', event => {
   if (!state.drag) return;
   const el = state.profileData.elements.find(item => item.id === state.drag.id);
   if (!el) return;
-  if (state.drag.mode === 'move') { el.x = clamp(state.drag.x + (event.clientX - state.drag.startX), 0, CANVAS_W - el.w); el.y = clamp(state.drag.y + (event.clientY - state.drag.startY), state.profileData.songUrl ? 96 : 0, CANVAS_H - el.h); }
+  if (state.drag.mode === 'move') { el.x = clamp(state.drag.x + (event.clientX - state.drag.startX), 0, CANVAS_W - el.w); el.y = clamp(state.drag.y + (event.clientY - state.drag.startY), 0, CANVAS_H - el.h); }
   else { el.w = clamp(state.drag.w + (event.clientX - state.drag.startX), 80, CANVAS_W - el.x); el.h = clamp(state.drag.h + (event.clientY - state.drag.startY), 80, CANVAS_H - el.y); }
   renderCanvas();
 });
 window.addEventListener('mouseup', () => state.drag = null);
 document.getElementById('profileSongLabel').addEventListener('input', e => { state.profileData.songLabel = e.target.value; renderCanvas(); });
-document.getElementById('profileSongUrl').addEventListener('input', e => { state.profileData.songUrl = e.target.value; renderCanvas(); });
+document.getElementById('profileSongUpload').addEventListener('change', e => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  if (!/^audio\/(mpeg|wav|x-wav)/.test(file.type) && !/\.(mp3|wav)$/i.test(file.name)) {
+    setStatus('Upload an MP3 or WAV file for the profile visualizer.', 'err');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = event => {
+    state.profileData.songAudio = String(event.target.result || '');
+    setupAudioPlayback(state.profileData.songAudio);
+    renderCanvas();
+    setStatus('Audio uploaded. Press play on the preview to test your visualizer.', 'ok');
+  };
+  reader.readAsDataURL(file);
+});
 document.getElementById('canvasBg').addEventListener('input', e => { state.profileData.background = e.target.value; renderCanvas(); });
 document.getElementById('canvasAccent').addEventListener('input', e => { state.profileData.accent = e.target.value; renderCanvas(); });
 
@@ -321,7 +431,7 @@ async function saveProfileLayout() {
   const response = await fetch(getUserPath(state.user.handle), {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ profileLayoutEncoded: encodeLayout(state.profileData), profileUpdatedAt: Date.now(), profileSongUrl: state.profileData.songUrl || '', profileSongLabel: state.profileData.songLabel || '' })
+    body: JSON.stringify({ profileLayoutEncoded: encodeLayout(state.profileData), profileUpdatedAt: Date.now(), profileSongLabel: state.profileData.songLabel || '', profileSongAudio: state.profileData.songAudio || '' })
   });
   if (!response.ok) { const message = await response.text(); setStatus(message || 'Could not save profile data.', 'err'); return; }
   setStatus('Saved. Your encoded profile JSON is now stored under this user in Firebase.', 'ok');
