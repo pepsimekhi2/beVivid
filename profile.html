@@ -110,7 +110,7 @@ async function loadProfile() {
     stage.appendChild(banner);
   }
 
-  (layout.elements || []).forEach(el => {
+  (layout.elements || []).slice().sort((a, b) => (a.z || 0) - (b.z || 0)).forEach(el => {
     const node = document.createElement('div');
     node.className = 'el';
     node.style.left = `${el.x}px`;
@@ -121,6 +121,7 @@ async function loadProfile() {
     node.style.opacity = String(el.opacity ?? 1);
     node.style.transform = `rotate(${el.rotation || 0}deg)`;
     node.style.background = el.bg || 'rgba(255,255,255,0.03)';
+    node.style.zIndex = String(el.z || 1);
 
     if (el.type === 'text' || el.type === 'shape') {
       node.className += ' text-block';
