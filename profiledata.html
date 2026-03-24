@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>beVivid Profile Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;500;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; background: #050505; color: #f5f0eb; font-family: 'Syne', sans-serif; }
+body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opacity: .04; background-image: radial-gradient(circle at 20% 20%, rgba(255,45,85,.22), transparent 25%), radial-gradient(circle at 80% 0%, rgba(52,170,220,.22), transparent 28%), radial-gradient(circle at 50% 100%, rgba(0,229,176,.16), transparent 25%); }
+.shell { position: relative; z-index: 1; min-height: 100vh; display: grid; grid-template-columns: 280px minmax(0,1fr) 320px; }
+.sidebar, .inspector { background: rgba(9,9,9,.92); backdrop-filter: blur(18px); border-right: 1px solid rgba(245,240,235,.08); }
+.inspector { border-right: 0; border-left: 1px solid rgba(245,240,235,.08); }
+.panel { padding: 24px; }
+.eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: #34aadc; margin-bottom: 12px; }
+.title { font-family: 'Bebas Neue', sans-serif; font-size: 48px; line-height: .9; margin: 0 0 12px; }
+.sub { color: rgba(245,240,235,.52); line-height: 1.7; font-size: 14px; margin: 0 0 18px; }
+.stack { display: grid; gap: 10px; }
+.tool-btn, .primary-btn, .ghost-btn, .mini-btn { width: 100%; border: 1px solid rgba(245,240,235,.1); background: rgba(245,240,235,.03); color: #f5f0eb; border-radius: 10px; padding: 13px 14px; text-align: left; cursor: pointer; font-family: inherit; }
+.tool-btn:hover, .ghost-btn:hover, .mini-btn:hover { border-color: rgba(245,240,235,.22); background: rgba(245,240,235,.06); }
+.primary-btn { background: #f5f0eb; color: #050505; border-color: transparent; text-align: center; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; font-weight: 700; }
+.primary-btn:hover { background: #ff9500; }
+.ghost-btn, .mini-btn { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
+.tool-name { display: block; font-weight: 700; font-size: 14px; }
+.tool-desc { display: block; margin-top: 5px; color: rgba(245,240,235,.4); font-size: 12px; line-height: 1.5; }
+.main { min-width: 0; padding: 24px; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+.chip-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.chip { border: 1px solid rgba(245,240,235,.1); border-radius: 999px; padding: 10px 14px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: rgba(245,240,235,.56); background: rgba(245,240,235,.03); }
+.workspace { border: 1px solid rgba(245,240,235,.08); border-radius: 22px; padding: 18px; background: rgba(245,240,235,.02); }
+.canvas-shell { overflow: auto; border-radius: 18px; background: rgba(0,0,0,.3); padding: 18px; min-height: calc(100vh - 180px); }
+.canvas { position: relative; width: 1200px; height: 900px; border-radius: 24px; overflow: hidden; background: linear-gradient(135deg, #111 0%, #181818 40%, #0b0b0b 100%); border: 1px solid rgba(245,240,235,.08); box-shadow: 0 30px 100px rgba(0,0,0,.35); }
+.canvas::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; }
+.designer-el { position: absolute; overflow: hidden; cursor: move; border: 1px solid transparent; transition: border-color .15s, box-shadow .15s; user-select: none; }
+.designer-el.selected { border-color: #ff9500; box-shadow: 0 0 0 1px rgba(255,149,0,.4), 0 14px 28px rgba(0,0,0,.28); }
+.designer-el .inner { width: 100%; height: 100%; overflow: hidden; }
+.resize-handle { position: absolute; width: 16px; height: 16px; right: 6px; bottom: 6px; border-radius: 4px; background: #ff9500; cursor: nwse-resize; }
+.text-block { padding: 18px; white-space: pre-wrap; line-height: 1.45; }
+.image-block img, .embed-block iframe { width: 100%; height: 100%; border: 0; display: block; }
+.song-banner { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 20px 26px; border-bottom: 1px solid rgba(245,240,235,.08); position: absolute; top: 0; left: 0; right: 0; z-index: 2; background: linear-gradient(90deg, rgba(5,5,5,.84), rgba(5,5,5,.46)); backdrop-filter: blur(18px); }
+.song-copy small { display: block; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: rgba(245,240,235,.42); margin-bottom: 8px; }
+.song-copy strong { display: block; font-size: 24px; }
+.song-embed { width: 360px; max-width: 48%; min-height: 80px; }
+.song-embed iframe { width: 100%; height: 80px; border: 0; border-radius: 12px; }
+.field { margin-bottom: 14px; }
+.field label { display: block; margin-bottom: 7px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: rgba(245,240,235,.4); }
+.field input, .field textarea, .field select { width: 100%; border: 1px solid rgba(245,240,235,.1); background: rgba(245,240,235,.03); color: #f5f0eb; border-radius: 10px; padding: 12px 13px; font: inherit; outline: none; }
+.field textarea { min-height: 110px; resize: vertical; }
+.field input[type="range"] { padding: 0; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.status { margin-top: 14px; padding: 12px 14px; border-radius: 12px; background: rgba(245,240,235,.04); color: rgba(245,240,235,.66); font-size: 13px; line-height: 1.6; }
+.status.ok { color: #92ffd9; }
+.status.err { color: #ff9eb4; }
+.empty { color: rgba(245,240,235,.36); font-size: 14px; line-height: 1.7; }
+@media (max-width: 1180px) { .shell { grid-template-columns: 1fr; } .sidebar, .inspector { border: 0; } .main { order: -1; } }
+@media (max-width: 760px) { .main, .panel { padding: 18px; } .topbar { flex-direction: column; align-items: flex-start; } .canvas-shell { min-height: 60vh; } .song-banner { flex-direction: column; align-items: flex-start; } .song-embed { max-width: 100%; width: 100%; } .two { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar"><div class="panel">
+    <div class="eyebrow">Profile Studio</div>
+    <h1 class="title">Build your vivid page.</h1>
+    <p class="sub">Drag blocks around, resize them, recolor them, switch fonts, and save the whole layout as encoded JSON in Firebase.</p>
+    <div class="stack">
+      <button class="tool-btn" onclick="addElement('text')"><span class="tool-name">Text Block</span><span class="tool-desc">Headlines, bios, manifesto, lists and notes.</span></button>
+      <button class="tool-btn" onclick="addElement('image')"><span class="tool-name">Image Card</span><span class="tool-desc">Paste an image URL and shape it however you want.</span></button>
+      <button class="tool-btn" onclick="addElement('spotify')"><span class="tool-name">Spotify Embed</span><span class="tool-desc">Albums, tracks, playlists, podcasts.</span></button>
+      <button class="tool-btn" onclick="addElement('soundcloud')"><span class="tool-name">SoundCloud Embed</span><span class="tool-desc">Tracks, mixes, reposts and audio drops.</span></button>
+      <button class="tool-btn" onclick="addElement('shape')"><span class="tool-name">Shape / Glow</span><span class="tool-desc">Mood panels, dividers, neon blobs, background accents.</span></button>
+    </div>
+    <div style="height:16px"></div>
+    <button class="primary-btn" onclick="saveProfileLayout()">Save Layout</button>
+    <div style="height:10px"></div>
+    <button class="ghost-btn" onclick="goToPublicProfile()">View Public Profile</button>
+    <div style="height:10px"></div>
+    <button class="ghost-btn" onclick="window.location.href='/'">Back To Site</button>
+    <div class="status" id="studioStatus">Waiting for your session...</div>
+  </div></aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <div class="eyebrow">Live Preview</div>
+        <div class="chip-row">
+          <div class="chip" id="chipUser">No user loaded</div>
+          <div class="chip">Drag + resize</div>
+          <div class="chip">Spotify + SoundCloud</div>
+          <div class="chip">Saved as encoded JSON</div>
+        </div>
+      </div>
+      <div class="chip-row"><div class="chip" id="layoutCount">0 blocks</div></div>
+    </div>
+    <div class="workspace"><div class="canvas-shell"><div class="canvas" id="canvas"></div></div></div>
+  </main>
+
+  <aside class="inspector"><div class="panel">
+    <div class="eyebrow">Inspector</div>
+    <div class="field"><label for="profileSongLabel">Profile Song Label</label><input id="profileSongLabel" type="text" placeholder="Now playing on my page" /></div>
+    <div class="field"><label for="profileSongUrl">Profile Song Embed URL</label><input id="profileSongUrl" type="text" placeholder="Spotify or SoundCloud embed URL" /></div>
+    <div class="field"><label for="canvasBg">Canvas Background</label><input id="canvasBg" type="color" value="#121212" /></div>
+    <div class="field"><label for="canvasAccent">Canvas Accent</label><input id="canvasAccent" type="color" value="#ff2d55" /></div>
+    <div id="selectionInspector" class="empty">Select a block to edit its content, font, colors, size, spacing, and embed URL.</div>
+  </div></aside>
+</div>
+
+<script>
+const FIREBASE_DB_URL = 'https://bevivid-73a69-default-rtdb.firebaseio.com';
+const AUTH_COOKIE_NAME = 'bevivid_session';
+const CANVAS_W = 1200;
+const CANVAS_H = 900;
+const FONTS = ['Syne', 'Bebas Neue', 'DM Mono', 'Georgia', 'Times New Roman', 'Courier New', 'Trebuchet MS'];
+const state = { user: null, profileData: { songLabel: '', songUrl: '', background: '#121212', accent: '#ff2d55', elements: [] }, selectedId: null, drag: null };
+
+function getCookie(name) { const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)')); return match ? decodeURIComponent(match[1]) : ''; }
+function setStatus(message, type) { const box = document.getElementById('studioStatus'); box.textContent = message; box.className = 'status' + (type ? ' ' + type : ''); }
+function encodeLayout(data) { return btoa(unescape(encodeURIComponent(JSON.stringify(data)))); }
+function decodeLayout(value) { return JSON.parse(decodeURIComponent(escape(atob(value)))); }
+function makeId() { return 'el_' + Math.random().toString(36).slice(2, 9); }
+function clamp(num, min, max) { return Math.min(max, Math.max(min, num)); }
+function normalizeSession() { const raw = getCookie(AUTH_COOKIE_NAME); if (!raw) return null; try { return JSON.parse(raw); } catch (_) { return null; } }
+function getUserPath(handle) { return `${FIREBASE_DB_URL}/users/${encodeURIComponent(handle)}.json`; }
+function getSelectedElement() { return state.profileData.elements.find(el => el.id === state.selectedId) || null; }
+function escapeHtml(value) { return String(value || '').replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch])); }
+function escapeAttr(value) { return escapeHtml(value).replace(/'/g, '&#39;'); }
+function toColorValue(input, fallback) { const value = String(input || '').trim(); return /^#[0-9a-fA-F]{6}$/.test(value) ? value : fallback; }
+function goToPublicProfile() { if (!state.user || !state.user.handle) return; window.location.href = `/profile?handle=${encodeURIComponent(state.user.handle)}`; }
+
+function defaultLayout(user) {
+  return {
+    songLabel: 'Profile song',
+    songUrl: '',
+    background: '#121212',
+    accent: '#ff2d55',
+    elements: [
+      { id: makeId(), type: 'text', x: 60, y: 130, w: 420, h: 180, text: `${user.displayName || 'Your Name'}\n@${user.handle || 'handle'}\nBuild something unforgettable.`, bg: '#111111', color: '#f5f0eb', fontFamily: 'Bebas Neue', fontSize: 42, radius: 24, opacity: 1, rotation: 0, align: 'left' },
+      { id: makeId(), type: 'text', x: 60, y: 340, w: 360, h: 180, text: user.bio || 'Write your bio here. Add projects, what you make, what you love, and what you want people to remember.', bg: 'rgba(255,255,255,0.02)', color: '#d6d1cb', fontFamily: 'Syne', fontSize: 18, radius: 20, opacity: 1, rotation: 0, align: 'left' },
+      { id: makeId(), type: 'shape', x: 520, y: 160, w: 280, h: 280, text: '', bg: '#ff2d55', color: '#ffffff', fontFamily: 'Syne', fontSize: 16, radius: 140, opacity: .9, rotation: 0, align: 'left' }
+    ]
+  };
+}
+
+function getEmbedUrl(type, url) {
+  const raw = String(url || '').trim();
+  if (!raw) return '';
+  if (raw.includes('open.spotify.com')) return raw.replace('/track/', '/embed/track/').replace('/album/', '/embed/album/').replace('/playlist/', '/embed/playlist/').replace('/episode/', '/embed/episode/');
+  if (raw.includes('spotify.com/embed')) return raw;
+  if (type === 'soundcloud' && raw.includes('soundcloud.com') && !raw.includes('w.soundcloud.com')) return `https://w.soundcloud.com/player/?url=${encodeURIComponent(raw)}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=false&show_user=true&show_reposts=false&visual=true`;
+  return raw;
+}
+
+function getEmbedMarkup(url, type) { const src = getEmbedUrl(type, url); return src ? `<iframe src="${escapeAttr(src)}" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>` : ''; }
+
+function renderCanvas() {
+  const canvas = document.getElementById('canvas');
+  canvas.innerHTML = '';
+  canvas.style.background = `radial-gradient(circle at 20% 10%, ${state.profileData.accent}22, transparent 26%), ${state.profileData.background}`;
+  if (state.profileData.songUrl) {
+    const banner = document.createElement('div');
+    banner.className = 'song-banner';
+    banner.innerHTML = `<div class="song-copy"><small>Profile Song</small><strong>${escapeHtml(state.profileData.songLabel || 'Now playing')}</strong></div><div class="song-embed">${getEmbedMarkup(state.profileData.songUrl, 'song')}</div>`;
+    canvas.appendChild(banner);
+  }
+  state.profileData.elements.forEach(el => {
+    const node = document.createElement('div');
+    node.className = 'designer-el' + (el.id === state.selectedId ? ' selected' : '');
+    node.style.left = `${el.x}px`; node.style.top = `${el.y}px`; node.style.width = `${el.w}px`; node.style.height = `${el.h}px`;
+    node.style.borderRadius = `${el.radius || 0}px`; node.style.opacity = String(el.opacity ?? 1); node.style.transform = `rotate(${el.rotation || 0}deg)`; node.style.background = el.bg || 'rgba(255,255,255,0.04)';
+    node.dataset.id = el.id; node.addEventListener('mousedown', startDrag); node.addEventListener('click', () => selectElement(el.id));
+    const inner = document.createElement('div'); inner.className = 'inner';
+    if (el.type === 'text' || el.type === 'shape') { inner.className += ' text-block'; inner.style.color = el.color || '#f5f0eb'; inner.style.fontFamily = el.fontFamily || 'Syne'; inner.style.fontSize = `${el.fontSize || 24}px`; inner.style.textAlign = el.align || 'left'; inner.textContent = el.text || ''; }
+    else if (el.type === 'image') { inner.className += ' image-block'; inner.innerHTML = el.url ? `<img src="${escapeAttr(el.url)}" alt="">` : ''; }
+    else { inner.className += ' embed-block'; inner.innerHTML = getEmbedMarkup(el.url, el.type); }
+    node.appendChild(inner);
+    const handle = document.createElement('div'); handle.className = 'resize-handle'; handle.dataset.id = el.id; handle.addEventListener('mousedown', startResize); node.appendChild(handle);
+    canvas.appendChild(node);
+  });
+  document.getElementById('layoutCount').textContent = `${state.profileData.elements.length} block${state.profileData.elements.length === 1 ? '' : 's'}`;
+}
+
+function renderInspector() {
+  const box = document.getElementById('selectionInspector');
+  const el = getSelectedElement();
+  document.getElementById('profileSongLabel').value = state.profileData.songLabel || '';
+  document.getElementById('profileSongUrl').value = state.profileData.songUrl || '';
+  document.getElementById('canvasBg').value = toColorValue(state.profileData.background, '#121212');
+  document.getElementById('canvasAccent').value = toColorValue(state.profileData.accent, '#ff2d55');
+  if (!el) { box.className = 'empty'; box.innerHTML = 'Select a block to edit its content, font, colors, size, spacing, and embed URL.'; return; }
+  const textField = el.type === 'text' || el.type === 'shape' ? `<div class="field"><label>Text</label><textarea id="insText">${escapeHtml(el.text || '')}</textarea></div>` : '';
+  const urlField = el.type === 'image' || el.type === 'spotify' || el.type === 'soundcloud' ? `<div class="field"><label>Media / Embed URL</label><input id="insUrl" type="text" value="${escapeAttr(el.url || '')}"></div>` : '';
+  const alignField = el.type === 'text' ? `<div class="field"><label>Alignment</label><select id="insAlign"><option value="left"${el.align === 'left' ? ' selected' : ''}>Left</option><option value="center"${el.align === 'center' ? ' selected' : ''}>Center</option><option value="right"${el.align === 'right' ? ' selected' : ''}>Right</option></select></div>` : '';
+  box.className = '';
+  box.innerHTML = `
+    <div class="field"><label>Selected Block</label><div class="chip">${escapeHtml(el.type)}</div></div>
+    ${textField}${urlField}${alignField}
+    <div class="two">
+      <div class="field"><label>Width</label><input id="insW" type="range" min="80" max="900" value="${el.w}"></div>
+      <div class="field"><label>Height</label><input id="insH" type="range" min="80" max="700" value="${el.h}"></div>
+    </div>
+    <div class="two">
+      <div class="field"><label>Font Size</label><input id="insSize" type="range" min="12" max="96" value="${el.fontSize || 20}"></div>
+      <div class="field"><label>Radius</label><input id="insRadius" type="range" min="0" max="200" value="${el.radius || 0}"></div>
+    </div>
+    <div class="two">
+      <div class="field"><label>Opacity</label><input id="insOpacity" type="range" min="10" max="100" value="${Math.round((el.opacity ?? 1) * 100)}"></div>
+      <div class="field"><label>Rotation</label><input id="insRotate" type="range" min="-45" max="45" value="${el.rotation || 0}"></div>
+    </div>
+    <div class="two">
+      <div class="field"><label>Block Color</label><input id="insBg" type="color" value="${toColorValue(el.bg, '#222222')}"></div>
+      <div class="field"><label>Text Color</label><input id="insColor" type="color" value="${toColorValue(el.color, '#f5f0eb')}"></div>
+    </div>
+    <div class="field"><label>Font Family</label><select id="insFont">${FONTS.map(font => `<option value="${escapeAttr(font)}"${(el.fontFamily || 'Syne') === font ? ' selected' : ''}>${escapeHtml(font)}</option>`).join('')}</select></div>
+    <div class="two"><button class="mini-btn" type="button" onclick="duplicateSelected()">Duplicate</button><button class="mini-btn" type="button" onclick="removeSelected()">Delete</button></div>
+  `;
+  bindInspectorEvents(el);
+}
+
+function bindInspectorEvents(el) {
+  const map = {
+    insText: v => el.text = v, insUrl: v => el.url = v, insAlign: v => el.align = v, insW: v => el.w = Number(v), insH: v => el.h = Number(v),
+    insSize: v => el.fontSize = Number(v), insRadius: v => el.radius = Number(v), insOpacity: v => el.opacity = Number(v) / 100,
+    insRotate: v => el.rotation = Number(v), insBg: v => el.bg = v, insColor: v => el.color = v, insFont: v => el.fontFamily = v
+  };
+  Object.keys(map).forEach(id => {
+    const node = document.getElementById(id);
+    if (!node) return;
+    node.addEventListener('input', () => { map[id](node.value); renderCanvas(); });
+  });
+}
+
+function selectElement(id) { state.selectedId = id; renderCanvas(); renderInspector(); }
+function addElement(type) {
+  const el = { id: makeId(), type, x: 120 + state.profileData.elements.length * 16, y: 120 + state.profileData.elements.length * 16, w: 280, h: type === 'text' ? 180 : 220, text: type === 'text' ? 'New text block' : '', url: '', bg: type === 'shape' ? '#a259ff' : '#161616', color: '#f5f0eb', fontFamily: 'Syne', fontSize: 20, radius: 18, opacity: 1, rotation: 0, align: 'left' };
+  if (type === 'spotify') el.url = 'https://open.spotify.com/embed/track/11dFghVXANMlKmJXsNCbNl';
+  if (type === 'soundcloud') el.url = 'https://soundcloud.com/forss/flickermood';
+  state.profileData.elements.push(el); selectElement(el.id);
+}
+function removeSelected() { if (!state.selectedId) return; state.profileData.elements = state.profileData.elements.filter(el => el.id !== state.selectedId); state.selectedId = null; renderCanvas(); renderInspector(); }
+function duplicateSelected() { const el = getSelectedElement(); if (!el) return; const copy = JSON.parse(JSON.stringify(el)); copy.id = makeId(); copy.x += 20; copy.y += 20; state.profileData.elements.push(copy); selectElement(copy.id); }
+function startDrag(event) { if (event.target.classList.contains('resize-handle')) return; const el = state.profileData.elements.find(item => item.id === event.currentTarget.dataset.id); if (!el) return; state.selectedId = el.id; state.drag = { mode: 'move', id: el.id, startX: event.clientX, startY: event.clientY, x: el.x, y: el.y }; renderCanvas(); renderInspector(); event.preventDefault(); }
+function startResize(event) { const el = state.profileData.elements.find(item => item.id === event.currentTarget.dataset.id); if (!el) return; state.selectedId = el.id; state.drag = { mode: 'resize', id: el.id, startX: event.clientX, startY: event.clientY, w: el.w, h: el.h }; renderCanvas(); renderInspector(); event.preventDefault(); event.stopPropagation(); }
+window.addEventListener('mousemove', event => {
+  if (!state.drag) return;
+  const el = state.profileData.elements.find(item => item.id === state.drag.id);
+  if (!el) return;
+  if (state.drag.mode === 'move') { el.x = clamp(state.drag.x + (event.clientX - state.drag.startX), 0, CANVAS_W - el.w); el.y = clamp(state.drag.y + (event.clientY - state.drag.startY), state.profileData.songUrl ? 96 : 0, CANVAS_H - el.h); }
+  else { el.w = clamp(state.drag.w + (event.clientX - state.drag.startX), 80, CANVAS_W - el.x); el.h = clamp(state.drag.h + (event.clientY - state.drag.startY), 80, CANVAS_H - el.y); }
+  renderCanvas();
+});
+window.addEventListener('mouseup', () => state.drag = null);
+document.getElementById('profileSongLabel').addEventListener('input', e => { state.profileData.songLabel = e.target.value; renderCanvas(); });
+document.getElementById('profileSongUrl').addEventListener('input', e => { state.profileData.songUrl = e.target.value; renderCanvas(); });
+document.getElementById('canvasBg').addEventListener('input', e => { state.profileData.background = e.target.value; renderCanvas(); });
+document.getElementById('canvasAccent').addEventListener('input', e => { state.profileData.accent = e.target.value; renderCanvas(); });
+
+async function loadUserAndLayout() {
+  state.user = normalizeSession();
+  if (!state.user || !state.user.handle) { setStatus('No signed-in user was found in this browser. Log in on the homepage first.', 'err'); renderCanvas(); renderInspector(); return; }
+  document.getElementById('chipUser').textContent = '@' + state.user.handle;
+  try {
+    const response = await fetch(getUserPath(state.user.handle));
+    const user = await response.json();
+    if (!user) throw new Error('Profile record not found.');
+    state.user = Object.assign({}, state.user, user);
+    state.profileData = user.profileLayoutEncoded ? decodeLayout(user.profileLayoutEncoded) : defaultLayout(state.user);
+    setStatus('Profile Studio loaded. Build something vivid.', 'ok');
+  } catch (error) {
+    state.profileData = defaultLayout(state.user);
+    setStatus(error.message || 'Could not load profile data, so a fresh layout was created.', 'err');
+  }
+  renderCanvas(); renderInspector();
+}
+
+async function saveProfileLayout() {
+  if (!state.user || !state.user.handle) { setStatus('You need to log in on the homepage before saving.', 'err'); return; }
+  setStatus('Saving profile layout to Firebase...');
+  const response = await fetch(getUserPath(state.user.handle), {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ profileLayoutEncoded: encodeLayout(state.profileData), profileUpdatedAt: Date.now(), profileSongUrl: state.profileData.songUrl || '', profileSongLabel: state.profileData.songLabel || '' })
+  });
+  if (!response.ok) { const message = await response.text(); setStatus(message || 'Could not save profile data.', 'err'); return; }
+  setStatus('Saved. Your encoded profile JSON is now stored under this user in Firebase.', 'ok');
+}
+
+loadUserAndLayout();
+</script>
+</body>
+</html>
