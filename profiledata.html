@@ -67,7 +67,7 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
     <p class="sub">Drag blocks around, resize them, recolor them, switch fonts, and save the whole layout as encoded JSON in Firebase.</p>
     <div class="stack">
       <button class="tool-btn" onclick="addElement('text')"><span class="tool-name">Text Block</span><span class="tool-desc">Headlines, bios, manifesto, lists and notes.</span></button>
-      <button class="tool-btn" onclick="addElement('image')"><span class="tool-name">Image Card</span><span class="tool-desc">Paste an image URL and shape it however you want.</span></button>
+      <button class="tool-btn" onclick="addElement('image')"><span class="tool-name">Image Card</span><span class="tool-desc">Upload your own image or paste a URL and shape it however you want.</span></button>
       <button class="tool-btn" onclick="addElement('spotify')"><span class="tool-name">Spotify Embed</span><span class="tool-desc">Albums, tracks, playlists, podcasts.</span></button>
       <button class="tool-btn" onclick="addElement('soundcloud')"><span class="tool-name">SoundCloud Embed</span><span class="tool-desc">Tracks, mixes, reposts and audio drops.</span></button>
       <button class="tool-btn" onclick="addElement('shape')"><span class="tool-name">Shape / Glow</span><span class="tool-desc">Mood panels, dividers, neon blobs, background accents.</span></button>
@@ -191,11 +191,12 @@ function renderInspector() {
   if (!el) { box.className = 'empty'; box.innerHTML = 'Select a block to edit its content, font, colors, size, spacing, and embed URL.'; return; }
   const textField = el.type === 'text' || el.type === 'shape' ? `<div class="field"><label>Text</label><textarea id="insText">${escapeHtml(el.text || '')}</textarea></div>` : '';
   const urlField = el.type === 'image' || el.type === 'spotify' || el.type === 'soundcloud' ? `<div class="field"><label>Media / Embed URL</label><input id="insUrl" type="text" value="${escapeAttr(el.url || '')}"></div>` : '';
+  const uploadField = el.type === 'image' ? `<div class="field"><label>Upload Image</label><input id="insUpload" type="file" accept="image/*"></div>` : '';
   const alignField = el.type === 'text' ? `<div class="field"><label>Alignment</label><select id="insAlign"><option value="left"${el.align === 'left' ? ' selected' : ''}>Left</option><option value="center"${el.align === 'center' ? ' selected' : ''}>Center</option><option value="right"${el.align === 'right' ? ' selected' : ''}>Right</option></select></div>` : '';
   box.className = '';
   box.innerHTML = `
     <div class="field"><label>Selected Block</label><div class="chip">${escapeHtml(el.type)}</div></div>
-    ${textField}${urlField}${alignField}
+    ${textField}${urlField}${uploadField}${alignField}
     <div class="two">
       <div class="field"><label>Width</label><input id="insW" type="range" min="80" max="900" value="${el.w}"></div>
       <div class="field"><label>Height</label><input id="insH" type="range" min="80" max="700" value="${el.h}"></div>
@@ -229,6 +230,25 @@ function bindInspectorEvents(el) {
     if (!node) return;
     node.addEventListener('input', () => { map[id](node.value); renderCanvas(); });
   });
+
+  const upload = document.getElementById('insUpload');
+  if (upload) {
+    upload.addEventListener('change', () => {
+      const file = upload.files && upload.files[0];
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        setStatus('That file is not an image.', 'err');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = event => {
+        el.url = String(event.target.result || '');
+        renderCanvas();
+        setStatus('Image added to this block. Save to keep it on your profile.', 'ok');
+      };
+      reader.readAsDataURL(file);
+    });
+  }
 }
 
 function selectElement(id) { state.selectedId = id; renderCanvas(); renderInspector(); }
