@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>beVivid Community</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;500;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; background: #050505; color: #f5f0eb; font-family: 'Syne', sans-serif; }
+body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opacity: .05; background-image: radial-gradient(circle at 14% 12%, rgba(255,45,85,.18), transparent 24%), radial-gradient(circle at 88% 8%, rgba(52,170,220,.16), transparent 22%), radial-gradient(circle at 50% 100%, rgba(0,229,176,.12), transparent 28%); }
+.shell { position: relative; z-index: 1; max-width: 1500px; margin: 0 auto; padding: 28px; }
+.topbar { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 24px; }
+.nav-group { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.pill, .action-btn, .ghost-btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 18px; border-radius: 999px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer; }
+.action-btn { background: #f5f0eb; color: #050505; border-color: transparent; }
+.action-btn:hover { background: #ff9500; }
+.hero { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(320px, .8fr); gap: 22px; align-items: start; }
+.hero-card, .panel, .post-card, .analytics-card, .empty, .search-card { border: 1px solid rgba(245,240,235,.08); border-radius: 24px; background: rgba(245,240,235,.03); backdrop-filter: blur(16px); }
+.hero-card, .panel, .search-card { padding: 24px; }
+.eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: #34aadc; margin-bottom: 10px; }
+.title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(62px, 9vw, 118px); line-height: .88; margin: 0; }
+.sub { color: rgba(245,240,235,.56); max-width: 700px; line-height: 1.8; margin-top: 12px; }
+.hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 22px; }
+.stat-box { border: 1px solid rgba(245,240,235,.08); border-radius: 18px; padding: 16px; background: rgba(5,5,5,.42); }
+.stat-box small, .analytics-card small { display: block; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: rgba(245,240,235,.38); margin-bottom: 8px; }
+.stat-box strong, .analytics-card strong { display: block; font-size: 28px; line-height: 1; }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 22px; margin-top: 22px; align-items: start; }
+.composer textarea, .comment-input, .search-input { width: 100%; border: 1px solid rgba(245,240,235,.1); border-radius: 18px; background: rgba(10,10,10,.9); color: #f5f0eb; padding: 16px 18px; font: inherit; outline: none; }
+.composer textarea { min-height: 130px; resize: vertical; }
+.composer-tools, .post-actions, .post-meta-row, .comment-row, .search-results { display: flex; gap: 10px; flex-wrap: wrap; }
+.composer-tools { margin-top: 14px; align-items: center; }
+.tiny { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: rgba(245,240,235,.36); }
+.preview-image, .post-image { width: 100%; border-radius: 18px; object-fit: cover; display: block; margin-top: 14px; border: 1px solid rgba(245,240,235,.08); background: rgba(0,0,0,.25); }
+.feed { display: grid; gap: 18px; margin-top: 18px; }
+.post-card { padding: 20px; }
+.post-header { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; }
+.author { display: flex; gap: 12px; align-items: center; min-width: 0; }
+.avatar { width: 48px; height: 48px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, #ff2d55, #34aadc); display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 22px; flex-shrink: 0; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.author-name { font-weight: 700; font-size: 16px; }
+.author-handle, .meta-copy { color: rgba(245,240,235,.44); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+.post-body { margin-top: 16px; line-height: 1.8; color: #f5f0eb; white-space: pre-wrap; }
+.post-actions { margin-top: 16px; }
+.tag-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 11px 14px; border-radius: 999px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
+.tag-btn.active { background: rgba(255,149,0,.15); border-color: rgba(255,149,0,.35); color: #ffd7a1; }
+.comments { display: none; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(245,240,235,.08); }
+.comments.open { display: block; }
+.comment-list { display: grid; gap: 10px; margin-bottom: 12px; }
+.comment-card { border: 1px solid rgba(245,240,235,.06); border-radius: 16px; padding: 12px 14px; background: rgba(5,5,5,.34); }
+.comment-head { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+.comment-text { color: rgba(245,240,235,.82); line-height: 1.65; white-space: pre-wrap; }
+.analytics-grid { display: grid; gap: 12px; margin-top: 14px; }
+.analytics-card { padding: 18px; }
+.analytics-sub { color: rgba(245,240,235,.52); font-size: 13px; line-height: 1.6; margin-top: 8px; }
+.my-posts { display: grid; gap: 12px; margin-top: 14px; }
+.mini-post { border: 1px solid rgba(245,240,235,.08); border-radius: 18px; padding: 14px; background: rgba(5,5,5,.34); }
+.mini-post strong { display: block; font-size: 14px; line-height: 1.5; }
+.mini-stats { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+.mini-chip { padding: 7px 10px; border-radius: 999px; background: rgba(245,240,235,.05); color: rgba(245,240,235,.6); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .11em; text-transform: uppercase; }
+.search-form { position: relative; }
+.search-results { display: none; position: absolute; top: calc(100% + 10px); left: 0; right: 0; flex-direction: column; border: 1px solid rgba(245,240,235,.1); border-radius: 18px; background: rgba(10,10,10,.96); overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,.35); z-index: 8; }
+.search-results.open { display: flex; }
+.search-item { width: 100%; border: 0; border-bottom: 1px solid rgba(245,240,235,.06); background: transparent; color: #f5f0eb; padding: 12px 14px; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 12px; }
+.search-item:last-child { border-bottom: 0; }
+.search-item:hover { background: rgba(245,240,235,.05); }
+.status { margin-top: 12px; color: rgba(245,240,235,.5); line-height: 1.7; font-size: 13px; }
+.empty { padding: 22px; color: rgba(245,240,235,.56); line-height: 1.8; }
+@media (max-width: 1080px) { .hero, .layout { grid-template-columns: 1fr; } .hero-stats { grid-template-columns: 1fr; } }
+@media (max-width: 720px) { .shell { padding: 18px; } .composer-tools, .post-actions, .comment-row { flex-direction: column; align-items: stretch; } .title { font-size: 72px; } }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="topbar">
+    <div class="nav-group">
+      <a class="pill" href="/">Back To beVivid</a>
+      <a class="pill" href="/profile">Profiles</a>
+    </div>
+    <div class="nav-group">
+      <a class="pill" id="myProfileLink" href="/profile">My Profile</a>
+      <a class="pill" id="studioLink" href="/profiledata">Studio</a>
+    </div>
+  </div>
+
+  <section class="hero">
+    <div class="hero-card">
+      <div class="eyebrow">Community</div>
+      <h1 class="title">Post vivid.<br>Find your people.</h1>
+      <p class="sub">Share updates, support other creators, follow favorite people, and keep an eye on how your posts are landing with impressions, reach, likes, and comments.</p>
+      <div class="hero-stats">
+        <div class="stat-box"><small>Total Posts</small><strong id="totalPostsStat">0</strong></div>
+        <div class="stat-box"><small>Total Likes</small><strong id="totalLikesStat">0</strong></div>
+        <div class="stat-box"><small>Your Following</small><strong id="followingStat">0</strong></div>
+      </div>
+    </div>
+    <div class="search-card">
+      <div class="eyebrow">Find People</div>
+      <form class="search-form" onsubmit="event.preventDefault();">
+        <input class="search-input" id="userSearch" type="text" placeholder="Search display name or handle" />
+        <div class="search-results" id="searchResults"></div>
+      </form>
+      <div class="status">Search only reads the small public profile index, not everyone’s private account data.</div>
+    </div>
+  </section>
+
+  <section class="layout">
+    <div>
+      <div class="panel composer">
+        <div class="eyebrow">Create Post</div>
+        <textarea id="composerText" placeholder="Drop a thought, update, project launch, or little win for the community..."></textarea>
+        <img class="preview-image" id="composerPreview" alt="" style="display:none; max-height:340px;" />
+        <div class="composer-tools">
+          <input id="composerImage" type="file" accept="image/*" />
+          <button class="action-btn" type="button" onclick="submitPost()">Publish</button>
+          <button class="ghost-btn" type="button" onclick="clearComposer()">Clear</button>
+          <span class="tiny" id="composerHint">Text-first posts load fastest. Images are compressed before upload.</span>
+        </div>
+        <div class="status" id="composerStatus">Log in on the homepage to post as yourself.</div>
+      </div>
+      <div class="feed" id="feed"></div>
+    </div>
+    <aside>
+      <div class="panel">
+        <div class="eyebrow">Your Analytics</div>
+        <div class="analytics-grid">
+          <div class="analytics-card"><small>Impressions</small><strong id="myImpressions">0</strong><div class="analytics-sub">How many times your posts were loaded in this community view.</div></div>
+          <div class="analytics-card"><small>Reach</small><strong id="myReach">0</strong><div class="analytics-sub">Unique signed-in people who reached your posts.</div></div>
+          <div class="analytics-card"><small>Engagement</small><strong id="myEngagement">0%</strong><div class="analytics-sub">Likes plus comments compared with reach.</div></div>
+        </div>
+        <div class="my-posts" id="myPosts"></div>
+      </div>
+    </aside>
+  </section>
+</div>
+
+<script>
+const FIREBASE_DB_URL = 'https://bevivid-73a69-default-rtdb.firebaseio.com';
+const AUTH_COOKIE_NAME = 'bevivid_session';
+const MAX_POST_IMAGE_BYTES = 1.5 * 1024 * 1024;
+const state = { currentUser: null, composerImage: '', following: {}, likedPosts: {}, posts: [] };
+
+function getCookie(name) { const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)')); return match ? decodeURIComponent(match[1]) : ''; }
+function normalizeSession() { const raw = getCookie(AUTH_COOKIE_NAME); if (!raw) return null; try { return JSON.parse(raw); } catch (_) { return null; } }
+function escapeHtml(value) { return String(value || '').replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch])); }
+function escapeAttr(value) { return escapeHtml(value).replace(/'/g, '&#39;'); }
+function normalizeSearchQuery(value) { return String(value || '').trim().toLowerCase(); }
+function makeId(prefix) { return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`; }
+function timeAgo(value) {
+  const diff = Math.max(1, Date.now() - Number(value || 0));
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d ago`;
+  return new Date(Number(value || 0)).toLocaleDateString();
+}
+function sessionViewerKey() {
+  if (state.currentUser && state.currentUser.handle) return `member_${state.currentUser.handle}`;
+  let key = sessionStorage.getItem('bevivid_guest_id');
+  if (!key) {
+    key = `guest_${Math.random().toString(36).slice(2, 10)}`;
+    sessionStorage.setItem('bevivid_guest_id', key);
+  }
+  return key;
+}
+function setComposerStatus(message) { document.getElementById('composerStatus').textContent = message; }
+function getPath(path) { return `${FIREBASE_DB_URL}/${path}.json`; }
+function compressImageFile(file, maxSize = 1400, quality = 0.8) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('Could not read this image.'));
+    reader.onload = event => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+        const width = Math.max(1, Math.round(img.width * scale));
+        const height = Math.max(1, Math.round(img.height * scale));
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/webp', quality));
+      };
+      img.onerror = () => reject(new Error('Could not process this image.'));
+      img.src = String(event.target.result || '');
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function getAvatarMarkup(url, label) {
+  return url ? `<div class="avatar"><img src="${escapeAttr(url)}" alt=""></div>` : `<div class="avatar">${escapeHtml((label || '?').charAt(0).toUpperCase())}</div>`;
+}
+function engagementPercent(post) {
+  const reach = Math.max(1, Number(post.reachCount || 0));
+  const total = Number(post.likeCount || 0) + Number(post.commentCount || 0);
+  return `${Math.round((total / reach) * 100)}%`;
+}
+
+async function fetchJson(path) {
+  const response = await fetch(getPath(path));
+  if (!response.ok) throw new Error(`Could not load ${path}.`);
+  return response.json();
+}
+
+async function saveJson(path, method, payload) {
+  const response = await fetch(getPath(path), {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || 'Firebase rejected that request.');
+  }
+  return response.json();
+}
+
+function hydrateSessionUi() {
+  state.currentUser = normalizeSession();
+  const handle = state.currentUser && state.currentUser.handle;
+  document.getElementById('myProfileLink').href = handle ? `/profile?handle=${encodeURIComponent(handle)}` : '/profile';
+  document.getElementById('studioLink').href = handle ? `/profiledata?handle=${encodeURIComponent(handle)}` : '/profiledata';
+  setComposerStatus(handle ? `Posting as @${handle}.` : 'Log in on the homepage to post as yourself.');
+}
+
+async function loadViewerMaps() {
+  if (!state.currentUser || !state.currentUser.handle) {
+    state.following = {};
+    state.likedPosts = {};
+    return;
+  }
+  const [social, likes] = await Promise.all([
+    fetchJson(`userSocial/${state.currentUser.handle}`).catch(() => null),
+    fetchJson(`userLikes/${state.currentUser.handle}`).catch(() => null)
+  ]);
+  state.following = (social && social.following) || {};
+  state.likedPosts = likes || {};
+}
+
+async function submitPost() {
+  if (!state.currentUser || !state.currentUser.handle) {
+    setComposerStatus('Log in on the homepage first so the post can belong to you.');
+    return;
+  }
+  const text = document.getElementById('composerText').value.trim();
+  if (!text && !state.composerImage) {
+    setComposerStatus('Add some text or an image before publishing.');
+    return;
+  }
+  setComposerStatus('Publishing...');
+  const postId = makeId('post');
+  const post = {
+    id: postId,
+    authorHandle: state.currentUser.handle,
+    authorDisplayName: state.currentUser.displayName || state.currentUser.handle,
+    authorAvatar: '',
+    text,
+    imageUrl: state.composerImage || '',
+    createdAt: Date.now(),
+    likeCount: 0,
+    commentCount: 0,
+    impressionCount: 0,
+    reachCount: 0
+  };
+  try {
+    const publicUser = await fetchJson(`publicUserIndex/${state.currentUser.handle}`).catch(() => null);
+    post.authorAvatar = (publicUser && publicUser.profileImage) || '';
+    await saveJson(`communityPosts/${postId}`, 'PUT', post);
+    clearComposer();
+    setComposerStatus('Published. Your post is live.');
+    await loadFeed();
+  } catch (error) {
+    setComposerStatus(error.message || 'Could not publish right now.');
+  }
+}
+
+function clearComposer() {
+  document.getElementById('composerText').value = '';
+  document.getElementById('composerImage').value = '';
+  document.getElementById('composerPreview').style.display = 'none';
+  document.getElementById('composerPreview').removeAttribute('src');
+  state.composerImage = '';
+}
+
+async function toggleLike(postId) {
+  if (!state.currentUser || !state.currentUser.handle) {
+    setComposerStatus('Log in first to like posts.');
+    return;
+  }
+  const post = state.posts.find(item => item.id === postId);
+  if (!post) return;
+  const alreadyLiked = Boolean(state.likedPosts[postId]);
+  const nextCount = Math.max(0, Number(post.likeCount || 0) + (alreadyLiked ? -1 : 1));
+  try {
+    await Promise.all([
+      saveJson(`communityPosts/${postId}/likeCount`, 'PUT', nextCount),
+      saveJson(`postLikes/${postId}/${state.currentUser.handle}`, 'PUT', alreadyLiked ? null : true),
+      saveJson(`userLikes/${state.currentUser.handle}/${postId}`, 'PUT', alreadyLiked ? null : true)
+    ]);
+    post.likeCount = nextCount;
+    if (alreadyLiked) delete state.likedPosts[postId];
+    else state.likedPosts[postId] = true;
+    renderFeed();
+    renderAnalytics();
+  } catch (error) {
+    setComposerStatus(error.message || 'Could not update the like.');
+  }
+}
+
+async function toggleFollow(targetHandle) {
+  if (!state.currentUser || !state.currentUser.handle) {
+    setComposerStatus('Log in first to follow people.');
+    return;
+  }
+  if (targetHandle === state.currentUser.handle) return;
+  const following = Boolean(state.following[targetHandle]);
+  try {
+    await Promise.all([
+      saveJson(`userSocial/${state.currentUser.handle}/following/${targetHandle}`, 'PUT', following ? null : true),
+      saveJson(`userSocial/${targetHandle}/followers/${state.currentUser.handle}`, 'PUT', following ? null : true)
+    ]);
+    if (following) delete state.following[targetHandle];
+    else state.following[targetHandle] = true;
+    document.getElementById('followingStat').textContent = String(Object.keys(state.following).length);
+    renderFeed();
+  } catch (error) {
+    setComposerStatus(error.message || 'Could not update the follow.');
+  }
+}
+
+function toggleComments(postId) {
+  const box = document.getElementById(`comments-${postId}`);
+  if (!box) return;
+  box.classList.toggle('open');
+  if (box.classList.contains('open')) loadComments(postId);
+}
+
+async function loadComments(postId) {
+  const post = state.posts.find(item => item.id === postId);
+  if (!post) return;
+  const container = document.getElementById(`comment-list-${postId}`);
+  container.innerHTML = '<div class="tiny">Loading comments...</div>';
+  try {
+    const data = await fetchJson(`postComments/${postId}`).catch(() => null);
+    const comments = Object.values(data || {}).sort((a, b) => Number(a.createdAt || 0) - Number(b.createdAt || 0));
+    if (!comments.length) {
+      container.innerHTML = '<div class="tiny">No comments yet.</div>';
+      return;
+    }
+    container.innerHTML = comments.map(comment => `
+      <div class="comment-card">
+        <div class="comment-head">
+          <div>
+            <strong>${escapeHtml(comment.authorDisplayName || comment.authorHandle || 'Member')}</strong>
+            <div class="author-handle">@${escapeHtml(comment.authorHandle || '')}</div>
+          </div>
+          <div class="meta-copy">${escapeHtml(timeAgo(comment.createdAt))}</div>
+        </div>
+        <div class="comment-text">${escapeHtml(comment.text || '')}</div>
+      </div>
+    `).join('');
+  } catch (_) {
+    container.innerHTML = '<div class="tiny">Comments could not load right now.</div>';
+  }
+}
+
+async function addComment(postId) {
+  if (!state.currentUser || !state.currentUser.handle) {
+    setComposerStatus('Log in first to comment.');
+    return;
+  }
+  const input = document.getElementById(`comment-input-${postId}`);
+  const text = input.value.trim();
+  if (!text) return;
+  const post = state.posts.find(item => item.id === postId);
+  if (!post) return;
+  const commentId = makeId('comment');
+  const comment = {
+    id: commentId,
+    authorHandle: state.currentUser.handle,
+    authorDisplayName: state.currentUser.displayName || state.currentUser.handle,
+    text,
+    createdAt: Date.now()
+  };
+  try {
+    await Promise.all([
+      saveJson(`postComments/${postId}/${commentId}`, 'PUT', comment),
+      saveJson(`communityPosts/${postId}/commentCount`, 'PUT', Number(post.commentCount || 0) + 1)
+    ]);
+    post.commentCount = Number(post.commentCount || 0) + 1;
+    input.value = '';
+    await loadComments(postId);
+    renderFeed();
+    renderAnalytics();
+  } catch (error) {
+    setComposerStatus(error.message || 'Could not add the comment.');
+  }
+}
+
+async function recordView(post) {
+  const seenKey = `bevivid_seen_${post.id}`;
+  if (sessionStorage.getItem(seenKey)) return;
+  sessionStorage.setItem(seenKey, '1');
+  try {
+    await saveJson(`communityPosts/${post.id}/impressionCount`, 'PUT', Number(post.impressionCount || 0) + 1);
+    post.impressionCount = Number(post.impressionCount || 0) + 1;
+    const viewer = sessionViewerKey();
+    const existing = await fetchJson(`postReach/${post.id}/${viewer}`).catch(() => null);
+    if (!existing) {
+      await Promise.all([
+        saveJson(`postReach/${post.id}/${viewer}`, 'PUT', Date.now()),
+        saveJson(`communityPosts/${post.id}/reachCount`, 'PUT', Number(post.reachCount || 0) + 1)
+      ]);
+      post.reachCount = Number(post.reachCount || 0) + 1;
+    }
+  } catch (_) {
+  }
+}
+
+function renderFeed() {
+  const feed = document.getElementById('feed');
+  if (!state.posts.length) {
+    feed.innerHTML = '<div class="empty">No community posts yet. Be the first one to drop something vivid.</div>';
+    return;
+  }
+  feed.innerHTML = state.posts.map(post => {
+    const canFollow = state.currentUser && state.currentUser.handle && state.currentUser.handle !== post.authorHandle;
+    const followLabel = state.following[post.authorHandle] ? 'Following' : 'Follow';
+    const likeLabel = state.likedPosts[post.id] ? 'Liked' : 'Like';
+    return `
+      <article class="post-card" id="post-${escapeAttr(post.id)}">
+        <div class="post-header">
+          <div class="author">
+            ${getAvatarMarkup(post.authorAvatar, post.authorDisplayName || post.authorHandle)}
+            <div>
+              <div class="author-name">${escapeHtml(post.authorDisplayName || post.authorHandle || 'Member')}</div>
+              <div class="author-handle">@${escapeHtml(post.authorHandle || '')}</div>
+            </div>
+          </div>
+          <div class="post-meta-row">
+            <div class="meta-copy">${escapeHtml(timeAgo(post.createdAt))}</div>
+            <a class="pill" href="/profile?handle=${encodeURIComponent(post.authorHandle || '')}">Profile</a>
+            ${canFollow ? `<button class="pill" type="button" onclick="toggleFollow('${escapeAttr(post.authorHandle)}')">${escapeHtml(followLabel)}</button>` : ''}
+          </div>
+        </div>
+        <div class="post-body">${escapeHtml(post.text || '')}</div>
+        ${post.imageUrl ? `<img class="post-image" src="${escapeAttr(post.imageUrl)}" alt="">` : ''}
+        <div class="post-actions">
+          <button class="tag-btn ${state.likedPosts[post.id] ? 'active' : ''}" type="button" onclick="toggleLike('${escapeAttr(post.id)}')">${escapeHtml(likeLabel)} ${escapeHtml(String(post.likeCount || 0))}</button>
+          <button class="tag-btn" type="button" onclick="toggleComments('${escapeAttr(post.id)}')">Comments ${escapeHtml(String(post.commentCount || 0))}</button>
+          <span class="tag-btn">Impressions ${escapeHtml(String(post.impressionCount || 0))}</span>
+          <span class="tag-btn">Reach ${escapeHtml(String(post.reachCount || 0))}</span>
+          <span class="tag-btn">Engagement ${escapeHtml(engagementPercent(post))}</span>
+        </div>
+        <div class="comments" id="comments-${escapeAttr(post.id)}">
+          <div class="comment-list" id="comment-list-${escapeAttr(post.id)}"></div>
+          <div class="comment-row">
+            <textarea class="comment-input" id="comment-input-${escapeAttr(post.id)}" rows="2" placeholder="Write a comment..."></textarea>
+            <button class="action-btn" type="button" onclick="addComment('${escapeAttr(post.id)}')">Send</button>
+          </div>
+        </div>
+      </article>
+    `;
+  }).join('');
+}
+
+function renderAnalytics() {
+  const mine = state.currentUser && state.currentUser.handle ? state.posts.filter(post => post.authorHandle === state.currentUser.handle) : [];
+  const totals = mine.reduce((acc, post) => {
+    acc.impressions += Number(post.impressionCount || 0);
+    acc.reach += Number(post.reachCount || 0);
+    acc.likes += Number(post.likeCount || 0);
+    acc.comments += Number(post.commentCount || 0);
+    return acc;
+  }, { impressions: 0, reach: 0, likes: 0, comments: 0 });
+  document.getElementById('myImpressions').textContent = String(totals.impressions);
+  document.getElementById('myReach').textContent = String(totals.reach);
+  document.getElementById('myEngagement').textContent = mine.length ? `${Math.round(((totals.likes + totals.comments) / Math.max(1, totals.reach)) * 100)}%` : '0%';
+  const myPosts = document.getElementById('myPosts');
+  if (!mine.length) {
+    myPosts.innerHTML = '<div class="empty">Your post analytics will show up here once you publish something.</div>';
+    return;
+  }
+  myPosts.innerHTML = mine.slice(0, 6).map(post => `
+    <div class="mini-post">
+      <strong>${escapeHtml((post.text || 'Untitled post').slice(0, 80))}${(post.text || '').length > 80 ? '...' : ''}</strong>
+      <div class="mini-stats">
+        <span class="mini-chip">${escapeHtml(String(post.impressionCount || 0))} impressions</span>
+        <span class="mini-chip">${escapeHtml(String(post.reachCount || 0))} reach</span>
+        <span class="mini-chip">${escapeHtml(String(post.likeCount || 0))} likes</span>
+        <span class="mini-chip">${escapeHtml(String(post.commentCount || 0))} comments</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateTopStats() {
+  document.getElementById('totalPostsStat').textContent = String(state.posts.length);
+  document.getElementById('totalLikesStat').textContent = String(state.posts.reduce((sum, post) => sum + Number(post.likeCount || 0), 0));
+  document.getElementById('followingStat').textContent = String(Object.keys(state.following).length);
+}
+
+async function loadFeed() {
+  const response = await fetch(`${FIREBASE_DB_URL}/communityPosts.json?orderBy=%22createdAt%22&limitToLast=30`);
+  const data = response.ok ? await response.json() : null;
+  state.posts = Object.values(data || {}).filter(Boolean).sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0)).slice(0, 30);
+  renderFeed();
+  renderAnalytics();
+  updateTopStats();
+  state.posts.slice(0, 7).forEach(post => { recordView(post); });
+}
+
+function renderSearchResults(users) {
+  const box = document.getElementById('searchResults');
+  if (!users.length) {
+    box.innerHTML = '<div class="empty" style="border:0; border-radius:0; background:transparent; padding:14px 16px;">No matching users yet.</div>';
+    box.classList.add('open');
+    return;
+  }
+  box.innerHTML = users.map(user => `
+    <button class="search-item" type="button" onclick="window.location.href='/profile?handle=${encodeURIComponent(user.handle || '')}'">
+      ${getAvatarMarkup(user.profileImage, user.displayName || user.handle)}
+      <div>
+        <div class="author-name">${escapeHtml(user.displayName || 'Member')}</div>
+        <div class="author-handle">@${escapeHtml(user.handle || '')}</div>
+      </div>
+    </button>
+  `).join('');
+  box.classList.add('open');
+}
+
+async function queryUsers(query) {
+  const data = await fetchJson('publicUserIndex').catch(() => null);
+  return Object.values(data || {})
+    .filter(Boolean)
+    .map(user => {
+      const handle = normalizeSearchQuery(user.handle);
+      const name = normalizeSearchQuery(user.displayName);
+      const words = name.split(/\s+/).filter(Boolean);
+      let rank = 9;
+      if (handle.startsWith(query)) rank = 0;
+      else if (words.some(word => word.startsWith(query))) rank = 1;
+      else if (name.startsWith(query)) rank = 2;
+      else if (handle.includes(query) || name.includes(query)) rank = 3;
+      return Object.assign({}, user, { _rank: rank });
+    })
+    .filter(user => user._rank < 9)
+    .sort((a, b) => a._rank - b._rank || normalizeSearchQuery(a.handle).localeCompare(normalizeSearchQuery(b.handle)))
+    .slice(0, 7);
+}
+
+async function handleSearchInput() {
+  const query = normalizeSearchQuery(document.getElementById('userSearch').value);
+  const box = document.getElementById('searchResults');
+  if (!query) {
+    box.classList.remove('open');
+    return;
+  }
+  const users = await queryUsers(query);
+  renderSearchResults(users);
+}
+
+document.getElementById('composerImage').addEventListener('change', async event => {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) {
+    setComposerStatus('That file is not an image.');
+    return;
+  }
+  if (file.size > MAX_POST_IMAGE_BYTES) {
+    setComposerStatus('Keep post images under 1.5 MB so the feed stays fast.');
+    return;
+  }
+  try {
+    state.composerImage = await compressImageFile(file, 1400, 0.8);
+    const preview = document.getElementById('composerPreview');
+    preview.src = state.composerImage;
+    preview.style.display = 'block';
+    setComposerStatus('Image ready. It was compressed before upload.');
+  } catch (error) {
+    setComposerStatus(error.message || 'Could not prepare this image.');
+  }
+});
+
+document.getElementById('userSearch').addEventListener('input', handleSearchInput);
+document.addEventListener('click', event => {
+  if (!event.target.closest('.search-form')) document.getElementById('searchResults').classList.remove('open');
+});
+
+(async function init() {
+  hydrateSessionUi();
+  await loadViewerMaps();
+  await loadFeed();
+})();
+</script>
+</body>
+</html>
