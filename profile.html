@@ -151,6 +151,7 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 <script>
 const FIREBASE_DB_URL = 'https://bevivid-73a69-default-rtdb.firebaseio.com';
 const AUTH_COOKIE_NAME = 'bevivid_session';
+const COMMUNITY_ROOT = 'communityData';
 const params = new URLSearchParams(window.location.search);
 const requestedHandle = params.get('handle');
 let activeUser = null;
@@ -168,6 +169,7 @@ function getSessionUser() { const raw = getCookie(AUTH_COOKIE_NAME); if (!raw) r
 function todayKey() { return new Date().toISOString().slice(0, 10); }
 function getProfileAudioPath(handle) { return `${FIREBASE_DB_URL}/profileAudio/${encodeURIComponent(handle)}.json`; }
 function getPath(path) { return `${FIREBASE_DB_URL}/${path}.json`; }
+function getCommunityPath(path) { return `${COMMUNITY_ROOT}/${path}`; }
 function setRecognitionStatus(message) { document.getElementById('recognitionStatus').textContent = message || ''; }
 function closeSearchResults() { document.getElementById('searchResults').classList.remove('open'); }
 function getProfilePreviewImage(user) {
@@ -278,8 +280,16 @@ async function fetchJson(path) {
   return response.json();
 }
 async function loadCommunityPosts(handle) {
-  const data = await fetchJson('communityPosts').catch(() => null);
-  return Object.values(data || {}).filter(post => post && post.authorHandle === handle).sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
+  let data = await fetchJson(getCommunityPath('posts')).catch(() => null);
+  if (!data) data = await fetchJson('communityPosts').catch(() => null);
+  return Object.values(data || {}).filter(post => post && post.authorHandle === handle).map(post => Object.assign({ stats: { likeCount: Number(post.likeCount || 0), commentCount: Number(post.commentCount || 0), impressionCount: Number(post.impressionCount || 0), reachCount: Number(post.reachCount || 0) } }, post)).sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
+}
+function canSeeProfilePostAnalytics() {
+  return Boolean(activeUser && viewingUser && activeUser.handle === viewingUser.handle);
+}
+function toggleProfilePostAnalytics(id) {
+  const box = document.getElementById(`profile-post-analytics-${id}`);
+  if (box) box.style.display = box.style.display === 'none' ? 'flex' : 'none';
 }
 function formatTimeAgo(value) {
   const diff = Math.max(1, Date.now() - Number(value || 0));
@@ -303,16 +313,22 @@ function renderProfilePosts(posts) {
       <div class="mini-post-text">${escapeHtml(post.text || '')}</div>
       ${post.imageUrl ? `<img class="mini-post-img" src="${escapeAttr(post.imageUrl)}" alt="">` : ''}
       <div class="mini-post-meta">
-        <span class="mini-chip">${escapeHtml(String(post.likeCount || 0))} likes</span>
-        <span class="mini-chip">${escapeHtml(String(post.commentCount || 0))} comments</span>
-        <span class="mini-chip">${escapeHtml(String(post.impressionCount || 0))} impressions</span>
-        <span class="mini-chip">${escapeHtml(String(post.reachCount || 0))} reach</span>
+        <span class="mini-chip">${escapeHtml(String(post.stats?.likeCount || 0))} likes</span>
+        <span class="mini-chip">${escapeHtml(String(post.stats?.commentCount || 0))} comments</span>
+        ${canSeeProfilePostAnalytics() ? `<button class="search-btn social-action" type="button" onclick="toggleProfilePostAnalytics('${escapeAttr(post.id)}')">Analytics</button>` : ''}
       </div>
+      ${canSeeProfilePostAnalytics() ? `<div class="mini-post-meta" id="profile-post-analytics-${escapeAttr(post.id)}" style="display:none;"><span class="mini-chip">${escapeHtml(String(post.stats?.impressionCount || 0))} impressions</span><span class="mini-chip">${escapeHtml(String(post.stats?.reachCount || 0))} reach</span><span class="mini-chip">${escapeHtml(String((Math.round(((Number(post.stats?.likeCount || 0) + Number(post.stats?.commentCount || 0)) / Math.max(1, Number(post.stats?.reachCount || 0))) * 100))) || 0))}% engagement</span></div>` : ''}
     </article>
   `).join('');
+  if (canSeeProfilePostAnalytics()) {
+    posts.slice(0, 8).forEach(post => {
+      const row = document.getElementById(`profile-post-analytics-${post.id}`);
+      if (row) row.classList.remove('open');
+    });
+  }
 }
 function renderSocialStats(posts, social) {
-  const totalLikes = posts.reduce((sum, post) => sum + Number(post.likeCount || 0), 0);
+  const totalLikes = posts.reduce((sum, post) => sum + Number(post.stats?.likeCount || 0), 0);
   const followers = Object.keys((social && social.followers) || {}).length;
   const following = Object.keys((social && social.following) || {}).length;
   document.getElementById('postCount').textContent = String(posts.length);
@@ -545,7 +561,7 @@ async function loadProfile() {
   document.getElementById('studioLink').href = `/profiledata?handle=${encodeURIComponent(handle)}`;
   const [userResponse, socialResponse, posts] = await Promise.all([
     fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(handle)}.json`),
-    fetch(getPath(`userSocial/${handle}`)).catch(() => null),
+    fetch(getPath(getCommunityPath(`social/${handle}`))).catch(() => null),
     loadCommunityPosts(handle).catch(() => [])
   ]);
   const user = await userResponse.json();
@@ -560,6 +576,10 @@ async function loadProfile() {
     return;
   }
   followData = socialResponse && socialResponse.ok ? (await socialResponse.json()) || { followers: {}, following: {} } : { followers: {}, following: {} };
+  if (!Object.keys(followData.followers || {}).length && !Object.keys(followData.following || {}).length) {
+    const legacySocial = await fetchJson('userSocial/' + handle).catch(() => null);
+    if (legacySocial) followData = legacySocial;
+  }
   viewingPosts = posts;
   viewingUser = user;
 
