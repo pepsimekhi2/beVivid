@@ -18,7 +18,7 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: #34aadc; margin-bottom: 12px; }
 .title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(58px, 10vw, 120px); line-height: .88; margin: 0; }
 .sub { color: rgba(245,240,235,.46); max-width: 680px; line-height: 1.8; margin-top: 10px; }
-.profile-search-corner { position: fixed; top: 88px; right: 28px; z-index: 60; width: min(420px, calc(100vw - 56px)); }
+.topbar-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .profile-tools { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 22px; }
 .search-form { display: flex; gap: 10px; flex-wrap: wrap; position: relative; }
 .search-input { min-width: 260px; border: 1px solid rgba(245,240,235,.12); background: rgba(10,10,10,.88); color: #f5f0eb; border-radius: 999px; padding: 12px 16px; font: inherit; outline: none; flex: 1; backdrop-filter: blur(14px); }
@@ -44,6 +44,7 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .stage-wrap { overflow: auto; border: 1px solid rgba(245,240,235,.08); border-radius: 28px; padding: 20px; background: rgba(245,240,235,.02); display: flex; justify-content: center; }
 .stage { position: relative; width: 1200px; min-height: 900px; border-radius: 24px; overflow: hidden; border: 1px solid rgba(245,240,235,.08); background: #111; box-shadow: 0 30px 90px rgba(0,0,0,.35); }
 .stage::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; }
+.pattern-layer { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: .22; }
 .el { position: absolute; overflow: hidden; }
 .text-block { padding: 18px; white-space: pre-wrap; line-height: 1.45; }
 .image-block img, .embed-block iframe { width: 100%; height: 100%; border: 0; display: block; object-fit: cover; position: relative; z-index: 1; }
@@ -56,21 +57,21 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .audio-toggle { position: absolute; left: 20px; bottom: 20px; z-index: 4; border: 1px solid rgba(245,240,235,.12); background: rgba(5,5,5,.55); color: #f5f0eb; border-radius: 999px; padding: 12px 16px; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; backdrop-filter: blur(14px); }
 .audio-note { position: absolute; right: 20px; bottom: 22px; z-index: 4; color: rgba(245,240,235,.42); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
 .empty { padding: 26px; border-radius: 16px; border: 1px solid rgba(245,240,235,.08); background: rgba(245,240,235,.03); color: rgba(245,240,235,.56); line-height: 1.8; }
-@media (max-width: 760px) { .shell { padding: 18px; } .profile-search-corner { position: static; width: 100%; margin-bottom: 16px; } .profile-tools { flex-direction: column; align-items: stretch; } .search-form { width: 100%; } .search-input { min-width: 0; width: 100%; } .search-btn { width: 100%; } .stage-wrap { padding: 10px; } .stage { width: 980px; min-height: 780px; } .audio-toggle { left: 12px; bottom: 12px; } .audio-note { left: 12px; right: auto; bottom: 58px; } }
+@media (max-width: 760px) { .shell { padding: 18px; } .topbar-right { width: 100%; } .profile-tools { flex-direction: column; align-items: stretch; } .search-form { width: 100%; } .search-input { min-width: 0; width: 100%; } .search-btn { width: 100%; } .stage-wrap { padding: 10px; } .stage { width: 980px; min-height: 780px; } .audio-toggle { left: 12px; bottom: 12px; } .audio-note { left: 12px; right: auto; bottom: 58px; } }
 </style>
 </head>
 <body>
 <div class="shell">
-  <div class="profile-search-corner">
-    <form class="search-form" onsubmit="event.preventDefault(); searchProfiles();">
-      <input class="search-input" id="searchHandle" type="text" placeholder="Find a user by handle" />
-      <button class="search-btn" type="submit">Search User</button>
-      <div class="search-results" id="searchResults"></div>
-    </form>
-  </div>
   <div class="topbar">
     <a class="back" href="/">Back To beVivid</a>
-    <a class="studio" id="studioLink" href="/profiledata">Open Studio</a>
+    <div class="topbar-right">
+      <a class="studio" id="studioLink" href="/profiledata">Open Studio</a>
+      <form class="search-form" onsubmit="event.preventDefault(); searchProfiles();">
+        <input class="search-input" id="searchHandle" type="text" placeholder="Find a user by handle" />
+        <button class="search-btn" type="submit">Search User</button>
+        <div class="search-results" id="searchResults"></div>
+      </form>
+    </div>
   </div>
   <div class="header">
     <div class="eyebrow">Profile</div>
@@ -171,6 +172,13 @@ function withAlpha(color, alpha) {
   const g = parseInt(hex.slice(3, 5), 16);
   const b = parseInt(hex.slice(5, 7), 16);
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+function getPatternStyle(pattern, accent) {
+  if (pattern === 'dots') return `radial-gradient(${accent}44 1px, transparent 1px) 0 0 / 22px 22px`;
+  if (pattern === 'stripes') return `repeating-linear-gradient(135deg, ${accent}22 0 10px, transparent 10px 24px)`;
+  if (pattern === 'waves') return `radial-gradient(circle at 0 100%, ${accent}28, transparent 32%), radial-gradient(circle at 100% 0, ${accent}18, transparent 26%)`;
+  if (pattern === 'none') return 'none';
+  return `linear-gradient(${accent}18 1px, transparent 1px), linear-gradient(90deg, ${accent}18 1px, transparent 1px)`;
 }
 function updateRecognitionUi(user) {
   document.getElementById('recognitionPoints').textContent = String(user.recognitionPoints || 0);
@@ -371,6 +379,11 @@ async function loadProfile() {
   const layout = decodeLayout(user.profileLayoutEncoded);
   stage.style.background = `radial-gradient(circle at 20% 10%, ${(layout.accent || '#ff2d55')}22, transparent 26%), ${layout.background || '#111111'}`;
   stage.innerHTML = '';
+  const pattern = document.createElement('div');
+  pattern.className = 'pattern-layer';
+  pattern.style.backgroundImage = getPatternStyle(layout.pattern || 'grid', layout.accent || '#ff2d55');
+  pattern.style.backgroundSize = (layout.pattern || 'grid') === 'grid' ? '40px 40px' : 'auto';
+  stage.appendChild(pattern);
 
   const viz = document.createElement('canvas');
   viz.className = 'visualizer-bg';
@@ -414,7 +427,7 @@ async function loadProfile() {
       node.textContent = el.text || '';
     } else if (el.type === 'image') {
       node.className += ' image-block';
-      node.innerHTML = el.url ? `<img src="${escapeAttr(el.url)}" alt="">` : '';
+      node.innerHTML = el.url ? `<img src="${escapeAttr(el.url)}" alt="" style="transform: scaleX(${el.flipX ? -1 : 1}) scaleY(${el.flipY ? -1 : 1}); object-fit:${el.fitMode || 'cover'};">` : '';
     } else {
       node.className += ' embed-block';
       node.innerHTML = getEmbedMarkup(el.url, el.type);
