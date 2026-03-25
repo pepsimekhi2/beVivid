@@ -26,7 +26,9 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .plus-badge[hidden] { display: none; }
 .sub { color: rgba(245,240,235,.46); max-width: 680px; line-height: 1.8; margin-top: 10px; }
 .topbar-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.profile-tools { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 22px; }
+.profile-tools { display: grid; gap: 16px; margin-top: 22px; }
+.profile-stats { display: flex; flex-wrap: wrap; gap: 12px; align-items: stretch; }
+.profile-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 14px 16px; border-radius: 20px; border: 1px solid rgba(245,240,235,.08); background: rgba(245,240,235,.025); }
 .search-form { display: flex; gap: 10px; flex-wrap: wrap; position: relative; }
 .search-input { min-width: 260px; border: 1px solid rgba(245,240,235,.12); background: rgba(10,10,10,.88); color: #f5f0eb; border-radius: 999px; padding: 12px 16px; font: inherit; outline: none; flex: 1; backdrop-filter: blur(14px); }
 .search-btn, .recognize-btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 18px; border-radius: 999px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer; }
@@ -68,8 +70,9 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .spotify-card span { font-size: 13px; line-height: 1.6; opacity: .85; }
 .spotify-card a { display: inline-flex; width: fit-content; margin-top: 12px; padding: 10px 14px; border-radius: 999px; background: rgba(255,255,255,.16); color: #fff; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
 .visualizer-bg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: .9; }
-.audio-toggle { position: absolute; left: 20px; bottom: 20px; z-index: 4; border: 1px solid rgba(245,240,235,.12); background: rgba(5,5,5,.55); color: #f5f0eb; border-radius: 999px; padding: 12px 16px; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; backdrop-filter: blur(14px); }
-.audio-note { position: absolute; right: 20px; bottom: 22px; z-index: 4; color: rgba(245,240,235,.42); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
+.audio-pod { position: absolute; left: 20px; bottom: 20px; z-index: 4; display: grid; gap: 8px; padding: 12px; border-radius: 18px; border: 1px solid rgba(245,240,235,.12); background: rgba(5,5,5,.42); backdrop-filter: blur(14px); }
+.audio-toggle { border: 1px solid rgba(245,240,235,.12); background: rgba(5,5,5,.55); color: #f5f0eb; border-radius: 999px; padding: 12px 16px; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; backdrop-filter: blur(14px); }
+.audio-note { color: rgba(245,240,235,.56); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
 .empty { padding: 26px; border-radius: 16px; border: 1px solid rgba(245,240,235,.08); background: rgba(245,240,235,.03); color: rgba(245,240,235,.56); line-height: 1.8; }
 .posts-wrap { margin-top: 22px; display: grid; gap: 16px; }
 .section-card { border: 1px solid rgba(245,240,235,.08); border-radius: 28px; padding: 22px; background: rgba(245,240,235,.02); }
@@ -119,24 +122,28 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
     </div>
     <div class="sub" id="profileSub">Pulling the latest profile layout.</div>
     <div class="profile-tools">
-      <div class="recognition-card">
-        <small>Recognition Points</small>
-        <strong id="recognitionPoints">0</strong>
-        <span id="recognitionMeta">Lifetime appreciation from the community.</span>
+      <div class="profile-stats">
+        <div class="recognition-card">
+          <small>Recognition Points</small>
+          <strong id="recognitionPoints">0</strong>
+          <span id="recognitionMeta">Lifetime appreciation from the community.</span>
+        </div>
+        <div class="recognition-card">
+          <small>Posts</small>
+          <strong id="postCount">0</strong>
+          <span id="postMeta">Community updates shared by this profile.</span>
+        </div>
+        <div class="recognition-card">
+          <small>Total Likes</small>
+          <strong id="totalLikeCount">0</strong>
+          <span id="likeMeta">All likes collected across published posts.</span>
+        </div>
       </div>
-      <div class="recognition-card">
-        <small>Posts</small>
-        <strong id="postCount">0</strong>
-        <span id="postMeta">Community updates shared by this profile.</span>
+      <div class="profile-actions">
+        <button class="search-btn social-action" id="followersBtn" type="button" onclick="openFollowModal('followers')">Followers 0</button>
+        <button class="search-btn social-action" id="followingBtn" type="button" onclick="openFollowModal('following')">Following 0</button>
+        <button class="recognize-btn" id="recognizeBtn" onclick="grantRecognition()">Grant Recognition</button>
       </div>
-      <div class="recognition-card">
-        <small>Total Likes</small>
-        <strong id="totalLikeCount">0</strong>
-        <span id="likeMeta">All likes collected across published posts.</span>
-      </div>
-      <button class="search-btn social-action" id="followersBtn" type="button" onclick="openFollowModal('followers')">Followers 0</button>
-      <button class="search-btn social-action" id="followingBtn" type="button" onclick="openFollowModal('following')">Following 0</button>
-      <button class="recognize-btn" id="recognizeBtn" onclick="grantRecognition()">Grant Recognition</button>
     </div>
     <div class="profile-note" id="recognitionStatus"></div>
   </div>
@@ -775,17 +782,20 @@ async function loadProfile() {
   }
 
   if (layout.songAudio || user.profileSongReady || user.profileSongAudio) {
+    const pod = document.createElement('div');
+    pod.className = 'audio-pod';
     const button = document.createElement('button');
     button.className = 'audio-toggle';
     button.id = 'audioToggle';
     button.textContent = audioState.playing ? 'Pause Audio' : 'Play Audio';
     button.onclick = toggleProfileAudio;
-    stage.appendChild(button);
+    pod.appendChild(button);
 
     const note = document.createElement('div');
     note.className = 'audio-note';
     note.textContent = layout.songLabel || 'Profile song ready';
-    stage.appendChild(note);
+    pod.appendChild(note);
+    stage.appendChild(pod);
     setTimeout(() => { tryAutoPlayProfileSong(); }, 120);
   }
 
