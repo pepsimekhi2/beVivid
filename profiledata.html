@@ -131,6 +131,8 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
     <div style="height:16px"></div>
     <button class="primary-btn" onclick="saveProfileLayout()">Save Layout</button>
     <div style="height:10px"></div>
+    <button class="ghost-btn" onclick="eraseLayout()">Erase Everything</button>
+    <div style="height:10px"></div>
     <button class="ghost-btn" onclick="goToPublicProfile()">View Public Profile</button>
     <div style="height:10px"></div>
     <button class="ghost-btn" onclick="window.location.href='/'">Back To Site</button>
@@ -159,7 +161,7 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
     <div class="field"><label for="canvasBg">Canvas Background</label><input id="canvasBg" type="color" value="#121212" /></div>
     <div class="field"><label for="canvasAccent">Canvas Accent</label><input id="canvasAccent" type="color" value="#ff2d55" /></div>
     <div class="field"><label for="canvasPattern">Background Pattern</label><select id="canvasPattern"><option value="grid">Grid</option><option value="dots">Dots</option><option value="stripes">Stripes</option><option value="waves">Waves</option><option value="none">None</option></select></div>
-    <div id="plusControls" class="empty">beVivid+ unlocks full-page controls like canvas size and page framing.</div>
+    <div id="plusControls" class="empty">Change the outer page color, pattern, and visualizer here.</div>
     <div id="selectionInspector" class="empty">Select a block to edit its content, font, colors, size, spacing, and embed URL.</div>
   </div></aside>
 </div>
@@ -211,47 +213,35 @@ function sanitizeProfileDataForPlan(profileData, premium) {
   next.pageBackground = toColorValue(next.pageBackground, '#050505');
   next.pageAccent = toColorValue(next.pageAccent, '#a259ff');
   next.pagePattern = next.pagePattern || 'none';
-  next.canvasWidth = premium ? Math.max(900, Number(next.canvasWidth) || 1200) : 1200;
-  next.canvasHeight = premium ? Math.max(700, Number(next.canvasHeight) || 900) : 900;
-  next.pageMode = premium && next.pageMode === 'full' ? 'full' : 'framed';
+  next.canvasWidth = 1200;
+  next.canvasHeight = 900;
+  next.pageMode = 'framed';
   next.visualizerVariant = premium
     ? (next.visualizerVariant || 'halo')
     : ((next.visualizerVariant === 'bars' || next.visualizerVariant === 'wave') ? next.visualizerVariant : 'bars');
-  if (!premium) {
-    next.pageBackground = '#050505';
-    next.pageAccent = '#a259ff';
-    next.pagePattern = 'none';
-    next.canvasWidth = 1200;
-    next.canvasHeight = 900;
-  }
   return next;
 }
 function getCanvasBounds() {
-  return {
-    width: isBeVividPlus(state.user) ? Math.max(900, Number(state.profileData.canvasWidth) || CANVAS_W) : CANVAS_W,
-    height: isBeVividPlus(state.user) ? Math.max(700, Number(state.profileData.canvasHeight) || CANVAS_H) : CANVAS_H
-  };
+  return { width: CANVAS_W, height: CANVAS_H };
 }
 function applyStudioBackdrop() {
-  const fullPageMode = isBeVividPlus(state.user) && state.profileData.pageMode === 'full';
-  const background = (fullPageMode && state.profileData.pageBackground) || '#050505';
-  const accent = (fullPageMode && state.profileData.pageAccent) || state.profileData.accent || '#ff2d55';
-  const patternName = (fullPageMode && state.profileData.pagePattern) || 'none';
+  const hasSong = Boolean(state.profileData.songAudio);
+  const background = state.profileData.pageBackground || '#050505';
+  const accent = state.profileData.pageAccent || '#a259ff';
+  const patternName = state.profileData.pagePattern || 'none';
   const pattern = getPatternStyle(patternName, accent);
   document.documentElement.style.background = background;
   document.body.style.background = background;
-  document.body.style.backgroundImage = fullPageMode
-    ? `radial-gradient(circle at 18% 12%, ${accent}22, transparent 26%), ${pattern.image === 'none' ? 'none' : pattern.image}`
-    : '';
-  document.body.style.backgroundSize = fullPageMode ? `auto, ${pattern.size}` : '';
-  document.body.style.backgroundRepeat = fullPageMode ? `no-repeat, ${patternName === 'waves' ? 'no-repeat' : 'repeat'}` : '';
+  document.body.style.backgroundImage = `radial-gradient(circle at 18% 12%, ${accent}22, transparent 26%), ${pattern.image === 'none' ? 'none' : pattern.image}`;
+  document.body.style.backgroundSize = `auto, ${pattern.size}`;
+  document.body.style.backgroundRepeat = `no-repeat, ${patternName === 'waves' ? 'no-repeat' : 'repeat'}`;
   if (!studioBackdropViz) {
     studioBackdropViz = document.createElement('canvas');
     studioBackdropViz.className = 'studio-backdrop-viz';
     document.body.appendChild(studioBackdropViz);
   }
-  studioBackdropViz.style.display = fullPageMode ? 'block' : 'none';
-  if (fullPageMode) drawVisualizer(studioBackdropViz, state.profileData.visualizerVariant || 'halo');
+  studioBackdropViz.style.display = hasSong ? 'block' : 'none';
+  if (hasSong) drawVisualizer(studioBackdropViz, state.profileData.visualizerVariant || 'bars');
 }
 function getPatternStyle(pattern, accent) {
   if (pattern === 'dots') return { image: `radial-gradient(${accent}88 1.6px, transparent 1.6px)`, size: '22px 22px' };
@@ -460,45 +450,32 @@ function renderCanvas() {
   const bounds = getCanvasBounds();
   const width = bounds.width;
   const height = bounds.height;
-  const fullPageMode = isBeVividPlus(state.user) && state.profileData.pageMode === 'full';
   applyStudioBackdrop();
   canvas.innerHTML = '';
   canvas.style.width = `${width}px`;
   canvas.style.height = `${height}px`;
-  canvas.style.borderRadius = fullPageMode ? '0' : '26px';
-  canvas.style.border = fullPageMode ? '0' : '1px solid rgba(245,240,235,.08)';
-  canvas.style.boxShadow = fullPageMode ? 'none' : '0 30px 100px rgba(0,0,0,.35)';
-  canvas.style.background = fullPageMode ? 'transparent' : `radial-gradient(circle at 20% 10%, ${state.profileData.accent}22, transparent 26%), ${state.profileData.background}`;
-  if (fullPageMode) {
-    const shellWidth = Math.max(320, canvasShell.clientWidth - 24);
-    const shellHeight = Math.max(320, window.innerHeight - 250);
-    const scale = Math.min(0.72, 1, shellWidth / width, shellHeight / height);
-    canvasStage.style.transform = `scale(${scale})`;
-    canvasStage.style.height = `${Math.max(340, Math.round(height * scale))}px`;
-  } else {
-    canvasStage.style.transform = 'scale(1)';
-    canvasStage.style.height = `${height}px`;
-  }
-  document.querySelector('.workspace').style.border = fullPageMode ? '0' : '1px solid rgba(245,240,235,.08)';
-  document.querySelector('.workspace').style.background = fullPageMode ? 'transparent' : 'linear-gradient(180deg, rgba(18,18,18,.88), rgba(7,7,7,.88))';
-  document.querySelector('.workspace').style.boxShadow = fullPageMode ? 'none' : 'inset 0 1px 0 rgba(255,255,255,.03)';
-  document.querySelector('.canvas-shell').style.background = fullPageMode ? 'transparent' : 'radial-gradient(circle at top, rgba(255,45,85,.08), transparent 42%), rgba(0,0,0,.32)';
-  document.querySelector('.canvas-shell').style.padding = fullPageMode ? '0' : '18px';
+  canvas.style.borderRadius = '26px';
+  canvas.style.border = '1px solid rgba(245,240,235,.08)';
+  canvas.style.boxShadow = '0 30px 100px rgba(0,0,0,.35)';
+  canvas.style.background = `radial-gradient(circle at 20% 10%, ${state.profileData.accent}22, transparent 26%), ${state.profileData.background}`;
+  canvasStage.style.transform = 'scale(1)';
+  canvasStage.style.height = `${height}px`;
+  document.querySelector('.workspace').style.border = '1px solid rgba(245,240,235,.08)';
+  document.querySelector('.workspace').style.background = 'linear-gradient(180deg, rgba(18,18,18,.88), rgba(7,7,7,.88))';
+  document.querySelector('.workspace').style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,.03)';
+  document.querySelector('.canvas-shell').style.background = 'radial-gradient(circle at top, rgba(255,45,85,.08), transparent 42%), rgba(0,0,0,.32)';
+  document.querySelector('.canvas-shell').style.padding = '18px';
   const pattern = document.createElement('div');
   pattern.className = 'pattern-layer';
   const patternStyle = getPatternStyle(state.profileData.pattern, state.profileData.accent);
-  if (!fullPageMode) {
-    pattern.style.backgroundImage = patternStyle.image;
-    pattern.style.backgroundSize = patternStyle.size;
-    pattern.style.backgroundRepeat = state.profileData.pattern === 'waves' ? 'no-repeat' : 'repeat';
-    canvas.appendChild(pattern);
-  }
+  pattern.style.backgroundImage = patternStyle.image;
+  pattern.style.backgroundSize = patternStyle.size;
+  pattern.style.backgroundRepeat = state.profileData.pattern === 'waves' ? 'no-repeat' : 'repeat';
+  canvas.appendChild(pattern);
   const viz = document.createElement('canvas');
   viz.className = 'visualizer-bg';
-  if (!fullPageMode) {
-    canvas.appendChild(viz);
-    drawVisualizer(viz, state.profileData.visualizerVariant || 'bars');
-  }
+  canvas.appendChild(viz);
+  drawVisualizer(viz, state.profileData.visualizerVariant || 'bars');
 
   if (state.profileData.songAudio) {
     setupAudioPlayback(state.profileData.songAudio);
@@ -529,7 +506,7 @@ function renderCanvas() {
     canvas.appendChild(node);
   });
   document.getElementById('layoutCount').textContent = `${state.profileData.elements.length} block${state.profileData.elements.length === 1 ? '' : 's'}`;
-  document.getElementById('editorModeChip').textContent = `${fullPageMode ? 'Full Page' : 'Framed'} · ${Math.round(width)} x ${Math.round(height)}`;
+  document.getElementById('editorModeChip').textContent = `Framed / ${Math.round(width)} x ${Math.round(height)}`;
 }
 
 function renderInspector() {
@@ -543,39 +520,21 @@ function renderInspector() {
   document.getElementById('canvasPattern').value = state.profileData.pattern || 'grid';
   const plusUnlocked = isBeVividPlus(state.user);
   document.getElementById('plusStudioPill').hidden = !plusUnlocked;
-  if (plusUnlocked) {
-    plusControls.className = '';
-    plusControls.innerHTML = `
-      <div class="field"><label>Page Mode</label><select id="plusPageMode"><option value="framed"${(state.profileData.pageMode || 'framed') === 'framed' ? ' selected' : ''}>Framed</option><option value="full"${state.profileData.pageMode === 'full' ? ' selected' : ''}>Full Page</option></select></div>
-      <div class="field"><label>Full Page Backdrop</label><input id="plusPageBackground" type="color" value="${toColorValue(state.profileData.pageBackground, '#050505')}"></div>
-      <div class="field"><label>Full Page Accent</label><input id="plusPageAccent" type="color" value="${toColorValue(state.profileData.pageAccent, '#a259ff')}"></div>
-      <div class="field"><label>Full Page Pattern</label><select id="plusPagePattern"><option value="none"${(state.profileData.pagePattern || 'none') === 'none' ? ' selected' : ''}>None</option><option value="grid"${state.profileData.pagePattern === 'grid' ? ' selected' : ''}>Grid</option><option value="dots"${state.profileData.pagePattern === 'dots' ? ' selected' : ''}>Dots</option><option value="stripes"${state.profileData.pagePattern === 'stripes' ? ' selected' : ''}>Stripes</option><option value="waves"${state.profileData.pagePattern === 'waves' ? ' selected' : ''}>Waves</option></select></div>
-      <div class="field"><label>Visualizer Style</label><select id="plusVisualizerVariant"><option value="halo"${(state.profileData.visualizerVariant || 'halo') === 'halo' ? ' selected' : ''}>Halo</option><option value="orbit"${state.profileData.visualizerVariant === 'orbit' ? ' selected' : ''}>Orbit</option><option value="wave"${state.profileData.visualizerVariant === 'wave' ? ' selected' : ''}>Wave</option><option value="bars"${state.profileData.visualizerVariant === 'bars' ? ' selected' : ''}>Bars</option></select></div>
-      <div class="two">
-        <div class="field"><label>Canvas Width</label><input id="plusCanvasWidth" type="range" min="900" max="3600" value="${Math.max(900, Number(state.profileData.canvasWidth) || 1200)}"></div>
-        <div class="field"><label>Canvas Height</label><input id="plusCanvasHeight" type="range" min="700" max="3200" value="${Math.max(700, Number(state.profileData.canvasHeight) || 900)}"></div>
-      </div>
-    `;
-  } else {
-    plusControls.className = 'empty';
-    plusControls.innerHTML = '<div class="field"><label>Visualizer Style</label><select id="freeVisualizerVariant"><option value="bars"' + ((state.profileData.visualizerVariant || 'bars') === 'bars' ? ' selected' : '') + '>Bars</option><option value="wave"' + (state.profileData.visualizerVariant === 'wave' ? ' selected' : '') + '>Wave</option></select></div>';
-  }
-  const plusPageMode = document.getElementById('plusPageMode');
-  if (plusPageMode) plusPageMode.addEventListener('input', () => { state.profileData.pageMode = plusPageMode.value; renderCanvas(); renderInspector(); });
+  plusControls.className = '';
+  plusControls.innerHTML = `
+    <div class="field"><label>Page Backdrop</label><input id="plusPageBackground" type="color" value="${toColorValue(state.profileData.pageBackground, '#050505')}"></div>
+    <div class="field"><label>Page Accent</label><input id="plusPageAccent" type="color" value="${toColorValue(state.profileData.pageAccent, '#a259ff')}"></div>
+    <div class="field"><label>Page Pattern</label><select id="plusPagePattern"><option value="none"${(state.profileData.pagePattern || 'none') === 'none' ? ' selected' : ''}>None</option><option value="grid"${state.profileData.pagePattern === 'grid' ? ' selected' : ''}>Grid</option><option value="dots"${state.profileData.pagePattern === 'dots' ? ' selected' : ''}>Dots</option><option value="stripes"${state.profileData.pagePattern === 'stripes' ? ' selected' : ''}>Stripes</option><option value="waves"${state.profileData.pagePattern === 'waves' ? ' selected' : ''}>Waves</option></select></div>
+    <div class="field"><label>Visualizer Style</label><select id="pageVisualizerVariant">${plusUnlocked ? `<option value="halo"${(state.profileData.visualizerVariant || 'halo') === 'halo' ? ' selected' : ''}>Halo</option><option value="orbit"${state.profileData.visualizerVariant === 'orbit' ? ' selected' : ''}>Orbit</option>` : ''}<option value="wave"${state.profileData.visualizerVariant === 'wave' ? ' selected' : ''}>Wave</option><option value="bars"${(state.profileData.visualizerVariant || 'bars') === 'bars' ? ' selected' : ''}>Bars</option></select></div>
+  `;
   const plusPageBackground = document.getElementById('plusPageBackground');
   if (plusPageBackground) plusPageBackground.addEventListener('input', () => { state.profileData.pageBackground = plusPageBackground.value; renderCanvas(); });
   const plusPageAccent = document.getElementById('plusPageAccent');
   if (plusPageAccent) plusPageAccent.addEventListener('input', () => { state.profileData.pageAccent = plusPageAccent.value; renderCanvas(); renderInspector(); });
   const plusPagePattern = document.getElementById('plusPagePattern');
   if (plusPagePattern) plusPagePattern.addEventListener('input', () => { state.profileData.pagePattern = plusPagePattern.value; renderCanvas(); });
-  const plusVisualizerVariant = document.getElementById('plusVisualizerVariant');
-  if (plusVisualizerVariant) plusVisualizerVariant.addEventListener('input', () => { state.profileData.visualizerVariant = plusVisualizerVariant.value; renderCanvas(); });
-  const freeVisualizerVariant = document.getElementById('freeVisualizerVariant');
-  if (freeVisualizerVariant) freeVisualizerVariant.addEventListener('input', () => { state.profileData.visualizerVariant = freeVisualizerVariant.value; renderCanvas(); });
-  const plusCanvasWidth = document.getElementById('plusCanvasWidth');
-  if (plusCanvasWidth) plusCanvasWidth.addEventListener('input', () => { state.profileData.canvasWidth = Number(plusCanvasWidth.value); renderCanvas(); });
-  const plusCanvasHeight = document.getElementById('plusCanvasHeight');
-  if (plusCanvasHeight) plusCanvasHeight.addEventListener('input', () => { state.profileData.canvasHeight = Number(plusCanvasHeight.value); renderCanvas(); });
+  const pageVisualizerVariant = document.getElementById('pageVisualizerVariant');
+  if (pageVisualizerVariant) pageVisualizerVariant.addEventListener('input', () => { state.profileData.visualizerVariant = pageVisualizerVariant.value; renderCanvas(); });
   if (!el) { box.className = 'empty'; box.innerHTML = 'Select a block to edit its content, font, colors, size, spacing, and embed URL.'; return; }
   const textField = el.type === 'text' || el.type === 'shape' ? `<div class="field"><label>Text</label><textarea id="insText">${escapeHtml(el.text || '')}</textarea></div>` : '';
   const urlField = el.type === 'image' || el.type === 'spotify' || el.type === 'soundcloud' ? `<div class="field"><label>Media / Embed URL</label><input id="insUrl" type="text" value="${escapeAttr(el.url || '')}"></div>` : '';
@@ -653,6 +612,20 @@ function addElement(type) {
   if (type === 'spotify') el.url = 'https://open.spotify.com/embed/track/11dFghVXANMlKmJXsNCbNl';
   if (type === 'soundcloud') el.url = 'https://soundcloud.com/forss/flickermood';
   state.profileData.elements.push(el); selectElement(el.id);
+}
+function eraseLayout() {
+  state.profileData.elements = [];
+  state.profileData.songAudio = '';
+  state.profileData.songLabel = '';
+  state.selectedId = null;
+  if (state.audio.el) {
+    state.audio.el.pause();
+    state.audio.el.removeAttribute('src');
+  }
+  state.audio.playing = false;
+  renderCanvas();
+  renderInspector();
+  setStatus('Everything on the page was cleared. You are starting fresh.', 'ok');
 }
 function removeSelected() { if (!state.selectedId) return; state.profileData.elements = state.profileData.elements.filter(el => el.id !== state.selectedId); state.selectedId = null; renderCanvas(); renderInspector(); }
 function duplicateSelected() { const el = getSelectedElement(); if (!el) return; const copy = JSON.parse(JSON.stringify(el)); copy.id = makeId(); copy.x += 20; copy.y += 20; state.profileData.elements.push(copy); selectElement(copy.id); }
