@@ -20,7 +20,23 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .back, .studio { display: inline-flex; align-items: center; justify-content: center; padding: 12px 18px; border-radius: 999px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; }
 .header { margin: 0 auto 20px; max-width: 1280px; width: 100%; }
 .eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: #34aadc; margin-bottom: 12px; }
+.title-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(58px, 10vw, 120px); line-height: .88; margin: 0; }
+.plus-badge { display: inline-flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 18px; border: 1px solid rgba(162,89,255,.24); background: linear-gradient(135deg, rgba(162,89,255,.24), rgba(122,108,224,.14)); box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 18px 40px rgba(74,40,142,.24); }
+.plus-badge[hidden] { display: none; }
+.plus-badge-mark { width: 26px; height: 26px; border-radius: 8px; background:
+  linear-gradient(135deg, #8d84eb 0 48%, transparent 48%),
+  linear-gradient(315deg, #6f63d9 0 44%, transparent 44%),
+  linear-gradient(225deg, #a9a4ff 0 40%, transparent 40%),
+  linear-gradient(45deg, #7a6ce0 0 38%, transparent 38%),
+  linear-gradient(180deg, #c8c4ff 0 100%);
+  position: relative;
+  overflow: hidden;
+}
+.plus-badge-mark::after { content: ''; position: absolute; inset: 6px; clip-path: polygon(14% 52%, 28% 39%, 44% 56%, 74% 22%, 86% 34%, 44% 80%); background: #efeefe; }
+.plus-badge-copy { display: flex; flex-direction: column; gap: 2px; }
+.plus-badge-copy strong { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #efeefe; }
+.plus-badge-copy span { color: rgba(245,240,235,.66); font-size: 12px; line-height: 1.4; }
 .sub { color: rgba(245,240,235,.46); max-width: 680px; line-height: 1.8; margin-top: 10px; }
 .topbar-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .profile-tools { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 22px; }
@@ -101,8 +117,17 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
   </div>
   <div class="header">
     <div class="eyebrow">Profile</div>
-    <h1 class="title" id="profileTitle">Loading...</h1>
-    <div class="sub" id="profileSub">Pulling the latest profile layout from Firebase.</div>
+    <div class="title-row">
+      <h1 class="title" id="profileTitle">Loading...</h1>
+      <div class="plus-badge" id="plusBadge" hidden>
+        <div class="plus-badge-mark" aria-hidden="true"></div>
+        <div class="plus-badge-copy">
+          <strong>beVivid+</strong>
+          <span>Premium profile unlocked.</span>
+        </div>
+      </div>
+    </div>
+    <div class="sub" id="profileSub">Pulling the latest profile layout.</div>
     <div class="profile-tools">
       <div class="recognition-card">
         <small>Recognition Points</small>
@@ -167,6 +192,7 @@ let viewingPosts = [];
 let followData = { followers: {}, following: {} };
 let profileSearchTimer = null;
 const audioState = { el: null, ctx: null, analyser: null, data: null, raf: null, playing: false, sourceLoaded: false, pendingSource: '' };
+let autoPlayAttempted = false;
 
 function getCookie(name) { const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)')); return match ? decodeURIComponent(match[1]) : ''; }
 function decodeLayout(value) { return JSON.parse(decodeURIComponent(escape(atob(value)))); }
@@ -174,6 +200,7 @@ function escapeHtml(value) { return String(value || '').replace(/[&<>"]/g, ch =>
 function escapeAttr(value) { return escapeHtml(value).replace(/'/g, '&#39;'); }
 function getSessionUser() { const raw = getCookie(AUTH_COOKIE_NAME); if (!raw) return null; try { return JSON.parse(raw); } catch (_) { return null; } }
 function todayKey() { return new Date().toISOString().slice(0, 10); }
+function isBeVividPlus(user) { return Boolean(user && (user['bevivid+'] === true || user.bevividPlus === true)); }
 function getProfileAudioPath(handle) { return `${FIREBASE_DB_URL}/profileAudio/${encodeURIComponent(handle)}.json`; }
 function getPath(path) { return `${FIREBASE_DB_URL}/${path}.json`; }
 function getCommunityPath(path) { return `${COMMUNITY_ROOT}/${path}`; }
@@ -483,6 +510,19 @@ function setupAudioPlayback(src) {
   audioState.sourceLoaded = true;
 }
 
+async function tryAutoPlayProfileSong() {
+  if (autoPlayAttempted || !viewingUser || !isBeVividPlus(viewingUser)) return;
+  autoPlayAttempted = true;
+  try {
+    await toggleProfileAudio();
+    const note = document.querySelector('.audio-note');
+    if (note && audioState.playing) note.textContent = viewingUser.profileSongLabel || 'Auto-playing for beVivid+';
+  } catch (_) {
+    const note = document.querySelector('.audio-note');
+    if (note) note.textContent = 'Autoplay is ready. Tap play if your browser blocks it.';
+  }
+}
+
 async function toggleProfileAudio() {
   if (!audioState.sourceLoaded) {
     let source = audioState.pendingSource || '';
@@ -562,6 +602,7 @@ async function loadProfile() {
   audioState.playing = false;
   audioState.sourceLoaded = false;
   audioState.pendingSource = '';
+  autoPlayAttempted = false;
   if (audioState.el) {
     audioState.el.pause();
     audioState.el.removeAttribute('src');
@@ -606,6 +647,7 @@ async function loadProfile() {
 
   document.getElementById('profileTitle').textContent = user.displayName || '@' + handle;
   document.getElementById('profileSub').textContent = '@' + (user.handle || handle) + '  |  ' + (user.bio || 'This vivid profile is still being shaped.');
+  document.getElementById('plusBadge').hidden = !isBeVividPlus(user);
   updateRecognitionUi(user);
   renderSocialStats(viewingPosts, followData);
   renderProfilePosts(viewingPosts);
@@ -617,6 +659,14 @@ async function loadProfile() {
   }
 
   const layout = decodeLayout(user.profileLayoutEncoded);
+  const canvasWidth = Math.max(900, Number(layout.canvasWidth) || 1200);
+  const canvasHeight = Math.max(700, Number(layout.canvasHeight) || 900);
+  const fullPageMode = layout.pageMode === 'full';
+  stage.style.width = `${canvasWidth}px`;
+  stage.style.minHeight = `${canvasHeight}px`;
+  stage.style.height = `${canvasHeight}px`;
+  stage.style.borderRadius = fullPageMode ? '0' : '24px';
+  stage.style.border = fullPageMode ? '0' : '1px solid rgba(245,240,235,.08)';
   stage.style.background = `radial-gradient(circle at 20% 10%, ${(layout.accent || '#ff2d55')}22, transparent 26%), ${layout.background || '#111111'}`;
   stage.innerHTML = '';
   const pattern = document.createElement('div');
@@ -644,14 +694,15 @@ async function loadProfile() {
     const button = document.createElement('button');
     button.className = 'audio-toggle';
     button.id = 'audioToggle';
-    button.textContent = audioState.playing ? 'Pause Audio' : 'Play Audio';
+    button.textContent = audioState.playing ? 'Pause Audio' : (isBeVividPlus(user) ? 'Auto Audio' : 'Play Audio');
     button.onclick = toggleProfileAudio;
     stage.appendChild(button);
 
     const note = document.createElement('div');
     note.className = 'audio-note';
-    note.textContent = layout.songLabel || 'Profile song ready';
+    note.textContent = isBeVividPlus(user) ? (layout.songLabel || 'beVivid+ profile song ready') : (layout.songLabel || 'Profile song ready');
     stage.appendChild(note);
+    if (isBeVividPlus(user)) setTimeout(() => { tryAutoPlayProfileSong(); }, 120);
   }
 
   (layout.elements || []).slice().sort((a, b) => (a.z || 0) - (b.z || 0)).forEach(el => {
