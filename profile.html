@@ -12,6 +12,10 @@
 html, body { margin: 0; min-height: 100%; background: #050505; color: #f5f0eb; font-family: 'Syne', sans-serif; }
 body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opacity: .05; background-image: radial-gradient(circle at 20% 20%, rgba(255,45,85,.18), transparent 24%), radial-gradient(circle at 80% 10%, rgba(52,170,220,.18), transparent 26%), radial-gradient(circle at 50% 100%, rgba(0,229,176,.14), transparent 25%); }
 .shell { position: relative; z-index: 1; min-height: 100vh; padding: 28px; max-width: 1560px; margin: 0 auto; }
+.shell, .header, .stage-wrap, .section-card, .modal-card { animation: pageRise .7s cubic-bezier(.16,1,.3,1) both; }
+.header { animation-delay: .05s; }
+.stage-wrap { animation-delay: .1s; }
+.section-card { animation-delay: .14s; }
 .topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
 .back, .studio { display: inline-flex; align-items: center; justify-content: center; padding: 12px 18px; border-radius: 999px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; }
 .header { margin: 0 auto 20px; max-width: 1280px; width: 100%; }
@@ -77,6 +81,7 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .follow-list { display: grid; gap: 12px; margin-top: 14px; }
 .follow-person { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 14px; border-radius: 18px; border: 1px solid rgba(245,240,235,.08); background: rgba(245,240,235,.03); }
 .follow-person-main { display: flex; gap: 12px; align-items: center; min-width: 0; }
+@keyframes pageRise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
 @media (max-width: 760px) { .shell { padding: 18px; } .topbar-right { width: 100%; } .profile-tools { flex-direction: column; align-items: stretch; } .search-form { width: 100%; } .search-input { min-width: 0; width: 100%; } .search-btn { width: 100%; } .stage-wrap { padding: 10px; } .stage { width: 980px; min-height: 780px; } .audio-toggle { left: 12px; bottom: 12px; } .audio-note { left: 12px; right: auto; bottom: 58px; } }
 </style>
 </head>
@@ -85,6 +90,7 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
   <div class="topbar">
     <a class="back" href="/">Back To beVivid</a>
     <div class="topbar-right">
+      <a class="studio" href="/community">Community</a>
       <a class="studio" id="studioLink" href="/profiledata">Open Studio</a>
       <form class="search-form" onsubmit="event.preventDefault(); searchProfiles();">
         <input class="search-input" id="searchHandle" type="text" placeholder="Find a user by handle" />
@@ -159,6 +165,7 @@ let viewingHandle = null;
 let viewingUser = null;
 let viewingPosts = [];
 let followData = { followers: {}, following: {} };
+let profileSearchTimer = null;
 const audioState = { el: null, ctx: null, analyser: null, data: null, raf: null, playing: false, sourceLoaded: false, pendingSource: '' };
 
 function getCookie(name) { const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)')); return match ? decodeURIComponent(match[1]) : ''; }
@@ -209,6 +216,21 @@ function renderSearchResults(users) {
 function normalizeSearchQuery(value) {
   return String(value || '').trim().replace(/^@+/, '').replace(/[^a-z0-9_ ]/gi, '').toLowerCase();
 }
+async function getSearchIndex() {
+  const cached = sessionStorage.getItem('bevivid_profile_search_index');
+  if (cached) {
+    try {
+      return JSON.parse(cached);
+    } catch (_) {
+      sessionStorage.removeItem('bevivid_profile_search_index');
+    }
+  }
+  const response = await fetch(`${FIREBASE_DB_URL}/publicUserIndex.json`);
+  if (!response.ok) throw new Error('Could not read public search index.');
+  const data = await response.json();
+  sessionStorage.setItem('bevivid_profile_search_index', JSON.stringify(data || {}));
+  return data || {};
+}
 function getSearchRank(user, query) {
   const handle = normalizeSearchQuery(user.handle);
   const displayName = normalizeSearchQuery(user.displayName);
@@ -228,11 +250,7 @@ async function queryUsersByPrefix(query) {
   } catch (_) {
     data = null;
   }
-  if (!data) {
-    const fallback = await fetch(`${FIREBASE_DB_URL}/publicUserIndex.json`);
-    if (!fallback.ok) throw new Error('Could not read public search index.');
-    data = await fallback.json();
-  }
+  if (!data) data = await getSearchIndex();
   return Object.values(data || {})
     .filter(user => user && (user.handle || user.displayName))
     .map(user => ({
@@ -252,13 +270,16 @@ async function handleSearchInput() {
     closeSearchResults();
     return;
   }
-  try {
-    const matches = await queryUsersByPrefix(query);
-    renderSearchResults(matches);
-  } catch (_) {
-    document.getElementById('searchResults').innerHTML = '<div class="search-empty">Search could not read the public profile index right now.</div>';
-    document.getElementById('searchResults').classList.add('open');
-  }
+  if (profileSearchTimer) clearTimeout(profileSearchTimer);
+  profileSearchTimer = setTimeout(async () => {
+    try {
+      const matches = await queryUsersByPrefix(query);
+      renderSearchResults(matches);
+    } catch (_) {
+      document.getElementById('searchResults').innerHTML = '<div class="search-empty">Search could not read the public profile index right now.</div>';
+      document.getElementById('searchResults').classList.add('open');
+    }
+  }, 120);
 }
 function withAlpha(color, alpha) {
   const hex = /^#[0-9a-fA-F]{6}$/.test(String(color || '').trim()) ? color : '#161616';
