@@ -39,12 +39,17 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .top-link { display: inline-flex; align-items: center; justify-content: center; padding: 11px 16px; border-radius: 999px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
 .workspace { border: 1px solid rgba(245,240,235,.08); border-radius: 26px; padding: 18px; background: linear-gradient(180deg, rgba(18,18,18,.88), rgba(7,7,7,.88)); width: min(100%, 1320px); box-shadow: inset 0 1px 0 rgba(255,255,255,.03); }
 .canvas-shell { overflow: auto; border-radius: 20px; background: radial-gradient(circle at top, rgba(255,45,85,.08), transparent 42%), rgba(0,0,0,.32); padding: 18px; min-height: calc(100vh - 180px); display: flex; justify-content: center; }
+.canvas-stage { display: flex; align-items: flex-start; justify-content: center; width: 100%; transform-origin: top center; transition: transform .22s ease; }
 .canvas { position: relative; width: 1200px; height: 900px; border-radius: 26px; overflow: hidden; background: linear-gradient(135deg, #111 0%, #181818 40%, #0b0b0b 100%); border: 1px solid rgba(245,240,235,.08); box-shadow: 0 30px 100px rgba(0,0,0,.35); }
 .studio-backdrop-viz { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: .42; display: none; }
 .canvas::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; }
 .pattern-layer { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: .42; mix-blend-mode: screen; }
 .designer-el { position: absolute; overflow: hidden; cursor: move; border: 1px solid transparent; transition: border-color .15s, box-shadow .15s; user-select: none; }
 .designer-el.selected { border-color: #ff9500; box-shadow: 0 0 0 1px rgba(255,149,0,.4), 0 14px 28px rgba(0,0,0,.28); }
+.designer-el.anim-float { animation: studioFloat 4.8s ease-in-out infinite; }
+.designer-el.anim-pulse { animation: studioPulse 2.8s ease-in-out infinite; }
+.designer-el.anim-drift { animation: studioDrift 6.8s ease-in-out infinite; }
+.designer-el.anim-flicker { animation: studioFlicker 2.6s steps(2, end) infinite; }
 .designer-el .inner { width: 100%; height: 100%; overflow: hidden; }
 .resize-handle { position: absolute; width: 16px; height: 16px; right: 6px; bottom: 6px; border-radius: 4px; background: #ff9500; cursor: nwse-resize; }
 .text-block { padding: 18px; white-space: pre-wrap; line-height: 1.45; }
@@ -78,6 +83,10 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .studio-loading-copy { color: rgba(245,240,235,.58); line-height: 1.7; margin: 0; }
 @keyframes studioSpin { to { transform: rotate(360deg); } }
 @keyframes studioRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes studioFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+@keyframes studioPulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.035); opacity: .88; } }
+@keyframes studioDrift { 0%, 100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(16px,-10px,0); } }
+@keyframes studioFlicker { 0%, 100% { opacity: 1; } 35% { opacity: .82; } 50% { opacity: .98; } 65% { opacity: .72; } }
 .studio-lock { position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(5,5,5,.96); }
 .studio-lock.open { display: flex; }
 .studio-lock-card { max-width: 520px; border: 1px solid rgba(245,240,235,.12); border-radius: 20px; background: linear-gradient(180deg, rgba(18,18,18,.98), rgba(8,8,8,.98)); padding: 28px; box-shadow: 0 30px 80px rgba(0,0,0,.45); }
@@ -139,7 +148,7 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
         <div class="chip-row"><div class="chip" id="layoutCount">0 blocks</div></div>
       </div>
     </div>
-    <div class="workspace"><div class="canvas-shell"><div class="canvas" id="canvas"></div></div></div>
+    <div class="workspace"><div class="canvas-shell"><div class="canvas-stage" id="canvasStage"><div class="canvas" id="canvas"></div></div></div></div>
   </main>
 
   <aside class="inspector"><div class="panel">
@@ -195,6 +204,23 @@ function getContrastColor(color) {
   const b = parseInt(hex.slice(5, 7), 16);
   const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
   return luminance > 0.66 ? '#141414' : '#f2e9e2';
+}
+function sanitizeProfileDataForPlan(profileData, premium) {
+  const next = Object.assign({}, profileData || {});
+  next.pageBackground = toColorValue(next.pageBackground, '#050505');
+  next.pageAccent = toColorValue(next.pageAccent, '#a259ff');
+  next.pagePattern = next.pagePattern || 'none';
+  next.canvasWidth = clamp(Number(next.canvasWidth) || 1200, 900, 1800);
+  next.canvasHeight = clamp(Number(next.canvasHeight) || 900, 700, 1400);
+  next.pageMode = premium && next.pageMode === 'full' ? 'full' : 'framed';
+  if (!premium) {
+    next.pageBackground = '#050505';
+    next.pageAccent = '#a259ff';
+    next.pagePattern = 'none';
+    next.canvasWidth = 1200;
+    next.canvasHeight = 900;
+  }
+  return next;
 }
 function applyStudioBackdrop() {
   const fullPageMode = isBeVividPlus(state.user) && state.profileData.pageMode === 'full';
@@ -368,12 +394,12 @@ async function toggleProfileAudio() {
 
 function renderCanvas() {
   const canvas = document.getElementById('canvas');
+  const canvasStage = document.getElementById('canvasStage');
+  const canvasShell = document.querySelector('.canvas-shell');
+  state.profileData = sanitizeProfileDataForPlan(state.profileData, isBeVividPlus(state.user));
   const width = clamp(Number(state.profileData.canvasWidth) || 1200, 900, 1800);
   const height = clamp(Number(state.profileData.canvasHeight) || 900, 700, 1400);
-  const fullPageMode = state.profileData.pageMode === 'full';
-  state.profileData.canvasWidth = width;
-  state.profileData.canvasHeight = height;
-  state.profileData.pageMode = fullPageMode ? 'full' : 'framed';
+  const fullPageMode = isBeVividPlus(state.user) && state.profileData.pageMode === 'full';
   applyStudioBackdrop();
   canvas.innerHTML = '';
   canvas.style.width = `${width}px`;
@@ -382,6 +408,15 @@ function renderCanvas() {
   canvas.style.border = fullPageMode ? '0' : '1px solid rgba(245,240,235,.08)';
   canvas.style.boxShadow = fullPageMode ? 'none' : '0 30px 100px rgba(0,0,0,.35)';
   canvas.style.background = fullPageMode ? 'transparent' : `radial-gradient(circle at 20% 10%, ${state.profileData.accent}22, transparent 26%), ${state.profileData.background}`;
+  if (fullPageMode) {
+    const shellWidth = Math.max(320, canvasShell.clientWidth - 24);
+    const scale = Math.min(1, shellWidth / width);
+    canvasStage.style.transform = `scale(${scale})`;
+    canvasStage.style.height = `${Math.max(340, Math.round(height * scale))}px`;
+  } else {
+    canvasStage.style.transform = 'scale(1)';
+    canvasStage.style.height = `${height}px`;
+  }
   document.querySelector('.workspace').style.border = fullPageMode ? '0' : '1px solid rgba(245,240,235,.08)';
   document.querySelector('.workspace').style.background = fullPageMode ? 'transparent' : 'linear-gradient(180deg, rgba(18,18,18,.88), rgba(7,7,7,.88))';
   document.querySelector('.workspace').style.boxShadow = fullPageMode ? 'none' : 'inset 0 1px 0 rgba(255,255,255,.03)';
@@ -419,7 +454,7 @@ function renderCanvas() {
   }
   state.profileData.elements.slice().sort((a, b) => (a.z || 0) - (b.z || 0)).forEach(el => {
     const node = document.createElement('div');
-    node.className = 'designer-el' + (el.id === state.selectedId ? ' selected' : '');
+    node.className = 'designer-el' + (el.id === state.selectedId ? ' selected' : '') + (el.animation && el.animation !== 'none' ? ` anim-${el.animation}` : '');
     node.style.left = `${el.x}px`; node.style.top = `${el.y}px`; node.style.width = `${el.w}px`; node.style.height = `${el.h}px`;
     node.style.borderRadius = `${el.radius || 0}px`; node.style.opacity = String(el.opacity ?? 1); node.style.transform = `rotate(${el.rotation || 0}deg)`; node.style.background = el.type === 'image' ? withAlpha(el.bg || '#161616', el.bgAlpha ?? 0.28) : (el.bg || 'rgba(255,255,255,0.04)'); node.style.zIndex = String(el.z || 1);
     node.dataset.id = el.id; node.addEventListener('mousedown', startDrag); node.addEventListener('click', () => selectElement(el.id));
@@ -499,6 +534,7 @@ function renderInspector() {
       <div class="field"><label>Block Color</label><input id="insBg" type="color" value="${toColorValue(el.bg, '#222222')}"></div>
       <div class="field"><label>Text Color</label><input id="insColor" type="color" value="${toColorValue(el.color, '#f5f0eb')}"></div>
     </div>
+    <div class="field"><label>Animation</label><select id="insAnimation"><option value="none"${(el.animation || 'none') === 'none' ? ' selected' : ''}>None</option><option value="float"${el.animation === 'float' ? ' selected' : ''}>Float</option><option value="pulse"${el.animation === 'pulse' ? ' selected' : ''}>Pulse</option><option value="drift"${el.animation === 'drift' ? ' selected' : ''}>Drift</option><option value="flicker"${el.animation === 'flicker' ? ' selected' : ''}>Flicker</option></select></div>
     <div class="field"><label>Font Family</label><select id="insFont">${FONTS.map(font => `<option value="${escapeAttr(font)}"${(el.fontFamily || 'Syne') === font ? ' selected' : ''}>${escapeHtml(font)}</option>`).join('')}</select></div>
     <div class="field"><label>Layer</label><div class="chip">z-index ${el.z || 1}</div></div>
     <div class="two"><button class="mini-btn" type="button" onclick="bringForward()">Bring Forward</button><button class="mini-btn" type="button" onclick="sendBackward()">Send Backward</button></div>
@@ -512,7 +548,7 @@ function bindInspectorEvents(el) {
   const map = {
     insText: v => el.text = v, insUrl: v => el.url = v, insAlign: v => el.align = v, insW: v => el.w = Number(v), insH: v => el.h = Number(v),
     insSize: v => el.fontSize = Number(v), insRadius: v => el.radius = Number(v), insOpacity: v => el.opacity = Number(v) / 100,
-    insRotate: v => el.rotation = Number(v), insBg: v => { el.bg = v; if (el.type === 'text' || el.type === 'shape') el.color = getContrastColor(v); }, insColor: v => el.color = v, insFont: v => el.fontFamily = v, insImageBgAlpha: v => el.bgAlpha = Number(v) / 100, insFitMode: v => el.fitMode = v
+    insRotate: v => el.rotation = Number(v), insBg: v => { el.bg = v; if (el.type === 'text' || el.type === 'shape') el.color = getContrastColor(v); }, insColor: v => el.color = v, insFont: v => el.fontFamily = v, insImageBgAlpha: v => el.bgAlpha = Number(v) / 100, insFitMode: v => el.fitMode = v, insAnimation: v => el.animation = v
   };
   Object.keys(map).forEach(id => {
     const node = document.getElementById(id);
@@ -541,7 +577,7 @@ function bindInspectorEvents(el) {
 
 function selectElement(id) { state.selectedId = id; renderCanvas(); renderInspector(); }
 function addElement(type) {
-  const el = { id: makeId(), type, x: 120 + state.profileData.elements.length * 16, y: 120 + state.profileData.elements.length * 16, w: 280, h: type === 'text' ? 180 : 220, text: type === 'text' ? 'New text block' : '', url: '', bg: type === 'shape' ? '#a259ff' : '#161616', bgAlpha: type === 'image' ? 0.28 : 1, color: type === 'text' ? '#f2e9e2' : '#141414', fontFamily: 'Syne', fontSize: 20, radius: 18, opacity: 1, rotation: 0, align: 'left', fitMode: 'cover', flipX: false, flipY: false, z: (Math.max(0, ...state.profileData.elements.map(item => item.z || 0)) + 1) };
+  const el = { id: makeId(), type, x: 120 + state.profileData.elements.length * 16, y: 120 + state.profileData.elements.length * 16, w: 280, h: type === 'text' ? 180 : 220, text: type === 'text' ? 'New text block' : '', url: '', bg: type === 'shape' ? '#a259ff' : '#161616', bgAlpha: type === 'image' ? 0.28 : 1, color: type === 'text' ? '#f2e9e2' : '#141414', fontFamily: 'Syne', fontSize: 20, radius: 18, opacity: 1, rotation: 0, align: 'left', fitMode: 'cover', flipX: false, flipY: false, animation: 'none', z: (Math.max(0, ...state.profileData.elements.map(item => item.z || 0)) + 1) };
   if (type === 'spotify') el.url = 'https://open.spotify.com/embed/track/11dFghVXANMlKmJXsNCbNl';
   if (type === 'soundcloud') el.url = 'https://soundcloud.com/forss/flickermood';
   state.profileData.elements.push(el); selectElement(el.id);
@@ -612,12 +648,7 @@ async function loadUserAndLayout() {
     if (!user) throw new Error('Profile record not found.');
     state.user = Object.assign({}, state.user, user);
     state.profileData = user.profileLayoutEncoded ? decodeLayout(user.profileLayoutEncoded) : defaultLayout(state.user);
-    state.profileData.pageBackground = toColorValue(state.profileData.pageBackground, '#050505');
-    state.profileData.pageAccent = toColorValue(state.profileData.pageAccent, '#a259ff');
-    state.profileData.pagePattern = state.profileData.pagePattern || 'none';
-    state.profileData.canvasWidth = clamp(Number(state.profileData.canvasWidth) || 1200, 900, 1800);
-    state.profileData.canvasHeight = clamp(Number(state.profileData.canvasHeight) || 900, 700, 1400);
-    state.profileData.pageMode = state.profileData.pageMode === 'full' ? 'full' : 'framed';
+    state.profileData = sanitizeProfileDataForPlan(state.profileData, isBeVividPlus(state.user));
     state.profileData.songAudio = (audioRecord && audioRecord.audioData) || user.profileSongAudio || state.profileData.songAudio || '';
     setStatus(isBeVividPlus(state.user) ? 'beVivid+ is active. Full-page editing is unlocked.' : 'Profile Studio loaded. Build something vivid.', 'ok');
   } catch (error) {
@@ -632,6 +663,7 @@ async function saveProfileLayout() {
   setSavingOverlay(true);
   setStatus('Saving your profile...', '');
   try {
+    state.profileData = sanitizeProfileDataForPlan(state.profileData, isBeVividPlus(state.user));
     const layoutToSave = Object.assign({}, state.profileData, { songAudio: '' });
     const encodedLayout = encodeLayout(layoutToSave);
     const response = await fetch(getUserPath(state.user.handle), {
