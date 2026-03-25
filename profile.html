@@ -97,23 +97,53 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 @keyframes profilePulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.035); opacity: .88; } }
 @keyframes profileDrift { 0%, 100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(16px,-10px,0); } }
 @keyframes profileFlicker { 0%, 100% { opacity: 1; } 35% { opacity: .82; } 50% { opacity: .98; } 65% { opacity: .72; } }
-@media (max-width: 760px) { .shell { padding: 18px; } .topbar-right { width: 100%; } .profile-tools { flex-direction: column; align-items: stretch; } .search-form { width: 100%; } .search-input { min-width: 0; width: 100%; } .search-btn { width: 100%; } .stage-wrap { padding: 10px; } .stage { width: 980px; min-height: 780px; } .audio-toggle { left: 12px; bottom: 12px; } .audio-note { left: 12px; right: auto; bottom: 58px; } }
+/* Sidebar refresh */
+.profile-layout-shell { display: grid; grid-template-columns: 300px minmax(0,1fr); gap: 24px; align-items: start; max-width: 1680px; }
+.profile-sidebar { position: sticky; top: 24px; display: grid; gap: 16px; }
+.profile-main { min-width: 0; display: grid; gap: 22px; }
+.profile-main .header { margin: 0; max-width: none; }
+.profile-main .stage-wrap { margin: 0; }
+.sidebar-card { border: 1px solid rgba(245,240,235,.08); border-radius: 28px; padding: 20px; background: rgba(245,240,235,.03); backdrop-filter: blur(18px); box-shadow: 0 22px 50px rgba(0,0,0,.22); }
+.sidebar-title { font-family: 'Bebas Neue', sans-serif; font-size: 38px; line-height: .92; margin: 0 0 10px; }
+.sidebar-copy, .sidebar-meta { color: rgba(245,240,235,.56); line-height: 1.7; font-size: 13px; }
+.sidebar-current { margin-top: 12px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: rgba(245,240,235,.72); }
+.sidebar-section { display: grid; gap: 10px; margin-top: 16px; }
+.sidebar-link { display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 13px 16px; border-radius: 16px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; transition: transform .18s ease, border-color .18s ease, background .18s ease; }
+.sidebar-link:hover { transform: translateY(-1px); border-color: rgba(255,149,0,.24); background: rgba(245,240,235,.06); }
+.sidebar-link--primary { background: linear-gradient(135deg, rgba(255,149,0,.98), rgba(245,240,235,.94)); color: #050505; border-color: transparent; }
+.sidebar-link--primary:hover { background: #ff9500; }
+.profile-sidebar .search-form { display: grid; gap: 10px; width: 100%; }
+.profile-sidebar .search-input { min-width: 0; width: 100%; }
+.profile-sidebar .search-btn { width: 100%; }
+@media (max-width: 1080px) { .profile-layout-shell { grid-template-columns: 1fr; } .profile-sidebar { position: static; } }
+@media (max-width: 760px) { .profile-layout-shell { padding: 18px; } .profile-tools { flex-direction: column; align-items: stretch; } .search-form { width: 100%; } .search-input { min-width: 0; width: 100%; } .search-btn { width: 100%; } .stage-wrap { padding: 10px; } .stage { width: 980px; min-height: 780px; } .audio-toggle { left: 12px; bottom: 12px; } .audio-note { left: 12px; right: auto; bottom: 58px; } }
 </style>
 </head>
 <body>
-<div class="shell">
-  <div class="topbar">
-    <a class="back" href="/">Back To beVivid</a>
-    <div class="topbar-right">
-      <a class="studio" href="/community">Community</a>
-      <a class="studio" id="studioLink" href="/profiledata">Open Studio</a>
+<div class="shell profile-layout-shell">
+  <aside class="profile-sidebar">
+    <div class="sidebar-card">
+      <div class="eyebrow">Navigate</div>
+      <h2 class="sidebar-title">Keep the profile focused.</h2>
+      <div class="sidebar-copy">Everything important sits in one calm lane now, so the actual page has room to breathe.</div>
+      <div class="sidebar-section">
+        <a class="sidebar-link" href="/">Back To beVivid</a>
+        <a class="sidebar-link" href="/community">Community</a>
+        <a class="sidebar-link sidebar-link--primary" id="studioLink" href="/profiledata">Open Studio</a>
+      </div>
+    </div>
+    <div class="sidebar-card">
+      <div class="eyebrow">Find Profiles</div>
+      <div class="sidebar-meta" id="sidebarViewMeta">Search by handle or display name to jump into another page.</div>
+      <div class="sidebar-current" id="sidebarCurrentHandle">@loading</div>
       <form class="search-form" onsubmit="event.preventDefault(); searchProfiles();">
         <input class="search-input" id="searchHandle" type="text" placeholder="Find a user by handle" />
         <button class="search-btn" type="submit">Search User</button>
         <div class="search-results" id="searchResults"></div>
       </form>
     </div>
-  </div>
+  </aside>
+  <div class="profile-main">
   <div class="header">
     <div class="eyebrow">Profile</div>
     <div class="title-row">
@@ -160,6 +190,7 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
       <div class="section-sub">Recent posts from this profile appear here so their page and community presence stay connected.</div>
       <div class="mini-feed" id="profilePosts"></div>
     </div>
+  </div>
   </div>
 </div>
 <div class="modal" id="followModal">
@@ -697,11 +728,17 @@ async function loadProfile() {
     document.getElementById('profileTitle').textContent = 'No handle selected';
     document.getElementById('profileSub').textContent = 'Open this page with ?handle=yourhandle or sign in first.';
     document.getElementById('stage').innerHTML = '<div class="empty">No profile handle was provided.</div>';
+    document.getElementById('sidebarCurrentHandle').textContent = '@none';
+    document.getElementById('sidebarViewMeta').textContent = 'Open a profile with ?handle=yourhandle or sign in first.';
     return;
   }
 
   viewingHandle = handle;
   document.getElementById('searchHandle').value = handle;
+  document.getElementById('sidebarCurrentHandle').textContent = `@${handle}`;
+  document.getElementById('sidebarViewMeta').textContent = activeUser && activeUser.handle === handle
+    ? 'You are viewing your own profile page.'
+    : 'You are viewing a public profile page.';
   document.getElementById('studioLink').href = `/profiledata?handle=${encodeURIComponent(handle)}`;
   const [userResponse, socialResponse, posts] = await Promise.all([
     fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(handle)}.json`),
@@ -713,6 +750,8 @@ async function loadProfile() {
     document.getElementById('profileTitle').textContent = 'Profile not found';
     document.getElementById('profileSub').textContent = 'That handle does not exist in Firebase yet.';
     document.getElementById('stage').innerHTML = '<div class="empty">This profile has not been created yet.</div>';
+    document.getElementById('sidebarCurrentHandle').textContent = `@${handle}`;
+    document.getElementById('sidebarViewMeta').textContent = 'That profile has not been created yet.';
     document.getElementById('recognitionPoints').textContent = '0';
     document.getElementById('recognizeBtn').disabled = true;
     document.getElementById('recognizeBtn').textContent = 'Unavailable';
@@ -726,6 +765,9 @@ async function loadProfile() {
   }
   viewingPosts = posts;
   viewingUser = user;
+  document.getElementById('sidebarViewMeta').textContent = user.displayName
+    ? `${user.displayName} is live here.`
+    : `Viewing @${handle}.`;
 
   document.getElementById('profileTitle').textContent = user.displayName || '@' + handle;
   document.getElementById('profileSub').textContent = '@' + (user.handle || handle) + '  |  ' + (user.bio || 'This vivid profile is still being shaped.');
