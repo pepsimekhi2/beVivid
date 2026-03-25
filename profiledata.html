@@ -210,9 +210,12 @@ function sanitizeProfileDataForPlan(profileData, premium) {
   next.pageBackground = toColorValue(next.pageBackground, '#050505');
   next.pageAccent = toColorValue(next.pageAccent, '#a259ff');
   next.pagePattern = next.pagePattern || 'none';
-  next.canvasWidth = clamp(Number(next.canvasWidth) || 1200, 900, 1800);
-  next.canvasHeight = clamp(Number(next.canvasHeight) || 900, 700, 1400);
+  next.canvasWidth = premium ? Math.max(900, Number(next.canvasWidth) || 1200) : 1200;
+  next.canvasHeight = premium ? Math.max(700, Number(next.canvasHeight) || 900) : 900;
   next.pageMode = premium && next.pageMode === 'full' ? 'full' : 'framed';
+  next.visualizerVariant = premium
+    ? (next.visualizerVariant || 'halo')
+    : ((next.visualizerVariant === 'bars' || next.visualizerVariant === 'wave') ? next.visualizerVariant : 'bars');
   if (!premium) {
     next.pageBackground = '#050505';
     next.pageAccent = '#a259ff';
@@ -224,8 +227,8 @@ function sanitizeProfileDataForPlan(profileData, premium) {
 }
 function getCanvasBounds() {
   return {
-    width: clamp(Number(state.profileData.canvasWidth) || CANVAS_W, 900, 1800),
-    height: clamp(Number(state.profileData.canvasHeight) || CANVAS_H, 700, 1400)
+    width: isBeVividPlus(state.user) ? Math.max(900, Number(state.profileData.canvasWidth) || CANVAS_W) : CANVAS_W,
+    height: isBeVividPlus(state.user) ? Math.max(700, Number(state.profileData.canvasHeight) || CANVAS_H) : CANVAS_H
   };
 }
 function applyStudioBackdrop() {
@@ -247,7 +250,7 @@ function applyStudioBackdrop() {
     document.body.appendChild(studioBackdropViz);
   }
   studioBackdropViz.style.display = fullPageMode ? 'block' : 'none';
-  if (fullPageMode) drawVisualizer(studioBackdropViz, 'plus');
+  if (fullPageMode) drawVisualizer(studioBackdropViz, state.profileData.visualizerVariant || 'halo');
 }
 function getPatternStyle(pattern, accent) {
   if (pattern === 'dots') return { image: `radial-gradient(${accent}88 1.6px, transparent 1.6px)`, size: '22px 22px' };
@@ -294,6 +297,7 @@ function defaultLayout(user) {
     pageBackground: '#050505',
     pageAccent: '#a259ff',
     pagePattern: 'none',
+    visualizerVariant: 'bars',
     canvasWidth: 1200,
     canvasHeight: 900,
     pageMode: 'framed',
@@ -322,7 +326,7 @@ function getEmbedMarkup(url, type) {
   return `<iframe src="${escapeAttr(src)}" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
 }
 
-function drawVisualizer(canvas, styleVariant = 'free') {
+function drawVisualizer(canvas, styleVariant = 'bars') {
   const ctx = canvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
   const width = canvas.clientWidth;
@@ -334,7 +338,7 @@ function drawVisualizer(canvas, styleVariant = 'free') {
   const bars = 54;
   const gap = width / bars;
   const audio = state.audio;
-  const accent = styleVariant === 'plus' ? (state.profileData.pageAccent || '#a259ff') : (state.profileData.accent || '#ff2d55');
+  const accent = (styleVariant === 'halo' || styleVariant === 'orbit') ? (state.profileData.pageAccent || '#a259ff') : (state.profileData.accent || '#ff2d55');
 
   function frame() {
     ctx.clearRect(0, 0, width, height);
@@ -343,24 +347,25 @@ function drawVisualizer(canvas, styleVariant = 'free') {
       audio.analyser.getByteFrequencyData(audio.data);
       values = values.map((_, i) => (audio.data[Math.min(audio.data.length - 1, i * 2)] || 0) / 255);
     }
-    if (styleVariant === 'plus') {
+    if (styleVariant === 'halo' || styleVariant === 'orbit') {
       const centerX = width / 2;
       const centerY = height / 2;
-      const ring = Math.min(width, height) * 0.2;
+      const ring = Math.min(width, height) * (styleVariant === 'orbit' ? 0.16 : 0.2);
       ctx.save();
       ctx.translate(centerX, centerY);
       values.forEach((value, i) => {
         const angle = (Math.PI * 2 * i) / bars;
-        const outer = ring + value * Math.min(width, height) * 0.18;
-        const inner = ring * 0.58;
-        ctx.strokeStyle = `${accent}${i % 2 ? '66' : 'aa'}`;
-        ctx.lineWidth = Math.max(2, Math.min(7, value * 8));
+        const motion = 0.18 + value * 0.26;
+        const outer = ring + motion * Math.min(width, height) * (styleVariant === 'orbit' ? 0.12 : 0.18);
+        const inner = ring * (styleVariant === 'orbit' ? 0.28 : 0.58);
+        ctx.strokeStyle = `${accent}${i % 2 ? '88' : 'cc'}`;
+        ctx.lineWidth = Math.max(2.4, Math.min(8, 2.4 + value * 8));
         ctx.beginPath();
         ctx.moveTo(Math.cos(angle) * inner, Math.sin(angle) * inner);
         ctx.lineTo(Math.cos(angle) * outer, Math.sin(angle) * outer);
         ctx.stroke();
       });
-      const orb = ctx.createRadialGradient(0, 0, ring * 0.12, 0, 0, ring * 1.1);
+      const orb = ctx.createRadialGradient(0, 0, ring * 0.08, 0, 0, ring * (styleVariant === 'orbit' ? 1.6 : 1.1));
       orb.addColorStop(0, `${accent}cc`);
       orb.addColorStop(.45, `${accent}2a`);
       orb.addColorStop(1, `${accent}00`);
@@ -369,6 +374,27 @@ function drawVisualizer(canvas, styleVariant = 'free') {
       ctx.arc(0, 0, ring * 1.05, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
+    } else if (styleVariant === 'wave') {
+      ctx.beginPath();
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = `${accent}cc`;
+      values.forEach((value, i) => {
+        const x = i * gap;
+        const y = height * 0.55 - (value * height * 0.28);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = `${accent}66`;
+      values.forEach((value, i) => {
+        const x = i * gap;
+        const y = height * 0.7 - (value * height * 0.18);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
     } else {
       const gradient = ctx.createLinearGradient(0, height, width, 0);
       gradient.addColorStop(0, `${accent}00`);
@@ -470,7 +496,7 @@ function renderCanvas() {
   viz.className = 'visualizer-bg';
   if (!fullPageMode) {
     canvas.appendChild(viz);
-    drawVisualizer(viz, 'free');
+    drawVisualizer(viz, state.profileData.visualizerVariant || 'bars');
   }
 
   if (state.profileData.songAudio) {
@@ -521,14 +547,15 @@ function renderInspector() {
       <div class="field"><label>Full Page Backdrop</label><input id="plusPageBackground" type="color" value="${toColorValue(state.profileData.pageBackground, '#050505')}"></div>
       <div class="field"><label>Full Page Accent</label><input id="plusPageAccent" type="color" value="${toColorValue(state.profileData.pageAccent, '#a259ff')}"></div>
       <div class="field"><label>Full Page Pattern</label><select id="plusPagePattern"><option value="none"${(state.profileData.pagePattern || 'none') === 'none' ? ' selected' : ''}>None</option><option value="grid"${state.profileData.pagePattern === 'grid' ? ' selected' : ''}>Grid</option><option value="dots"${state.profileData.pagePattern === 'dots' ? ' selected' : ''}>Dots</option><option value="stripes"${state.profileData.pagePattern === 'stripes' ? ' selected' : ''}>Stripes</option><option value="waves"${state.profileData.pagePattern === 'waves' ? ' selected' : ''}>Waves</option></select></div>
+      <div class="field"><label>Visualizer Style</label><select id="plusVisualizerVariant"><option value="halo"${(state.profileData.visualizerVariant || 'halo') === 'halo' ? ' selected' : ''}>Halo</option><option value="orbit"${state.profileData.visualizerVariant === 'orbit' ? ' selected' : ''}>Orbit</option><option value="wave"${state.profileData.visualizerVariant === 'wave' ? ' selected' : ''}>Wave</option><option value="bars"${state.profileData.visualizerVariant === 'bars' ? ' selected' : ''}>Bars</option></select></div>
       <div class="two">
-        <div class="field"><label>Canvas Width</label><input id="plusCanvasWidth" type="range" min="900" max="1800" value="${clamp(Number(state.profileData.canvasWidth) || 1200, 900, 1800)}"></div>
-        <div class="field"><label>Canvas Height</label><input id="plusCanvasHeight" type="range" min="700" max="1400" value="${clamp(Number(state.profileData.canvasHeight) || 900, 700, 1400)}"></div>
+        <div class="field"><label>Canvas Width</label><input id="plusCanvasWidth" type="range" min="900" max="3600" value="${Math.max(900, Number(state.profileData.canvasWidth) || 1200)}"></div>
+        <div class="field"><label>Canvas Height</label><input id="plusCanvasHeight" type="range" min="700" max="3200" value="${Math.max(700, Number(state.profileData.canvasHeight) || 900)}"></div>
       </div>
     `;
   } else {
     plusControls.className = 'empty';
-    plusControls.innerHTML = 'beVivid+ unlocks full-page controls like canvas size and page framing.';
+    plusControls.innerHTML = '<div class="field"><label>Visualizer Style</label><select id="freeVisualizerVariant"><option value="bars"' + ((state.profileData.visualizerVariant || 'bars') === 'bars' ? ' selected' : '') + '>Bars</option><option value="wave"' + (state.profileData.visualizerVariant === 'wave' ? ' selected' : '') + '>Wave</option></select></div>';
   }
   const plusPageMode = document.getElementById('plusPageMode');
   if (plusPageMode) plusPageMode.addEventListener('input', () => { state.profileData.pageMode = plusPageMode.value; renderCanvas(); renderInspector(); });
@@ -538,6 +565,10 @@ function renderInspector() {
   if (plusPageAccent) plusPageAccent.addEventListener('input', () => { state.profileData.pageAccent = plusPageAccent.value; renderCanvas(); renderInspector(); });
   const plusPagePattern = document.getElementById('plusPagePattern');
   if (plusPagePattern) plusPagePattern.addEventListener('input', () => { state.profileData.pagePattern = plusPagePattern.value; renderCanvas(); });
+  const plusVisualizerVariant = document.getElementById('plusVisualizerVariant');
+  if (plusVisualizerVariant) plusVisualizerVariant.addEventListener('input', () => { state.profileData.visualizerVariant = plusVisualizerVariant.value; renderCanvas(); });
+  const freeVisualizerVariant = document.getElementById('freeVisualizerVariant');
+  if (freeVisualizerVariant) freeVisualizerVariant.addEventListener('input', () => { state.profileData.visualizerVariant = freeVisualizerVariant.value; renderCanvas(); });
   const plusCanvasWidth = document.getElementById('plusCanvasWidth');
   if (plusCanvasWidth) plusCanvasWidth.addEventListener('input', () => { state.profileData.canvasWidth = Number(plusCanvasWidth.value); renderCanvas(); });
   const plusCanvasHeight = document.getElementById('plusCanvasHeight');
