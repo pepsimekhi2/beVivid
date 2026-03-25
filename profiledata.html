@@ -222,6 +222,12 @@ function sanitizeProfileDataForPlan(profileData, premium) {
   }
   return next;
 }
+function getCanvasBounds() {
+  return {
+    width: clamp(Number(state.profileData.canvasWidth) || CANVAS_W, 900, 1800),
+    height: clamp(Number(state.profileData.canvasHeight) || CANVAS_H, 700, 1400)
+  };
+}
 function applyStudioBackdrop() {
   const fullPageMode = isBeVividPlus(state.user) && state.profileData.pageMode === 'full';
   const background = (fullPageMode && state.profileData.pageBackground) || '#050505';
@@ -241,7 +247,7 @@ function applyStudioBackdrop() {
     document.body.appendChild(studioBackdropViz);
   }
   studioBackdropViz.style.display = fullPageMode ? 'block' : 'none';
-  if (fullPageMode) drawVisualizer(studioBackdropViz);
+  if (fullPageMode) drawVisualizer(studioBackdropViz, 'plus');
 }
 function getPatternStyle(pattern, accent) {
   if (pattern === 'dots') return { image: `radial-gradient(${accent}88 1.6px, transparent 1.6px)`, size: '22px 22px' };
@@ -316,7 +322,7 @@ function getEmbedMarkup(url, type) {
   return `<iframe src="${escapeAttr(src)}" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
 }
 
-function drawVisualizer(canvas) {
+function drawVisualizer(canvas, styleVariant = 'free') {
   const ctx = canvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
   const width = canvas.clientWidth;
@@ -328,27 +334,54 @@ function drawVisualizer(canvas) {
   const bars = 54;
   const gap = width / bars;
   const audio = state.audio;
+  const accent = styleVariant === 'plus' ? (state.profileData.pageAccent || '#a259ff') : (state.profileData.accent || '#ff2d55');
 
   function frame() {
     ctx.clearRect(0, 0, width, height);
-    const gradient = ctx.createLinearGradient(0, height, width, 0);
-    gradient.addColorStop(0, `${state.profileData.accent}00`);
-    gradient.addColorStop(0.4, `${state.profileData.accent}55`);
-    gradient.addColorStop(1, `${state.profileData.accent}10`);
-    ctx.fillStyle = gradient;
-
     let values = new Array(bars).fill(0).map((_, i) => 0.25 + Math.sin((Date.now() / 420) + i * 0.35) * 0.12);
     if (audio.analyser && audio.data) {
       audio.analyser.getByteFrequencyData(audio.data);
       values = values.map((_, i) => (audio.data[Math.min(audio.data.length - 1, i * 2)] || 0) / 255);
     }
-
-    values.forEach((value, i) => {
-      const barHeight = Math.max(20, value * (height * 0.65));
-      const x = i * gap;
-      const y = height - barHeight;
-      ctx.fillRect(x + 3, y, Math.max(6, gap - 6), barHeight);
-    });
+    if (styleVariant === 'plus') {
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const ring = Math.min(width, height) * 0.2;
+      ctx.save();
+      ctx.translate(centerX, centerY);
+      values.forEach((value, i) => {
+        const angle = (Math.PI * 2 * i) / bars;
+        const outer = ring + value * Math.min(width, height) * 0.18;
+        const inner = ring * 0.58;
+        ctx.strokeStyle = `${accent}${i % 2 ? '66' : 'aa'}`;
+        ctx.lineWidth = Math.max(2, Math.min(7, value * 8));
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(angle) * inner, Math.sin(angle) * inner);
+        ctx.lineTo(Math.cos(angle) * outer, Math.sin(angle) * outer);
+        ctx.stroke();
+      });
+      const orb = ctx.createRadialGradient(0, 0, ring * 0.12, 0, 0, ring * 1.1);
+      orb.addColorStop(0, `${accent}cc`);
+      orb.addColorStop(.45, `${accent}2a`);
+      orb.addColorStop(1, `${accent}00`);
+      ctx.fillStyle = orb;
+      ctx.beginPath();
+      ctx.arc(0, 0, ring * 1.05, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    } else {
+      const gradient = ctx.createLinearGradient(0, height, width, 0);
+      gradient.addColorStop(0, `${accent}00`);
+      gradient.addColorStop(0.4, `${accent}55`);
+      gradient.addColorStop(1, `${accent}10`);
+      ctx.fillStyle = gradient;
+      values.forEach((value, i) => {
+        const barHeight = Math.max(20, value * (height * 0.65));
+        const x = i * gap;
+        const y = height - barHeight;
+        ctx.fillRect(x + 3, y, Math.max(6, gap - 6), barHeight);
+      });
+    }
 
     audio.raf = requestAnimationFrame(frame);
   }
@@ -397,8 +430,9 @@ function renderCanvas() {
   const canvasStage = document.getElementById('canvasStage');
   const canvasShell = document.querySelector('.canvas-shell');
   state.profileData = sanitizeProfileDataForPlan(state.profileData, isBeVividPlus(state.user));
-  const width = clamp(Number(state.profileData.canvasWidth) || 1200, 900, 1800);
-  const height = clamp(Number(state.profileData.canvasHeight) || 900, 700, 1400);
+  const bounds = getCanvasBounds();
+  const width = bounds.width;
+  const height = bounds.height;
   const fullPageMode = isBeVividPlus(state.user) && state.profileData.pageMode === 'full';
   applyStudioBackdrop();
   canvas.innerHTML = '';
@@ -410,7 +444,8 @@ function renderCanvas() {
   canvas.style.background = fullPageMode ? 'transparent' : `radial-gradient(circle at 20% 10%, ${state.profileData.accent}22, transparent 26%), ${state.profileData.background}`;
   if (fullPageMode) {
     const shellWidth = Math.max(320, canvasShell.clientWidth - 24);
-    const scale = Math.min(1, shellWidth / width);
+    const shellHeight = Math.max(320, window.innerHeight - 250);
+    const scale = Math.min(0.72, 1, shellWidth / width, shellHeight / height);
     canvasStage.style.transform = `scale(${scale})`;
     canvasStage.style.height = `${Math.max(340, Math.round(height * scale))}px`;
   } else {
@@ -435,7 +470,7 @@ function renderCanvas() {
   viz.className = 'visualizer-bg';
   if (!fullPageMode) {
     canvas.appendChild(viz);
-    drawVisualizer(viz);
+    drawVisualizer(viz, 'free');
   }
 
   if (state.profileData.songAudio) {
@@ -519,8 +554,8 @@ function renderInspector() {
     <div class="field"><label>Selected Block</label><div class="chip">${escapeHtml(el.type)}</div></div>
     ${textField}${urlField}${uploadField}${imageBgField}${imageFlipField}${alignField}
     <div class="two">
-      <div class="field"><label>Width</label><input id="insW" type="range" min="80" max="900" value="${el.w}"></div>
-      <div class="field"><label>Height</label><input id="insH" type="range" min="80" max="700" value="${el.h}"></div>
+      <div class="field"><label>Width</label><input id="insW" type="range" min="80" max="${Math.max(220, bounds.width)}" value="${el.w}"></div>
+      <div class="field"><label>Height</label><input id="insH" type="range" min="80" max="${Math.max(220, bounds.height)}" value="${el.h}"></div>
     </div>
     <div class="two">
       <div class="field"><label>Font Size</label><input id="insSize" type="range" min="12" max="96" value="${el.fontSize || 20}"></div>
@@ -577,7 +612,10 @@ function bindInspectorEvents(el) {
 
 function selectElement(id) { state.selectedId = id; renderCanvas(); renderInspector(); }
 function addElement(type) {
-  const el = { id: makeId(), type, x: 120 + state.profileData.elements.length * 16, y: 120 + state.profileData.elements.length * 16, w: 280, h: type === 'text' ? 180 : 220, text: type === 'text' ? 'New text block' : '', url: '', bg: type === 'shape' ? '#a259ff' : '#161616', bgAlpha: type === 'image' ? 0.28 : 1, color: type === 'text' ? '#f2e9e2' : '#141414', fontFamily: 'Syne', fontSize: 20, radius: 18, opacity: 1, rotation: 0, align: 'left', fitMode: 'cover', flipX: false, flipY: false, animation: 'none', z: (Math.max(0, ...state.profileData.elements.map(item => item.z || 0)) + 1) };
+  const bounds = getCanvasBounds();
+  const baseX = clamp(120 + state.profileData.elements.length * 28, 0, Math.max(0, bounds.width - 280));
+  const baseY = clamp(120 + state.profileData.elements.length * 24, 0, Math.max(0, bounds.height - 220));
+  const el = { id: makeId(), type, x: baseX, y: baseY, w: 280, h: type === 'text' ? 180 : 220, text: type === 'text' ? 'New text block' : '', url: '', bg: type === 'shape' ? '#a259ff' : '#161616', bgAlpha: type === 'image' ? 0.28 : 1, color: type === 'text' ? '#f2e9e2' : '#141414', fontFamily: 'Syne', fontSize: 20, radius: 18, opacity: 1, rotation: 0, align: 'left', fitMode: 'cover', flipX: false, flipY: false, animation: 'none', z: (Math.max(0, ...state.profileData.elements.map(item => item.z || 0)) + 1) };
   if (type === 'spotify') el.url = 'https://open.spotify.com/embed/track/11dFghVXANMlKmJXsNCbNl';
   if (type === 'soundcloud') el.url = 'https://soundcloud.com/forss/flickermood';
   state.profileData.elements.push(el); selectElement(el.id);
@@ -605,8 +643,18 @@ window.addEventListener('mousemove', event => {
   if (!state.drag) return;
   const el = state.profileData.elements.find(item => item.id === state.drag.id);
   if (!el) return;
-  if (state.drag.mode === 'move') { el.x = clamp(state.drag.x + (event.clientX - state.drag.startX), 0, CANVAS_W - el.w); el.y = clamp(state.drag.y + (event.clientY - state.drag.startY), 0, CANVAS_H - el.h); }
-  else { el.w = clamp(state.drag.w + (event.clientX - state.drag.startX), 80, CANVAS_W - el.x); el.h = clamp(state.drag.h + (event.clientY - state.drag.startY), 80, CANVAS_H - el.y); }
+  const bounds = getCanvasBounds();
+  const scaleMatch = document.getElementById('canvasStage').style.transform.match(/scale\(([^)]+)\)/);
+  const scale = scaleMatch ? Math.max(.1, Number(scaleMatch[1]) || 1) : 1;
+  const deltaX = (event.clientX - state.drag.startX) / scale;
+  const deltaY = (event.clientY - state.drag.startY) / scale;
+  if (state.drag.mode === 'move') {
+    el.x = clamp(state.drag.x + deltaX, 0, Math.max(0, bounds.width - el.w));
+    el.y = clamp(state.drag.y + deltaY, 0, Math.max(0, bounds.height - el.h));
+  } else {
+    el.w = clamp(state.drag.w + deltaX, 80, Math.max(80, bounds.width - el.x));
+    el.h = clamp(state.drag.h + deltaY, 80, Math.max(80, bounds.height - el.y));
+  }
   renderCanvas();
 });
 window.addEventListener('mouseup', () => state.drag = null);
