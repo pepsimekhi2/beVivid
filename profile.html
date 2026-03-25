@@ -200,6 +200,9 @@ function sanitizePublicLayout(layout, premium) {
   next.pageBackground = premium ? next.pageBackground : '#050505';
   next.pageAccent = premium ? next.pageAccent : '#a259ff';
   next.pagePattern = premium ? (next.pagePattern || 'none') : 'none';
+  next.visualizerVariant = premium
+    ? (next.visualizerVariant || 'halo')
+    : ((next.visualizerVariant === 'bars' || next.visualizerVariant === 'wave') ? next.visualizerVariant : 'bars');
   return next;
 }
 function getProfileAudioPath(handle) { return `${FIREBASE_DB_URL}/profileAudio/${encodeURIComponent(handle)}.json`; }
@@ -208,9 +211,9 @@ function getCommunityPath(path) { return `${COMMUNITY_ROOT}/${path}`; }
 function setRecognitionStatus(message) { document.getElementById('recognitionStatus').textContent = message || ''; }
 function closeSearchResults() { document.getElementById('searchResults').classList.remove('open'); }
 function applyPageBackdrop(layout, premium) {
-  const background = (premium && layout && layout.pageBackground) || (layout && layout.background) || '#050505';
-  const accent = (premium && layout && layout.pageAccent) || (layout && layout.accent) || '#ff2d55';
-  const patternName = (premium && layout && layout.pagePattern) || 'none';
+  const background = premium ? ((layout && layout.pageBackground) || '#050505') : '#050505';
+  const accent = premium ? ((layout && layout.pageAccent) || '#a259ff') : '#ff2d55';
+  const patternName = premium ? ((layout && layout.pagePattern) || 'none') : 'none';
   const pattern = getPatternStyle(patternName, accent);
   document.documentElement.style.background = background;
   document.body.style.background = background;
@@ -231,7 +234,7 @@ function syncPageVisualizer(premium) {
     document.body.appendChild(pageVisualizer);
   }
   pageVisualizer.style.display = premium ? 'block' : 'none';
-  if (premium) drawVisualizer(pageVisualizer, 'plus');
+  if (premium) drawVisualizer(pageVisualizer, (viewingUser && viewingUser._layoutVisualizerVariant) || 'halo');
 }
 function getProfilePreviewImage(user) {
   if (user.profileImage) return user.profileImage;
@@ -487,7 +490,7 @@ function getEmbedMarkup(url, type) {
   return `<iframe src="${escapeAttr(src)}" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
 }
 
-function drawVisualizer(canvas, styleVariant = 'free') {
+function drawVisualizer(canvas, styleVariant = 'bars') {
   const ctx = canvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
   const width = canvas.clientWidth;
@@ -497,7 +500,7 @@ function drawVisualizer(canvas, styleVariant = 'free') {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   const bars = 54;
   const gap = width / bars;
-  const accent = styleVariant === 'plus'
+  const accent = (styleVariant === 'halo' || styleVariant === 'orbit')
     ? ((viewingUser && (viewingUser.pageAccent || viewingUser.profileAccent)) || '#a259ff')
     : '#ff2d55';
 
@@ -508,24 +511,25 @@ function drawVisualizer(canvas, styleVariant = 'free') {
       audioState.analyser.getByteFrequencyData(audioState.data);
       values = values.map((_, i) => (audioState.data[Math.min(audioState.data.length - 1, i * 2)] || 0) / 255);
     }
-    if (styleVariant === 'plus') {
+    if (styleVariant === 'halo' || styleVariant === 'orbit') {
       const centerX = width / 2;
       const centerY = height / 2;
-      const ring = Math.min(width, height) * 0.2;
+      const ring = Math.min(width, height) * (styleVariant === 'orbit' ? 0.16 : 0.2);
       ctx.save();
       ctx.translate(centerX, centerY);
       values.forEach((value, i) => {
         const angle = (Math.PI * 2 * i) / bars;
-        const outer = ring + value * Math.min(width, height) * 0.18;
-        const inner = ring * 0.58;
-        ctx.strokeStyle = `${accent}${i % 2 ? '66' : 'aa'}`;
-        ctx.lineWidth = Math.max(2, Math.min(7, value * 8));
+        const motion = 0.18 + value * 0.26;
+        const outer = ring + motion * Math.min(width, height) * (styleVariant === 'orbit' ? 0.12 : 0.18);
+        const inner = ring * (styleVariant === 'orbit' ? 0.28 : 0.58);
+        ctx.strokeStyle = `${accent}${i % 2 ? '88' : 'cc'}`;
+        ctx.lineWidth = Math.max(2.4, Math.min(8, 2.4 + value * 8));
         ctx.beginPath();
         ctx.moveTo(Math.cos(angle) * inner, Math.sin(angle) * inner);
         ctx.lineTo(Math.cos(angle) * outer, Math.sin(angle) * outer);
         ctx.stroke();
       });
-      const orb = ctx.createRadialGradient(0, 0, ring * 0.12, 0, 0, ring * 1.1);
+      const orb = ctx.createRadialGradient(0, 0, ring * 0.08, 0, 0, ring * (styleVariant === 'orbit' ? 1.6 : 1.1));
       orb.addColorStop(0, `${accent}cc`);
       orb.addColorStop(.45, `${accent}2a`);
       orb.addColorStop(1, `${accent}00`);
@@ -534,6 +538,27 @@ function drawVisualizer(canvas, styleVariant = 'free') {
       ctx.arc(0, 0, ring * 1.05, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
+    } else if (styleVariant === 'wave') {
+      ctx.beginPath();
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = '#ff2d55cc';
+      values.forEach((value, i) => {
+        const x = i * gap;
+        const y = height * 0.55 - (value * height * 0.28);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#34aadc99';
+      values.forEach((value, i) => {
+        const x = i * gap;
+        const y = height * 0.7 - (value * height * 0.18);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
     } else {
       const gradient = ctx.createLinearGradient(0, height, width, 0);
       gradient.addColorStop(0, '#ff2d5500');
@@ -716,6 +741,7 @@ async function loadProfile() {
 
   const premium = isBeVividPlus(user);
   const layout = sanitizePublicLayout(decodeLayout(user.profileLayoutEncoded), premium);
+  user._layoutVisualizerVariant = layout.visualizerVariant || (premium ? 'halo' : 'bars');
   const canvasWidth = Math.max(900, Number(layout.canvasWidth) || 1200);
   const canvasHeight = Math.max(700, Number(layout.canvasHeight) || 900);
   const fullPageMode = premium && layout.pageMode === 'full';
@@ -746,7 +772,7 @@ async function loadProfile() {
   viz.className = 'visualizer-bg';
   if (!fullPageMode) {
     stage.appendChild(viz);
-    drawVisualizer(viz, 'free');
+    drawVisualizer(viz, layout.visualizerVariant || 'bars');
   }
 
   if (layout.songAudio) {
