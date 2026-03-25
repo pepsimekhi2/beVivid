@@ -56,6 +56,10 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .stage::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; }
 .pattern-layer { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: .42; mix-blend-mode: screen; }
 .el { position: absolute; overflow: hidden; }
+.el.anim-float { animation: profileFloat 4.8s ease-in-out infinite; }
+.el.anim-pulse { animation: profilePulse 2.8s ease-in-out infinite; }
+.el.anim-drift { animation: profileDrift 6.8s ease-in-out infinite; }
+.el.anim-flicker { animation: profileFlicker 2.6s steps(2, end) infinite; }
 .text-block { padding: 18px; white-space: pre-wrap; line-height: 1.45; }
 .image-block img, .embed-block iframe { width: 100%; height: 100%; border: 0; display: block; object-fit: cover; position: relative; z-index: 1; }
 .spotify-card { width: 100%; height: 100%; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; background: linear-gradient(135deg,#1db954,#111111 72%); color: #ffffff; }
@@ -86,6 +90,10 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .follow-person { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 14px; border-radius: 18px; border: 1px solid rgba(245,240,235,.08); background: rgba(245,240,235,.03); }
 .follow-person-main { display: flex; gap: 12px; align-items: center; min-width: 0; }
 @keyframes pageRise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes profileFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+@keyframes profilePulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.035); opacity: .88; } }
+@keyframes profileDrift { 0%, 100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(16px,-10px,0); } }
+@keyframes profileFlicker { 0%, 100% { opacity: 1; } 35% { opacity: .82; } 50% { opacity: .98; } 65% { opacity: .72; } }
 @media (max-width: 760px) { .shell { padding: 18px; } .topbar-right { width: 100%; } .profile-tools { flex-direction: column; align-items: stretch; } .search-form { width: 100%; } .search-input { min-width: 0; width: 100%; } .search-btn { width: 100%; } .stage-wrap { padding: 10px; } .stage { width: 980px; min-height: 780px; } .audio-toggle { left: 12px; bottom: 12px; } .audio-note { left: 12px; right: auto; bottom: 58px; } }
 </style>
 </head>
@@ -184,6 +192,16 @@ function escapeAttr(value) { return escapeHtml(value).replace(/'/g, '&#39;'); }
 function getSessionUser() { const raw = getCookie(AUTH_COOKIE_NAME); if (!raw) return null; try { return JSON.parse(raw); } catch (_) { return null; } }
 function todayKey() { return new Date().toISOString().slice(0, 10); }
 function isBeVividPlus(user) { return Boolean(user && (user['bevivid+'] === true || user.bevividPlus === true)); }
+function sanitizePublicLayout(layout, premium) {
+  const next = Object.assign({}, layout || {});
+  next.canvasWidth = premium ? Math.max(900, Number(next.canvasWidth) || 1200) : 1200;
+  next.canvasHeight = premium ? Math.max(700, Number(next.canvasHeight) || 900) : 900;
+  next.pageMode = premium && next.pageMode === 'full' ? 'full' : 'framed';
+  next.pageBackground = premium ? next.pageBackground : '#050505';
+  next.pageAccent = premium ? next.pageAccent : '#a259ff';
+  next.pagePattern = premium ? (next.pagePattern || 'none') : 'none';
+  return next;
+}
 function getProfileAudioPath(handle) { return `${FIREBASE_DB_URL}/profileAudio/${encodeURIComponent(handle)}.json`; }
 function getPath(path) { return `${FIREBASE_DB_URL}/${path}.json`; }
 function getCommunityPath(path) { return `${COMMUNITY_ROOT}/${path}`; }
@@ -667,10 +685,10 @@ async function loadProfile() {
     return;
   }
 
-  const layout = decodeLayout(user.profileLayoutEncoded);
+  const premium = isBeVividPlus(user);
+  const layout = sanitizePublicLayout(decodeLayout(user.profileLayoutEncoded), premium);
   const canvasWidth = Math.max(900, Number(layout.canvasWidth) || 1200);
   const canvasHeight = Math.max(700, Number(layout.canvasHeight) || 900);
-  const premium = isBeVividPlus(user);
   const fullPageMode = premium && layout.pageMode === 'full';
   applyPageBackdrop(layout, fullPageMode);
   syncPageVisualizer(fullPageMode);
@@ -727,7 +745,7 @@ async function loadProfile() {
 
   (layout.elements || []).slice().sort((a, b) => (a.z || 0) - (b.z || 0)).forEach(el => {
     const node = document.createElement('div');
-    node.className = 'el';
+    node.className = 'el' + (el.animation && el.animation !== 'none' ? ` anim-${el.animation}` : '');
     node.style.left = `${el.x}px`;
     node.style.top = `${el.y}px`;
     node.style.width = `${el.w}px`;
