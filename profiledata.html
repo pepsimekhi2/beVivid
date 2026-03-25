@@ -18,6 +18,21 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: #34aadc; margin-bottom: 12px; }
 .title { font-family: 'Bebas Neue', sans-serif; font-size: 48px; line-height: .9; margin: 0 0 12px; }
 .sub { color: rgba(245,240,235,.52); line-height: 1.7; font-size: 14px; margin: 0 0 18px; }
+.plus-pill { display: inline-flex; align-items: center; gap: 10px; margin: 0 0 16px; padding: 10px 14px; border-radius: 18px; border: 1px solid rgba(162,89,255,.24); background: linear-gradient(135deg, rgba(162,89,255,.24), rgba(122,108,224,.14)); box-shadow: inset 0 1px 0 rgba(255,255,255,.08); }
+.plus-pill[hidden] { display: none; }
+.plus-pill-mark { width: 20px; height: 20px; border-radius: 7px; background:
+  linear-gradient(135deg, #8d84eb 0 48%, transparent 48%),
+  linear-gradient(315deg, #6f63d9 0 44%, transparent 44%),
+  linear-gradient(225deg, #a9a4ff 0 40%, transparent 40%),
+  linear-gradient(45deg, #7a6ce0 0 38%, transparent 38%),
+  linear-gradient(180deg, #c8c4ff 0 100%);
+  position: relative;
+  overflow: hidden;
+}
+.plus-pill-mark::after { content: ''; position: absolute; inset: 4px; clip-path: polygon(14% 52%, 28% 39%, 44% 56%, 74% 22%, 86% 34%, 44% 80%); background: #efeefe; }
+.plus-pill-copy { display: flex; flex-direction: column; gap: 2px; }
+.plus-pill-copy strong { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #efeefe; }
+.plus-pill-copy span { font-size: 12px; color: rgba(245,240,235,.66); line-height: 1.45; }
 .stack { display: grid; gap: 10px; }
 .tool-btn, .primary-btn, .ghost-btn, .mini-btn { width: 100%; border: 1px solid rgba(245,240,235,.08); background: linear-gradient(180deg, rgba(24,24,24,.96), rgba(12,12,12,.96)); color: #f2e9e2; border-radius: 14px; padding: 14px 15px; text-align: left; cursor: pointer; font-family: inherit; box-shadow: inset 0 1px 0 rgba(255,255,255,.03); }
 .tool-btn:hover, .ghost-btn:hover, .mini-btn:hover { border-color: rgba(255,149,0,.28); background: linear-gradient(180deg, rgba(30,30,30,.98), rgba(14,14,14,.98)); }
@@ -106,7 +121,11 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
   <aside class="sidebar"><div class="panel">
     <div class="eyebrow">Profile Studio</div>
     <h1 class="title">Build your vivid page.</h1>
-    <p class="sub">Drag blocks around, resize them, recolor them, switch fonts, and save the whole layout as encoded JSON in Firebase.</p>
+    <div class="plus-pill" id="plusStudioPill" hidden>
+      <div class="plus-pill-mark" aria-hidden="true"></div>
+      <div class="plus-pill-copy"><strong>beVivid+</strong><span>Full-page controls unlocked.</span></div>
+    </div>
+    <p class="sub">Drag blocks around, resize them, recolor them, switch fonts, and shape the page exactly how you want it to feel.</p>
     <div class="stack">
       <button class="tool-btn" onclick="addElement('text')"><span class="tool-name">Text Block</span><span class="tool-desc">Headlines, bios, manifesto, lists and notes.</span></button>
       <button class="tool-btn" onclick="addElement('image')"><span class="tool-name">Image Card</span><span class="tool-desc">Upload your own image or paste a URL and shape it however you want.</span></button>
@@ -145,6 +164,7 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
     <div class="field"><label for="canvasBg">Canvas Background</label><input id="canvasBg" type="color" value="#121212" /></div>
     <div class="field"><label for="canvasAccent">Canvas Accent</label><input id="canvasAccent" type="color" value="#ff2d55" /></div>
     <div class="field"><label for="canvasPattern">Background Pattern</label><select id="canvasPattern"><option value="grid">Grid</option><option value="dots">Dots</option><option value="stripes">Stripes</option><option value="waves">Waves</option><option value="none">None</option></select></div>
+    <div id="plusControls" class="empty">beVivid+ unlocks full-page controls like canvas size and page framing.</div>
     <div id="selectionInspector" class="empty">Select a block to edit its content, font, colors, size, spacing, and embed URL.</div>
   </div></aside>
 </div>
@@ -165,6 +185,7 @@ function encodeLayout(data) { return btoa(unescape(encodeURIComponent(JSON.strin
 function decodeLayout(value) { return JSON.parse(decodeURIComponent(escape(atob(value)))); }
 function makeId() { return 'el_' + Math.random().toString(36).slice(2, 9); }
 function clamp(num, min, max) { return Math.min(max, Math.max(min, num)); }
+function isBeVividPlus(user) { return Boolean(user && (user['bevivid+'] === true || user.bevividPlus === true)); }
 function normalizeSession() { const raw = getCookie(AUTH_COOKIE_NAME); if (!raw) return null; try { return JSON.parse(raw); } catch (_) { return null; } }
 function getUserPath(handle) { return `${FIREBASE_DB_URL}/users/${encodeURIComponent(handle)}.json`; }
 function getPublicIndexPath(handle) { return `${FIREBASE_DB_URL}/publicUserIndex/${encodeURIComponent(handle)}.json`; }
@@ -231,6 +252,9 @@ function defaultLayout(user) {
     background: '#121212',
     accent: '#ff2d55',
     pattern: 'grid',
+    canvasWidth: 1200,
+    canvasHeight: 900,
+    pageMode: 'framed',
     elements: [
       { id: makeId(), type: 'text', x: 60, y: 130, w: 420, h: 180, text: `${user.displayName || 'Your Name'}\n@${user.handle || 'handle'}\nBuild something unforgettable.`, bg: '#111111', color: '#f5f0eb', fontFamily: 'Bebas Neue', fontSize: 42, radius: 24, opacity: 1, rotation: 0, align: 'left', z: 3 },
       { id: makeId(), type: 'text', x: 60, y: 340, w: 360, h: 180, text: user.bio || 'Write your bio here. Add projects, what you make, what you love, and what you want people to remember.', bg: 'rgba(255,255,255,0.02)', color: '#d6d1cb', fontFamily: 'Syne', fontSize: 18, radius: 20, opacity: 1, rotation: 0, align: 'left', z: 4 },
@@ -334,7 +358,17 @@ async function toggleProfileAudio() {
 
 function renderCanvas() {
   const canvas = document.getElementById('canvas');
+  const width = clamp(Number(state.profileData.canvasWidth) || 1200, 900, 1800);
+  const height = clamp(Number(state.profileData.canvasHeight) || 900, 700, 1400);
+  const fullPageMode = state.profileData.pageMode === 'full';
+  state.profileData.canvasWidth = width;
+  state.profileData.canvasHeight = height;
+  state.profileData.pageMode = fullPageMode ? 'full' : 'framed';
   canvas.innerHTML = '';
+  canvas.style.width = `${width}px`;
+  canvas.style.height = `${height}px`;
+  canvas.style.borderRadius = fullPageMode ? '0' : '26px';
+  canvas.style.border = fullPageMode ? '0' : '1px solid rgba(245,240,235,.08)';
   canvas.style.background = `radial-gradient(circle at 20% 10%, ${state.profileData.accent}22, transparent 26%), ${state.profileData.background}`;
   const pattern = document.createElement('div');
   pattern.className = 'pattern-layer';
@@ -381,11 +415,33 @@ function renderCanvas() {
 
 function renderInspector() {
   const box = document.getElementById('selectionInspector');
+  const plusControls = document.getElementById('plusControls');
   const el = getSelectedElement();
   document.getElementById('profileSongLabel').value = state.profileData.songLabel || '';
   document.getElementById('canvasBg').value = toColorValue(state.profileData.background, '#121212');
   document.getElementById('canvasAccent').value = toColorValue(state.profileData.accent, '#ff2d55');
   document.getElementById('canvasPattern').value = state.profileData.pattern || 'grid';
+  const plusUnlocked = isBeVividPlus(state.user);
+  document.getElementById('plusStudioPill').hidden = !plusUnlocked;
+  if (plusUnlocked) {
+    plusControls.className = '';
+    plusControls.innerHTML = `
+      <div class="field"><label>Page Mode</label><select id="plusPageMode"><option value="framed"${(state.profileData.pageMode || 'framed') === 'framed' ? ' selected' : ''}>Framed</option><option value="full"${state.profileData.pageMode === 'full' ? ' selected' : ''}>Full Page</option></select></div>
+      <div class="two">
+        <div class="field"><label>Canvas Width</label><input id="plusCanvasWidth" type="range" min="900" max="1800" value="${clamp(Number(state.profileData.canvasWidth) || 1200, 900, 1800)}"></div>
+        <div class="field"><label>Canvas Height</label><input id="plusCanvasHeight" type="range" min="700" max="1400" value="${clamp(Number(state.profileData.canvasHeight) || 900, 700, 1400)}"></div>
+      </div>
+    `;
+  } else {
+    plusControls.className = 'empty';
+    plusControls.innerHTML = 'beVivid+ unlocks full-page controls like canvas size and page framing.';
+  }
+  const plusPageMode = document.getElementById('plusPageMode');
+  if (plusPageMode) plusPageMode.addEventListener('input', () => { state.profileData.pageMode = plusPageMode.value; renderCanvas(); renderInspector(); });
+  const plusCanvasWidth = document.getElementById('plusCanvasWidth');
+  if (plusCanvasWidth) plusCanvasWidth.addEventListener('input', () => { state.profileData.canvasWidth = Number(plusCanvasWidth.value); renderCanvas(); });
+  const plusCanvasHeight = document.getElementById('plusCanvasHeight');
+  if (plusCanvasHeight) plusCanvasHeight.addEventListener('input', () => { state.profileData.canvasHeight = Number(plusCanvasHeight.value); renderCanvas(); });
   if (!el) { box.className = 'empty'; box.innerHTML = 'Select a block to edit its content, font, colors, size, spacing, and embed URL.'; return; }
   const textField = el.type === 'text' || el.type === 'shape' ? `<div class="field"><label>Text</label><textarea id="insText">${escapeHtml(el.text || '')}</textarea></div>` : '';
   const urlField = el.type === 'image' || el.type === 'spotify' || el.type === 'soundcloud' ? `<div class="field"><label>Media / Embed URL</label><input id="insUrl" type="text" value="${escapeAttr(el.url || '')}"></div>` : '';
@@ -433,7 +489,6 @@ function bindInspectorEvents(el) {
     if (!node) return;
     node.addEventListener('input', () => { map[id](node.value); renderCanvas(); });
   });
-
   const upload = document.getElementById('insUpload');
   if (upload) {
     upload.addEventListener('change', async () => {
@@ -527,8 +582,11 @@ async function loadUserAndLayout() {
     if (!user) throw new Error('Profile record not found.');
     state.user = Object.assign({}, state.user, user);
     state.profileData = user.profileLayoutEncoded ? decodeLayout(user.profileLayoutEncoded) : defaultLayout(state.user);
+    state.profileData.canvasWidth = clamp(Number(state.profileData.canvasWidth) || 1200, 900, 1800);
+    state.profileData.canvasHeight = clamp(Number(state.profileData.canvasHeight) || 900, 700, 1400);
+    state.profileData.pageMode = state.profileData.pageMode === 'full' ? 'full' : 'framed';
     state.profileData.songAudio = (audioRecord && audioRecord.audioData) || user.profileSongAudio || state.profileData.songAudio || '';
-    setStatus('Profile Studio loaded. Build something vivid.', 'ok');
+    setStatus(isBeVividPlus(state.user) ? 'beVivid+ is active. Full-page editing is unlocked.' : 'Profile Studio loaded. Build something vivid.', 'ok');
   } catch (error) {
     state.profileData = defaultLayout(state.user);
     setStatus(error.message || 'Could not load profile data, so a fresh layout was created.', 'err');
