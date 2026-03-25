@@ -194,12 +194,12 @@ function todayKey() { return new Date().toISOString().slice(0, 10); }
 function isBeVividPlus(user) { return Boolean(user && (user['bevivid+'] === true || user.bevividPlus === true)); }
 function sanitizePublicLayout(layout, premium) {
   const next = Object.assign({}, layout || {});
-  next.canvasWidth = premium ? Math.max(900, Number(next.canvasWidth) || 1200) : 1200;
-  next.canvasHeight = premium ? Math.max(700, Number(next.canvasHeight) || 900) : 900;
-  next.pageMode = premium && next.pageMode === 'full' ? 'full' : 'framed';
-  next.pageBackground = premium ? next.pageBackground : '#050505';
-  next.pageAccent = premium ? next.pageAccent : '#a259ff';
-  next.pagePattern = premium ? (next.pagePattern || 'none') : 'none';
+  next.canvasWidth = 1200;
+  next.canvasHeight = 900;
+  next.pageMode = 'framed';
+  next.pageBackground = next.pageBackground || '#050505';
+  next.pageAccent = next.pageAccent || '#a259ff';
+  next.pagePattern = next.pagePattern || 'none';
   next.visualizerVariant = premium
     ? (next.visualizerVariant || 'halo')
     : ((next.visualizerVariant === 'bars' || next.visualizerVariant === 'wave') ? next.visualizerVariant : 'bars');
@@ -210,31 +210,25 @@ function getPath(path) { return `${FIREBASE_DB_URL}/${path}.json`; }
 function getCommunityPath(path) { return `${COMMUNITY_ROOT}/${path}`; }
 function setRecognitionStatus(message) { document.getElementById('recognitionStatus').textContent = message || ''; }
 function closeSearchResults() { document.getElementById('searchResults').classList.remove('open'); }
-function applyPageBackdrop(layout, premium) {
-  const background = premium ? ((layout && layout.pageBackground) || '#050505') : '#050505';
-  const accent = premium ? ((layout && layout.pageAccent) || '#a259ff') : '#ff2d55';
-  const patternName = premium ? ((layout && layout.pagePattern) || 'none') : 'none';
+function applyPageBackdrop(layout) {
+  const background = (layout && layout.pageBackground) || '#050505';
+  const accent = (layout && layout.pageAccent) || '#a259ff';
+  const patternName = (layout && layout.pagePattern) || 'none';
   const pattern = getPatternStyle(patternName, accent);
   document.documentElement.style.background = background;
   document.body.style.background = background;
-  document.body.style.backgroundImage = premium
-    ? `radial-gradient(circle at 18% 12%, ${accent}22, transparent 26%), ${pattern.image === 'none' ? 'none' : pattern.image}`
-    : '';
-  document.body.style.backgroundSize = premium
-    ? `auto, ${pattern.size}`
-    : '';
-  document.body.style.backgroundRepeat = premium
-    ? `no-repeat, ${patternName === 'waves' ? 'no-repeat' : 'repeat'}`
-    : '';
+  document.body.style.backgroundImage = `radial-gradient(circle at 18% 12%, ${accent}22, transparent 26%), ${pattern.image === 'none' ? 'none' : pattern.image}`;
+  document.body.style.backgroundSize = `auto, ${pattern.size}`;
+  document.body.style.backgroundRepeat = `no-repeat, ${patternName === 'waves' ? 'no-repeat' : 'repeat'}`;
 }
-function syncPageVisualizer(premium) {
+function syncPageVisualizer(enabled, variant) {
   if (!pageVisualizer) {
     pageVisualizer = document.createElement('canvas');
     pageVisualizer.className = 'full-page-viz';
     document.body.appendChild(pageVisualizer);
   }
-  pageVisualizer.style.display = premium ? 'block' : 'none';
-  if (premium) drawVisualizer(pageVisualizer, (viewingUser && viewingUser._layoutVisualizerVariant) || 'halo');
+  pageVisualizer.style.display = enabled ? 'block' : 'none';
+  if (enabled) drawVisualizer(pageVisualizer, variant || 'bars');
 }
 function getProfilePreviewImage(user) {
   if (user.profileImage) return user.profileImage;
@@ -592,7 +586,7 @@ function setupAudioPlayback(src) {
 }
 
 async function tryAutoPlayProfileSong() {
-  if (autoPlayAttempted || !viewingUser || !isBeVividPlus(viewingUser)) return;
+  if (autoPlayAttempted || !viewingUser) return;
   autoPlayAttempted = true;
   try {
     await toggleProfileAudio();
@@ -742,38 +736,35 @@ async function loadProfile() {
   const premium = isBeVividPlus(user);
   const layout = sanitizePublicLayout(decodeLayout(user.profileLayoutEncoded), premium);
   user._layoutVisualizerVariant = layout.visualizerVariant || (premium ? 'halo' : 'bars');
+  user.pageAccent = layout.pageAccent;
   const canvasWidth = Math.max(900, Number(layout.canvasWidth) || 1200);
   const canvasHeight = Math.max(700, Number(layout.canvasHeight) || 900);
-  const fullPageMode = premium && layout.pageMode === 'full';
-  applyPageBackdrop(layout, fullPageMode);
-  syncPageVisualizer(fullPageMode);
-  document.querySelector('.stage-wrap').style.border = fullPageMode ? '0' : '1px solid rgba(245,240,235,.08)';
-  document.querySelector('.stage-wrap').style.background = fullPageMode ? 'transparent' : 'rgba(245,240,235,.02)';
-  document.querySelector('.stage-wrap').style.padding = fullPageMode ? '0' : '20px';
+  const hasSong = Boolean(layout.songAudio || user.profileSongReady || user.profileSongAudio);
+  applyPageBackdrop(layout);
+  syncPageVisualizer(hasSong, layout.visualizerVariant || (premium ? 'halo' : 'bars'));
+  document.querySelector('.stage-wrap').style.border = '1px solid rgba(245,240,235,.08)';
+  document.querySelector('.stage-wrap').style.background = 'rgba(245,240,235,.02)';
+  document.querySelector('.stage-wrap').style.padding = '20px';
   stage.style.width = `${canvasWidth}px`;
   stage.style.minHeight = `${canvasHeight}px`;
   stage.style.height = `${canvasHeight}px`;
-  stage.style.borderRadius = fullPageMode ? '0' : '24px';
-  stage.style.border = fullPageMode ? '0' : '1px solid rgba(245,240,235,.08)';
-  stage.style.boxShadow = fullPageMode ? 'none' : '0 30px 90px rgba(0,0,0,.35)';
-  stage.style.background = fullPageMode ? 'transparent' : `radial-gradient(circle at 20% 10%, ${(layout.accent || '#ff2d55')}22, transparent 26%), ${layout.background || '#111111'}`;
+  stage.style.borderRadius = '24px';
+  stage.style.border = '1px solid rgba(245,240,235,.08)';
+  stage.style.boxShadow = '0 30px 90px rgba(0,0,0,.35)';
+  stage.style.background = `radial-gradient(circle at 20% 10%, ${(layout.accent || '#ff2d55')}22, transparent 26%), ${layout.background || '#111111'}`;
   stage.innerHTML = '';
   const pattern = document.createElement('div');
   pattern.className = 'pattern-layer';
   const patternStyle = getPatternStyle(layout.pattern || 'grid', layout.accent || '#ff2d55');
-  if (!fullPageMode) {
-    pattern.style.backgroundImage = patternStyle.image;
-    pattern.style.backgroundSize = patternStyle.size;
-    pattern.style.backgroundRepeat = (layout.pattern || 'grid') === 'waves' ? 'no-repeat' : 'repeat';
-    stage.appendChild(pattern);
-  }
+  pattern.style.backgroundImage = patternStyle.image;
+  pattern.style.backgroundSize = patternStyle.size;
+  pattern.style.backgroundRepeat = (layout.pattern || 'grid') === 'waves' ? 'no-repeat' : 'repeat';
+  stage.appendChild(pattern);
 
   const viz = document.createElement('canvas');
   viz.className = 'visualizer-bg';
-  if (!fullPageMode) {
-    stage.appendChild(viz);
-    drawVisualizer(viz, layout.visualizerVariant || 'bars');
-  }
+  stage.appendChild(viz);
+  drawVisualizer(viz, layout.visualizerVariant || 'bars');
 
   if (layout.songAudio) {
     audioState.pendingSource = layout.songAudio;
@@ -787,15 +778,15 @@ async function loadProfile() {
     const button = document.createElement('button');
     button.className = 'audio-toggle';
     button.id = 'audioToggle';
-    button.textContent = audioState.playing ? 'Pause Audio' : (isBeVividPlus(user) ? 'Auto Audio' : 'Play Audio');
+    button.textContent = audioState.playing ? 'Pause Audio' : 'Play Audio';
     button.onclick = toggleProfileAudio;
     stage.appendChild(button);
 
     const note = document.createElement('div');
     note.className = 'audio-note';
-    note.textContent = isBeVividPlus(user) ? (layout.songLabel || 'beVivid+ profile song ready') : (layout.songLabel || 'Profile song ready');
+    note.textContent = layout.songLabel || 'Profile song ready';
     stage.appendChild(note);
-    if (isBeVividPlus(user)) setTimeout(() => { tryAutoPlayProfileSong(); }, 120);
+    setTimeout(() => { tryAutoPlayProfileSong(); }, 120);
   }
 
   (layout.elements || []).slice().sort((a, b) => (a.z || 0) - (b.z || 0)).forEach(el => {
