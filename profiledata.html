@@ -95,8 +95,15 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .studio-lock-card h2 { font-family: 'Bebas Neue', sans-serif; font-size: 52px; line-height: .9; margin: 0 0 12px; }
 .studio-lock-card p { color: rgba(245,240,235,.58); line-height: 1.8; margin: 0 0 18px; }
 .studio-lock-card a { display: inline-flex; align-items: center; justify-content: center; padding: 12px 18px; border-radius: 999px; border: 1px solid rgba(245,240,235,.14); background: rgba(245,240,235,.05); color: #f5f0eb; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; }
+/* Sidebar organization refresh */
+.sidebar-divider { margin-top: 18px; padding-top: 18px; border-top: 1px solid rgba(245,240,235,.08); }
+.nav-stack { display: grid; gap: 10px; }
+.nav-link { display: inline-flex; align-items: center; justify-content: center; width: 100%; border: 1px solid rgba(245,240,235,.08); background: linear-gradient(180deg, rgba(24,24,24,.96), rgba(12,12,12,.96)); color: #f2e9e2; border-radius: 14px; padding: 14px 15px; text-align: center; cursor: pointer; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; box-shadow: inset 0 1px 0 rgba(255,255,255,.03); transition: border-color .18s ease, background .18s ease, transform .18s ease; }
+.nav-link:hover { border-color: rgba(255,149,0,.28); background: linear-gradient(180deg, rgba(30,30,30,.98), rgba(14,14,14,.98)); transform: translateY(-1px); }
+.preview-copy { color: rgba(245,240,235,.48); font-size: 13px; line-height: 1.7; max-width: 520px; }
+.preview-meta { display: grid; gap: 10px; justify-items: end; }
 @media (max-width: 1180px) { .shell { grid-template-columns: 1fr; } .sidebar, .inspector { border: 0; } .main { order: -1; } .sidebar, .inspector, .main { width: 100%; } }
-@media (max-width: 760px) { .main, .panel { padding: 16px; } .topbar { flex-direction: column; align-items: flex-start; } .canvas-shell { min-height: 58vh; padding: 8px; } .workspace { padding: 10px; } .canvas { width: 980px; height: 780px; } .two { grid-template-columns: 1fr; } .audio-toggle { left: 12px; bottom: 12px; } .audio-hint { left: 12px; right: auto; bottom: 58px; } }
+@media (max-width: 760px) { .main, .panel { padding: 16px; } .topbar { flex-direction: column; align-items: flex-start; } .preview-meta { justify-items: start; } .canvas-shell { min-height: 58vh; padding: 8px; } .workspace { padding: 10px; } .canvas { width: 980px; height: 780px; } .two { grid-template-columns: 1fr; } .audio-toggle { left: 12px; bottom: 12px; } .audio-hint { left: 12px; right: auto; bottom: 58px; } }
 </style>
 </head>
 <body>
@@ -122,21 +129,34 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
     <h1 class="title">Build your vivid page.</h1>
     <div class="plus-pill" id="plusStudioPill" hidden>beVivid+</div>
     <p class="sub">Drag blocks around, resize them, recolor them, switch fonts, and shape the page exactly how you want it to feel.</p>
-    <div class="stack">
+    <div class="sidebar-divider">
+      <div class="eyebrow">Navigate</div>
+      <div class="nav-stack">
+        <a class="nav-link" href="/">Home</a>
+        <a class="nav-link" href="/community">Community</a>
+        <a class="nav-link" href="javascript:void(0)" onclick="goToPublicProfile()">Public Profile</a>
+      </div>
+    </div>
+    <div class="sidebar-divider">
+      <div class="eyebrow">Build Blocks</div>
+      <div class="stack">
       <button class="tool-btn" onclick="addElement('text')"><span class="tool-name">Text Block</span><span class="tool-desc">Headlines, bios, manifesto, lists and notes.</span></button>
       <button class="tool-btn" onclick="addElement('image')"><span class="tool-name">Image Card</span><span class="tool-desc">Upload your own image or paste a URL and shape it however you want.</span></button>
       <button class="tool-btn" onclick="addElement('spotify')"><span class="tool-name">Music Link Card</span><span class="tool-desc">A clean external music card when you want a clickable link.</span></button>
       <button class="tool-btn" onclick="addElement('soundcloud')"><span class="tool-name">SoundCloud Embed</span><span class="tool-desc">Tracks, mixes, reposts and audio drops.</span></button>
       <button class="tool-btn" onclick="addElement('shape')"><span class="tool-name">Shape / Glow</span><span class="tool-desc">Mood panels, dividers, neon blobs, background accents.</span></button>
     </div>
-    <div style="height:16px"></div>
-    <button class="primary-btn" onclick="saveProfileLayout()">Save Layout</button>
-    <div style="height:10px"></div>
-    <button class="ghost-btn" onclick="eraseLayout()">Erase Everything</button>
-    <div style="height:10px"></div>
-    <button class="ghost-btn" onclick="goToPublicProfile()">View Public Profile</button>
-    <div style="height:10px"></div>
-    <button class="ghost-btn" onclick="window.location.href='/'">Back To Site</button>
+    </div>
+    <div class="sidebar-divider">
+      <div class="eyebrow">Studio Actions</div>
+      <button class="primary-btn" onclick="saveProfileLayout()">Save Layout</button>
+      <div style="height:10px"></div>
+      <button class="ghost-btn" onclick="eraseLayout()">Erase Everything</button>
+      <div style="height:10px"></div>
+      <button class="ghost-btn" onclick="goToPublicProfile()">View Public Profile</button>
+      <div style="height:10px"></div>
+      <button class="ghost-btn" onclick="window.location.href='/'">Back To Site</button>
+    </div>
     <div class="status" id="studioStatus">Waiting for your session...</div>
   </div></aside>
 
@@ -144,12 +164,10 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
     <div class="topbar">
       <div>
         <div class="eyebrow">Live Preview</div>
+        <div class="preview-copy">Your page stays in a focused square canvas while the outer page styling updates around it.</div>
       </div>
-      <div class="top-actions">
-        <a class="top-link" href="/">Home</a>
-        <a class="top-link" href="/community">Community</a>
-        <a class="top-link" onclick="goToPublicProfile()" href="javascript:void(0)">Profile</a>
-        <div class="chip-row"><div class="chip" id="layoutCount">0 blocks</div><div class="chip" id="editorModeChip">Framed · 1200 x 900</div></div>
+      <div class="preview-meta">
+        <div class="chip-row"><div class="chip" id="layoutCount">0 blocks</div><div class="chip" id="editorModeChip">Framed / 1200 x 900</div></div>
       </div>
     </div>
     <div class="workspace"><div class="canvas-shell"><div class="canvas-stage" id="canvasStage"><div class="canvas" id="canvas"></div></div></div></div>
