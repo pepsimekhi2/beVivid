@@ -61,9 +61,10 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .spotify-card span { font-size: 13px; line-height: 1.6; opacity: .85; }
 .spotify-card a { display: inline-flex; width: fit-content; margin-top: 12px; padding: 10px 14px; border-radius: 999px; background: rgba(255,255,255,.16); color: #fff; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
 .visualizer-bg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: .9; }
-.audio-toggle { position: absolute; left: 20px; bottom: 20px; z-index: 4; border: 1px solid rgba(245,240,235,.12); background: rgba(5,5,5,.55); color: #f5f0eb; border-radius: 999px; padding: 12px 16px; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; backdrop-filter: blur(14px); }
+.audio-pod { position: absolute; left: 20px; bottom: 20px; z-index: 4; display: grid; gap: 8px; padding: 12px; border-radius: 18px; border: 1px solid rgba(245,240,235,.12); background: rgba(5,5,5,.42); backdrop-filter: blur(14px); }
+.audio-toggle { border: 1px solid rgba(245,240,235,.12); background: rgba(5,5,5,.55); color: #f5f0eb; border-radius: 999px; padding: 12px 16px; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; backdrop-filter: blur(14px); }
 .audio-toggle.hidden { display: none; }
-.audio-hint { position: absolute; right: 20px; bottom: 22px; z-index: 4; color: rgba(245,240,235,.42); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
+.audio-hint { color: rgba(245,240,235,.56); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
 .field { margin-bottom: 14px; }
 .field label { display: block; margin-bottom: 7px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: rgba(245,240,235,.4); }
 .field input, .field textarea, .field select { width: 100%; border: 1px solid rgba(245,240,235,.1); background: rgba(14,14,14,.96); color: #f5f0eb; border-radius: 10px; padding: 12px 13px; font: inherit; outline: none; }
@@ -479,17 +480,20 @@ function renderCanvas() {
 
   if (state.profileData.songAudio) {
     setupAudioPlayback(state.profileData.songAudio);
+    const pod = document.createElement('div');
+    pod.className = 'audio-pod';
     const btn = document.createElement('button');
     btn.className = 'audio-toggle';
     btn.id = 'audioToggle';
     btn.textContent = state.audio.playing ? 'Pause Audio' : 'Play Audio';
     btn.onclick = toggleProfileAudio;
-    canvas.appendChild(btn);
+    pod.appendChild(btn);
 
     const hint = document.createElement('div');
     hint.className = 'audio-hint';
     hint.textContent = state.profileData.songLabel || 'Profile song ready';
-    canvas.appendChild(hint);
+    pod.appendChild(hint);
+    canvas.appendChild(pod);
   }
   state.profileData.elements.slice().sort((a, b) => (a.z || 0) - (b.z || 0)).forEach(el => {
     const node = document.createElement('div');
@@ -615,17 +619,10 @@ function addElement(type) {
 }
 function eraseLayout() {
   state.profileData.elements = [];
-  state.profileData.songAudio = '';
-  state.profileData.songLabel = '';
   state.selectedId = null;
-  if (state.audio.el) {
-    state.audio.el.pause();
-    state.audio.el.removeAttribute('src');
-  }
-  state.audio.playing = false;
   renderCanvas();
   renderInspector();
-  setStatus('Everything on the page was cleared. You are starting fresh.', 'ok');
+  setStatus('Your blocks were cleared. Song controls and page styling stayed in place.', 'ok');
 }
 function removeSelected() { if (!state.selectedId) return; state.profileData.elements = state.profileData.elements.filter(el => el.id !== state.selectedId); state.selectedId = null; renderCanvas(); renderInspector(); }
 function duplicateSelected() { const el = getSelectedElement(); if (!el) return; const copy = JSON.parse(JSON.stringify(el)); copy.id = makeId(); copy.x += 20; copy.y += 20; state.profileData.elements.push(copy); selectElement(copy.id); }
