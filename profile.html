@@ -231,7 +231,7 @@ function syncPageVisualizer(premium) {
     document.body.appendChild(pageVisualizer);
   }
   pageVisualizer.style.display = premium ? 'block' : 'none';
-  if (premium) drawVisualizer(pageVisualizer);
+  if (premium) drawVisualizer(pageVisualizer, 'plus');
 }
 function getProfilePreviewImage(user) {
   if (user.profileImage) return user.profileImage;
@@ -487,7 +487,7 @@ function getEmbedMarkup(url, type) {
   return `<iframe src="${escapeAttr(src)}" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
 }
 
-function drawVisualizer(canvas) {
+function drawVisualizer(canvas, styleVariant = 'free') {
   const ctx = canvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
   const width = canvas.clientWidth;
@@ -497,27 +497,56 @@ function drawVisualizer(canvas) {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   const bars = 54;
   const gap = width / bars;
+  const accent = styleVariant === 'plus'
+    ? ((viewingUser && (viewingUser.pageAccent || viewingUser.profileAccent)) || '#a259ff')
+    : '#ff2d55';
 
   function frame() {
     ctx.clearRect(0, 0, width, height);
-    const gradient = ctx.createLinearGradient(0, height, width, 0);
-    gradient.addColorStop(0, '#ff2d5500');
-    gradient.addColorStop(0.4, '#ff2d5555');
-    gradient.addColorStop(1, '#34aadc20');
-    ctx.fillStyle = gradient;
-
     let values = new Array(bars).fill(0).map((_, i) => 0.25 + Math.sin((Date.now() / 420) + i * 0.35) * 0.12);
     if (audioState.analyser && audioState.data) {
       audioState.analyser.getByteFrequencyData(audioState.data);
       values = values.map((_, i) => (audioState.data[Math.min(audioState.data.length - 1, i * 2)] || 0) / 255);
     }
-
-    values.forEach((value, i) => {
-      const barHeight = Math.max(20, value * (height * 0.65));
-      const x = i * gap;
-      const y = height - barHeight;
-      ctx.fillRect(x + 3, y, Math.max(6, gap - 6), barHeight);
-    });
+    if (styleVariant === 'plus') {
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const ring = Math.min(width, height) * 0.2;
+      ctx.save();
+      ctx.translate(centerX, centerY);
+      values.forEach((value, i) => {
+        const angle = (Math.PI * 2 * i) / bars;
+        const outer = ring + value * Math.min(width, height) * 0.18;
+        const inner = ring * 0.58;
+        ctx.strokeStyle = `${accent}${i % 2 ? '66' : 'aa'}`;
+        ctx.lineWidth = Math.max(2, Math.min(7, value * 8));
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(angle) * inner, Math.sin(angle) * inner);
+        ctx.lineTo(Math.cos(angle) * outer, Math.sin(angle) * outer);
+        ctx.stroke();
+      });
+      const orb = ctx.createRadialGradient(0, 0, ring * 0.12, 0, 0, ring * 1.1);
+      orb.addColorStop(0, `${accent}cc`);
+      orb.addColorStop(.45, `${accent}2a`);
+      orb.addColorStop(1, `${accent}00`);
+      ctx.fillStyle = orb;
+      ctx.beginPath();
+      ctx.arc(0, 0, ring * 1.05, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    } else {
+      const gradient = ctx.createLinearGradient(0, height, width, 0);
+      gradient.addColorStop(0, '#ff2d5500');
+      gradient.addColorStop(0.4, '#ff2d5555');
+      gradient.addColorStop(1, '#34aadc20');
+      ctx.fillStyle = gradient;
+      values.forEach((value, i) => {
+        const barHeight = Math.max(20, value * (height * 0.65));
+        const x = i * gap;
+        const y = height - barHeight;
+        ctx.fillRect(x + 3, y, Math.max(6, gap - 6), barHeight);
+      });
+    }
 
     audioState.raf = requestAnimationFrame(frame);
   }
@@ -717,7 +746,7 @@ async function loadProfile() {
   viz.className = 'visualizer-bg';
   if (!fullPageMode) {
     stage.appendChild(viz);
-    drawVisualizer(viz);
+    drawVisualizer(viz, 'free');
   }
 
   if (layout.songAudio) {
