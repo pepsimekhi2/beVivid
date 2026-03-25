@@ -27,9 +27,14 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .tool-name { display: block; font-weight: 700; font-size: 14px; }
 .tool-desc { display: block; margin-top: 5px; color: rgba(245,240,235,.4); font-size: 12px; line-height: 1.5; }
 .main { min-width: 0; padding: 24px; display: flex; flex-direction: column; align-items: center; }
+.sidebar .panel, .inspector .panel, .workspace, .studio-loading-card, .studio-lock-card { animation: studioRise .7s cubic-bezier(.16,1,.3,1) both; }
+.workspace { animation-delay: .06s; }
+.inspector .panel { animation-delay: .1s; }
 .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; width: min(100%, 1320px); }
 .chip-row { display: flex; flex-wrap: wrap; gap: 10px; }
 .chip { border: 1px solid rgba(245,240,235,.1); border-radius: 999px; padding: 10px 14px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: rgba(245,240,235,.56); background: rgba(245,240,235,.03); }
+.top-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.top-link { display: inline-flex; align-items: center; justify-content: center; padding: 11px 16px; border-radius: 999px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
 .workspace { border: 1px solid rgba(245,240,235,.08); border-radius: 26px; padding: 18px; background: linear-gradient(180deg, rgba(18,18,18,.88), rgba(7,7,7,.88)); width: min(100%, 1320px); box-shadow: inset 0 1px 0 rgba(255,255,255,.03); }
 .canvas-shell { overflow: auto; border-radius: 20px; background: radial-gradient(circle at top, rgba(255,45,85,.08), transparent 42%), rgba(0,0,0,.32); padding: 18px; min-height: calc(100vh - 180px); display: flex; justify-content: center; }
 .canvas { position: relative; width: 1200px; height: 900px; border-radius: 26px; overflow: hidden; background: linear-gradient(135deg, #111 0%, #181818 40%, #0b0b0b 100%); border: 1px solid rgba(245,240,235,.08); box-shadow: 0 30px 100px rgba(0,0,0,.35); }
@@ -69,6 +74,7 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
 .studio-loading-title { font-family: 'Bebas Neue', sans-serif; font-size: 42px; line-height: .9; margin: 0 0 10px; }
 .studio-loading-copy { color: rgba(245,240,235,.58); line-height: 1.7; margin: 0; }
 @keyframes studioSpin { to { transform: rotate(360deg); } }
+@keyframes studioRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 .studio-lock { position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(5,5,5,.96); }
 .studio-lock.open { display: flex; }
 .studio-lock-card { max-width: 520px; border: 1px solid rgba(245,240,235,.12); border-radius: 20px; background: linear-gradient(180deg, rgba(18,18,18,.98), rgba(8,8,8,.98)); padding: 28px; box-shadow: 0 30px 80px rgba(0,0,0,.45); }
@@ -122,7 +128,12 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
       <div>
         <div class="eyebrow">Live Preview</div>
       </div>
-      <div class="chip-row"><div class="chip" id="layoutCount">0 blocks</div></div>
+      <div class="top-actions">
+        <a class="top-link" href="/">Home</a>
+        <a class="top-link" href="/community">Community</a>
+        <a class="top-link" onclick="goToPublicProfile()" href="javascript:void(0)">Profile</a>
+        <div class="chip-row"><div class="chip" id="layoutCount">0 blocks</div></div>
+      </div>
     </div>
     <div class="workspace"><div class="canvas-shell"><div class="canvas" id="canvas"></div></div></div>
   </main>
