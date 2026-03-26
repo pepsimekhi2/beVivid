@@ -45,7 +45,9 @@ body::before { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512
 .topbar-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .profile-tools { display: grid; gap: 16px; margin-top: 22px; }
 .profile-stats { display: flex; flex-wrap: wrap; gap: 12px; align-items: stretch; }
-.profile-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 14px 16px; border-radius: 20px; border: 1px solid rgba(245,240,235,.08); background: rgba(245,240,235,.025); }
+.profile-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; padding: 14px 16px; border-radius: 20px; border: 1px solid rgba(245,240,235,.08); background: rgba(245,240,235,.025); }
+.action-cluster { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.action-cluster--primary { margin-left: auto; }
 .search-form { display: flex; gap: 10px; flex-wrap: wrap; position: relative; }
 .search-input { min-width: 260px; border: 1px solid rgba(245,240,235,.12); background: rgba(10,10,10,.88); color: #f5f0eb; border-radius: 999px; padding: 12px 16px; font: inherit; outline: none; flex: 1; backdrop-filter: blur(14px); }
 .search-btn, .recognize-btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 18px; border-radius: 999px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer; }
@@ -102,6 +104,25 @@ body::before { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512
 .mini-post-img { width: 100%; max-height: 340px; object-fit: cover; display: block; margin-top: 14px; border-radius: 16px; border: 1px solid rgba(245,240,235,.08); }
 .mini-post-meta, .follow-person-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
 .mini-chip { padding: 8px 10px; border-radius: 999px; background: rgba(245,240,235,.05); color: rgba(245,240,235,.6); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .11em; text-transform: uppercase; }
+.meta-copy { color: rgba(245,240,235,.42); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+.showroom-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top: 16px; }
+.showroom-card { position: relative; min-height: 180px; padding: 18px; border: 1px solid rgba(245,240,235,.08); border-radius: 22px; background: linear-gradient(180deg, rgba(16,16,16,.92), rgba(6,6,6,.88)); overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,.03); }
+.showroom-card::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at top right, var(--award-accent, rgba(52,170,220,.16)), transparent 46%); pointer-events: none; opacity: .9; }
+.showroom-card > * { position: relative; z-index: 1; }
+.showroom-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.showroom-icon { width: 52px; height: 52px; border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; background: rgba(245,240,235,.08); color: #f5f0eb; font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: .04em; box-shadow: inset 0 1px 0 rgba(255,255,255,.06); }
+.showroom-type { display: inline-flex; align-items: center; justify-content: center; padding: 8px 10px; border-radius: 999px; border: 1px solid rgba(245,240,235,.1); background: rgba(245,240,235,.04); color: rgba(245,240,235,.64); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
+.showroom-title { margin-top: 18px; font-size: 22px; line-height: 1.15; font-weight: 700; }
+.showroom-copy { margin-top: 10px; color: rgba(245,240,235,.58); line-height: 1.7; font-size: 14px; }
+.showroom-empty { padding: 22px; border: 1px dashed rgba(245,240,235,.12); border-radius: 20px; color: rgba(245,240,235,.52); line-height: 1.8; background: rgba(245,240,235,.02); }
+.mention-link { color: #8fdfff; text-decoration: none; font-weight: 700; }
+.mention-link:hover { color: #f5f0eb; }
+.loading-stack { display: grid; gap: 12px; margin-top: 14px; }
+.loading-card { padding: 18px; border-radius: 20px; border: 1px solid rgba(245,240,235,.08); background: rgba(245,240,235,.025); overflow: hidden; }
+.loading-bar { height: 12px; border-radius: 999px; background: linear-gradient(90deg, rgba(245,240,235,.04), rgba(245,240,235,.14), rgba(245,240,235,.04)); background-size: 200% 100%; animation: shimmerBar 1.2s linear infinite; }
+.loading-bar + .loading-bar { margin-top: 10px; }
+.loading-bar.short { width: 46%; }
+.loading-bar.mid { width: 68%; }
 .modal { position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(5,5,5,.82); backdrop-filter: blur(14px); }
 .modal.open { display: flex; }
 .modal-card { width: min(720px, 100%); max-height: min(80vh, 900px); overflow: auto; border: 1px solid rgba(245,240,235,.12); border-radius: 28px; background: linear-gradient(180deg, rgba(18,18,18,.98), rgba(8,8,8,.98)); padding: 24px; box-shadow: 0 30px 80px rgba(0,0,0,.45); }
@@ -114,6 +135,7 @@ body::before { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512
 @keyframes profilePulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.035); opacity: .88; } }
 @keyframes profileDrift { 0%, 100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(16px,-10px,0); } }
 @keyframes profileFlicker { 0%, 100% { opacity: 1; } 35% { opacity: .82; } 50% { opacity: .98; } 65% { opacity: .72; } }
+@keyframes shimmerBar { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 /* Sidebar refresh */
 .profile-layout-shell { display: grid; grid-template-columns: 300px minmax(0,1fr); gap: 24px; align-items: start; max-width: 1680px; }
 .profile-sidebar { position: sticky; top: 24px; display: grid; gap: 16px; }
@@ -196,15 +218,29 @@ body::before { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512
         </div>
       </div>
       <div class="profile-actions">
-        <button class="search-btn social-action" id="followersBtn" type="button" onclick="openFollowModal('followers')">Followers 0</button>
-        <button class="search-btn social-action" id="followingBtn" type="button" onclick="openFollowModal('following')">Following 0</button>
-        <button class="recognize-btn" id="recognizeBtn" onclick="grantRecognition()">Grant Recognition</button>
+        <div class="action-cluster">
+          <button class="search-btn social-action" id="followersBtn" type="button" onclick="openFollowModal('followers')">Followers 0</button>
+          <button class="search-btn social-action" id="followingBtn" type="button" onclick="openFollowModal('following')">Following 0</button>
+        </div>
+        <div class="action-cluster action-cluster--primary">
+          <button class="recognize-btn" id="recognizeBtn" onclick="grantRecognition()">Grant Recognition</button>
+        </div>
       </div>
     </div>
     <div class="profile-note" id="recognitionStatus"></div>
   </div>
   <div class="stage-wrap"><div class="stage" id="stage"></div></div>
   <div class="posts-wrap">
+    <div class="section-card">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Showroom</div>
+          <h2 class="section-title-sm">Awards on display.</h2>
+        </div>
+      </div>
+      <div class="section-sub">Trophies, awards, certifications, and community proof points live here.</div>
+      <div class="showroom-grid" id="showroomGrid"></div>
+    </div>
     <div class="section-card">
       <div class="section-head">
         <div>
@@ -253,6 +289,10 @@ function getCookie(name) { const match = document.cookie.match(new RegExp('(?:^|
 function decodeLayout(value) { return JSON.parse(decodeURIComponent(escape(atob(value)))); }
 function escapeHtml(value) { return String(value || '').replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch])); }
 function escapeAttr(value) { return escapeHtml(value).replace(/'/g, '&#39;'); }
+function renderRichText(value) {
+  const escaped = escapeHtml(value || '').replace(/\n/g, '<br>');
+  return escaped.replace(/(^|[\s(>])@([a-z0-9_]{3,30})/gi, (match, prefix, handle) => `${prefix}<a class="mention-link" href="/profile?handle=${encodeURIComponent(handle.toLowerCase())}">@${escapeHtml(handle.toLowerCase())}</a>`);
+}
 function getSessionUser() { const raw = getCookie(AUTH_COOKIE_NAME); if (!raw) return null; try { return JSON.parse(raw); } catch (_) { return null; } }
 function todayKey() { return new Date().toISOString().slice(0, 10); }
 function isBeVividPlus(user) { return Boolean(user && (user['bevivid+'] === true || user.bevividPlus === true)); }
@@ -286,6 +326,98 @@ function getPath(path) { return `${FIREBASE_DB_URL}/${path}.json`; }
 function getCommunityPath(path) { return `${COMMUNITY_ROOT}/${path}`; }
 function setRecognitionStatus(message) { document.getElementById('recognitionStatus').textContent = message || ''; }
 function closeSearchResults() { document.getElementById('searchResults').classList.remove('open'); }
+function getLoadingMarkup(count = 3) {
+  return `<div class="loading-stack">${new Array(count).fill(0).map(() => `<div class="loading-card"><div class="loading-bar mid"></div><div class="loading-bar short"></div></div>`).join('')}</div>`;
+}
+function setProfileLoadingState() {
+  document.getElementById('stage').innerHTML = getLoadingMarkup(2);
+  document.getElementById('showroomGrid').innerHTML = getLoadingMarkup(3);
+  document.getElementById('profilePosts').innerHTML = getLoadingMarkup(2);
+}
+function getAwardAccent(type) {
+  const key = String(type || '').toLowerCase();
+  if (key.includes('trophy')) return 'rgba(255,149,0,.28)';
+  if (key.includes('cert')) return 'rgba(52,170,220,.26)';
+  if (key.includes('recogn')) return 'rgba(0,229,176,.24)';
+  return 'rgba(162,89,255,.24)';
+}
+function getAwardIcon(type) {
+  const key = String(type || '').toLowerCase();
+  if (key.includes('trophy')) return 'T';
+  if (key.includes('cert')) return 'C';
+  if (key.includes('recogn')) return 'R';
+  return 'A';
+}
+function unwrapAwardCollection(value) {
+  if (!value) return [];
+  if (Array.isArray(value)) return value;
+  if (typeof value === 'object') return Object.values(value);
+  return [value];
+}
+function normalizeAwardItem(item, fallbackType = 'Award') {
+  if (!item) return null;
+  if (typeof item === 'string') {
+    return { title: item, type: fallbackType, description: '', icon: getAwardIcon(fallbackType), accent: getAwardAccent(fallbackType) };
+  }
+  const title = item.title || item.name || item.label || item.award || item.id;
+  if (!title) return null;
+  const type = item.type || item.category || fallbackType;
+  return {
+    title,
+    type,
+    description: item.description || item.copy || item.reason || item.subtitle || '',
+    icon: item.icon || item.emoji || getAwardIcon(type),
+    accent: item.accent || getAwardAccent(type)
+  };
+}
+function getShowroomItems(user) {
+  const buckets = [
+    ['Award', user && user.awards],
+    ['Trophy', user && user.trophies],
+    ['Certification', user && user.certifications],
+    ['Showcase', user && (user.showroom || user.showcase || user.badges)]
+  ];
+  const seen = new Set();
+  const items = [];
+  buckets.forEach(([type, source]) => {
+    unwrapAwardCollection(source).forEach(entry => {
+      const item = normalizeAwardItem(entry, type);
+      if (!item) return;
+      const key = `${String(item.type).toLowerCase()}::${String(item.title).toLowerCase()}`;
+      if (seen.has(key)) return;
+      seen.add(key);
+      items.push(item);
+    });
+  });
+  if (!items.length && Number(user && user.recognitionPoints || 0) > 0) {
+    items.push({
+      title: 'Community Recognition',
+      type: 'Recognition',
+      description: `${Number(user.recognitionPoints || 0)} lifetime recognition points from other users.`,
+      icon: 'R',
+      accent: getAwardAccent('recognition')
+    });
+  }
+  return items.slice(0, 12);
+}
+function renderShowroom(user) {
+  const box = document.getElementById('showroomGrid');
+  const items = getShowroomItems(user);
+  if (!items.length) {
+    box.innerHTML = '<div class="showroom-empty">This profile has not added any awards to its showroom yet.</div>';
+    return;
+  }
+  box.innerHTML = items.map(item => `
+    <article class="showroom-card" style="--award-accent:${escapeAttr(item.accent || getAwardAccent(item.type))};">
+      <div class="showroom-top">
+        <div class="showroom-icon">${escapeHtml(item.icon || getAwardIcon(item.type))}</div>
+        <div class="showroom-type">${escapeHtml(item.type || 'Award')}</div>
+      </div>
+      <div class="showroom-title">${escapeHtml(item.title || 'Untitled Award')}</div>
+      <div class="showroom-copy">${escapeHtml(item.description || 'Displayed on this profile as part of the user showcase.')}</div>
+    </article>
+  `).join('');
+}
 function applyPageBackdrop(layout) {
   const background = (layout && layout.pageBackground) || '#050505';
   const accent = (layout && layout.pageAccent) || '#a259ff';
@@ -464,7 +596,7 @@ function renderProfilePosts(posts) {
   box.innerHTML = posts.slice(0, 8).map(post => `
     <article class="mini-post">
       <div class="meta-copy">${escapeHtml(formatTimeAgo(post.createdAt))}</div>
-      <div class="mini-post-text">${escapeHtml(post.text || '')}</div>
+      <div class="mini-post-text">${renderRichText(post.text || '')}</div>
       ${post.imageUrl ? `<img class="mini-post-img" src="${escapeAttr(post.imageUrl)}" alt="">` : ''}
       <div class="mini-post-meta">
         <span class="mini-chip">${escapeHtml(String(post.stats?.likeCount || 0))} likes</span>
@@ -751,6 +883,7 @@ async function grantRecognition() {
 async function loadProfile() {
   activeUser = getSessionUser();
   syncCreatorDashboardLink();
+  setProfileLoadingState();
   audioState.playing = false;
   audioState.sourceLoaded = false;
   audioState.pendingSource = '';
@@ -767,6 +900,8 @@ async function loadProfile() {
     document.getElementById('profileTitle').textContent = 'No handle selected';
     document.getElementById('profileSub').textContent = 'Open this page with ?handle=yourhandle or sign in first.';
     document.getElementById('stage').innerHTML = '<div class="empty">No profile handle was provided.</div>';
+    document.getElementById('showroomGrid').innerHTML = '<div class="showroom-empty">Choose a profile to load its showroom.</div>';
+    document.getElementById('profilePosts').innerHTML = '<div class="empty">Choose a profile to see its community posts.</div>';
     document.getElementById('sidebarCurrentHandle').textContent = '@none';
     document.getElementById('sidebarViewMeta').textContent = 'Open a profile with ?handle=yourhandle or sign in first.';
     return;
@@ -789,6 +924,8 @@ async function loadProfile() {
     document.getElementById('profileTitle').textContent = 'Profile not found';
     document.getElementById('profileSub').textContent = 'That handle does not exist in Firebase yet.';
     document.getElementById('stage').innerHTML = '<div class="empty">This profile has not been created yet.</div>';
+    document.getElementById('showroomGrid').innerHTML = '<div class="showroom-empty">There is no showroom to display for this handle yet.</div>';
+    document.getElementById('profilePosts').innerHTML = '<div class="empty">No posts can be shown because this profile does not exist yet.</div>';
     document.getElementById('sidebarCurrentHandle').textContent = `@${handle}`;
     document.getElementById('sidebarViewMeta').textContent = 'That profile has not been created yet.';
     document.getElementById('recognitionPoints').textContent = '0';
@@ -818,6 +955,7 @@ async function loadProfile() {
   document.getElementById('plusBadge').hidden = !isBeVividPlus(user);
   updateRecognitionUi(user);
   renderSocialStats(viewingPosts, followData);
+  renderShowroom(user);
   renderProfilePosts(viewingPosts);
 
   const stage = document.getElementById('stage');
