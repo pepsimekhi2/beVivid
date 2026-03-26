@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Terms of Service - beVivid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #050505;
+  --fg: #f5f0eb;
+  --muted: rgba(245, 240, 235, 0.58);
+  --line: rgba(245, 240, 235, 0.10);
+  --card: rgba(245, 240, 235, 0.04);
+  --orange: #ff9500;
+  --pink: #ff2d55;
+  --blue: #34aadc;
+  --green: #00e5b0;
+  --violet: #a259ff;
+  --grad: linear-gradient(135deg, var(--pink), var(--orange), var(--violet), var(--blue));
+}
+html { scroll-behavior: smooth; }
+html, body {
+  width: 100%;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Syne', sans-serif;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image:
+    radial-gradient(circle at 12% 20%, rgba(255, 149, 0, 0.15), transparent 22%),
+    radial-gradient(circle at 82% 10%, rgba(162, 89, 255, 0.13), transparent 24%),
+    radial-gradient(circle at 55% 100%, rgba(52, 170, 220, 0.10), transparent 26%);
+}
+body::before {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.04;
+  z-index: 500;
+  animation: grain .4s steps(1) infinite;
+}
+.scanline {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.024), transparent);
+  animation: scan 10s linear infinite;
+  pointer-events: none;
+  z-index: 499;
+}
+.orb-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(110px);
+  mix-blend-mode: screen;
+  opacity: 0;
+  animation: orbf linear infinite;
+}
+.orb:nth-child(1) { width: 620px; height: 620px; background: radial-gradient(circle, #ff2d55, transparent 70%); top: -15%; left: -8%; animation-duration: 22s; }
+.orb:nth-child(2) { width: 500px; height: 500px; background: radial-gradient(circle, #a259ff, transparent 70%); top: 56%; right: -12%; animation-duration: 28s; animation-delay: -9s; }
+.orb:nth-child(3) { width: 420px; height: 420px; background: radial-gradient(circle, #34aadc, transparent 70%); top: 26%; left: 38%; animation-duration: 20s; animation-delay: -13s; }
+.orb:nth-child(4) { width: 360px; height: 360px; background: radial-gradient(circle, #00e5b0, transparent 70%); bottom: -2%; left: 18%; animation-duration: 25s; animation-delay: -6s; }
+@keyframes grain { 0% { transform: translate(0,0); } 25% { transform: translate(-2px,1px); } 50% { transform: translate(1px,-1px); } 75% { transform: translate(-1px,2px); } 100% { transform: translate(2px,-2px); } }
+@keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+@keyframes orbf { 0%,100% { opacity: 0; transform: scale(.8) translateY(0); } 10%,90% { opacity: .14; } 50% { opacity: .2; transform: scale(1.06) translateY(-28px); } }
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px clamp(24px, 5vw, 64px);
+  border-bottom: 1px solid var(--line);
+  background: rgba(5, 5, 5, 0.74);
+  backdrop-filter: blur(16px);
+}
+.nav-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 0.04em;
+  color: var(--fg);
+  text-decoration: none;
+}
+.nav-back {
+  color: var(--muted);
+  text-decoration: none;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.hero {
+  position: relative;
+  z-index: 1;
+  padding: 140px clamp(24px, 5vw, 64px) 56px;
+  border-bottom: 1px solid var(--line);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 149, 0, 0.28);
+  color: var(--orange);
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+}
+.chip-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--orange);
+}
+.title {
+  margin-top: 24px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(64px, 11vw, 148px);
+  line-height: 0.88;
+}
+.title span {
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-copy {
+  max-width: 780px;
+  margin-top: 22px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+.meta {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+  margin-top: 28px;
+}
+.meta-item {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.meta-item .label { color: rgba(245, 240, 235, 0.28); margin-bottom: 4px; }
+.meta-item .value { color: var(--muted); }
+.layout {
+  position: relative;
+  z-index: 1;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 clamp(24px, 5vw, 64px);
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+}
+.sidebar {
+  position: sticky;
+  top: 84px;
+  align-self: start;
+  padding: 44px 28px 44px 0;
+  border-right: 1px solid var(--line);
+  height: calc(100vh - 84px);
+  overflow-y: auto;
+}
+.sidebar-label {
+  padding-left: 12px;
+  margin-bottom: 14px;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(245, 240, 235, 0.24);
+}
+.sidebar-nav { list-style: none; }
+.sidebar-nav a {
+  display: block;
+  padding: 8px 12px;
+  border-left: 2px solid transparent;
+  border-radius: 4px;
+  text-decoration: none;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.10em;
+}
+.sidebar-nav a:hover,
+.sidebar-nav a.active {
+  color: var(--orange);
+  border-left-color: var(--orange);
+  background: rgba(255, 149, 0, 0.06);
+}
+.content {
+  padding: 52px 0 96px 60px;
+  max-width: 780px;
+}
+.section {
+  margin-bottom: 62px;
+  scroll-margin-top: 110px;
+}
+.section-num {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--orange);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.20em;
+}
+.section h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(34px, 4vw, 54px);
+  line-height: 0.96;
+  margin-bottom: 22px;
+}
+.section p {
+  margin-bottom: 16px;
+  color: var(--muted);
+  line-height: 1.82;
+  font-size: 15px;
+}
+.section a {
+  color: var(--orange);
+  text-decoration: none;
+}
+.section ul {
+  list-style: none;
+  margin: 18px 0;
+}
+.section li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(245, 240, 235, 0.06);
+  color: var(--muted);
+  line-height: 1.78;
+}
+.section li:last-child { border-bottom: 0; }
+.bullet {
+  width: 6px;
+  height: 6px;
+  margin-top: 9px;
+  border-radius: 50%;
+  background: var(--orange);
+  flex-shrink: 0;
+}
+.highlight,
+.warning,
+.contact {
+  margin: 24px 0;
+  padding: 24px 26px;
+  border-radius: 8px;
+}
+.highlight {
+  border: 1px solid rgba(255, 149, 0, 0.20);
+  background: rgba(255, 149, 0, 0.05);
+}
+.warning {
+  border: 1px solid rgba(255, 45, 85, 0.20);
+  background: rgba(255, 45, 85, 0.05);
+}
+.contact {
+  border: 1px solid var(--line);
+  background: var(--card);
+}
+.highlight-label,
+.warning-label,
+.contact-label {
+  display: block;
+  margin-bottom: 10px;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+.highlight-label { color: var(--orange); }
+.warning-label { color: var(--pink); }
+.contact-label { color: var(--orange); }
+.divider {
+  height: 1px;
+  background: var(--line);
+  margin: 8px 0 62px;
+}
+footer {
+  position: relative;
+  z-index: 1;
+  padding: 38px clamp(24px, 5vw, 64px);
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.footer-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+}
+.footer-links {
+  display: flex;
+  gap: 22px;
+  flex-wrap: wrap;
+  list-style: none;
+}
+.footer-links a {
+  color: rgba(245, 240, 235, 0.28);
+  text-decoration: none;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.footer-copy {
+  color: rgba(245, 240, 235, 0.16);
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.10em;
+}
+@media (max-width: 860px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .content { padding: 46px 0 84px; }
+}
+</style>
+</head>
+<body>
+<div class="scanline"></div>
+<div class="orb-layer" aria-hidden="true">
+  <div class="orb"></div>
+  <div class="orb"></div>
+  <div class="orb"></div>
+  <div class="orb"></div>
+</div>
+<nav>
+  <a href="/" class="nav-logo">beVivid</a>
+  <a href="/" class="nav-back">Back to site</a>
+</nav>
+
+<section class="hero">
+  <div class="chip"><span class="chip-dot"></span>Legal Document</div>
+  <h1 class="title">Terms of<br><span>Service.</span></h1>
+  <p class="hero-copy">
+    beVivid is individually owned and run as a personal passion project. These Terms are meant to set fair rules for using the site without pretending it is a giant staffed platform.
+  </p>
+  <div class="meta">
+    <div class="meta-item"><div class="label">Effective Date</div><div class="value">April 1, 2026</div></div>
+    <div class="meta-item"><div class="label">Created</div><div class="value">March 23, 2026</div></div>
+    <div class="meta-item"><div class="label">Applies To</div><div class="value">All beVivid users</div></div>
+  </div>
+</section>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-label">Contents</div>
+    <ul class="sidebar-nav" id="sidebarNav">
+      <li><a href="#t1" class="active">1. Overview</a></li>
+      <li><a href="#t2">2. Who Can Use beVivid</a></li>
+      <li><a href="#t3">3. Accounts</a></li>
+      <li><a href="#t4">4. Community Rules</a></li>
+      <li><a href="#t5">5. Your Content</a></li>
+      <li><a href="#t6">6. Ads, Paid Features, and Creator Tools</a></li>
+      <li><a href="#t7">7. Availability and Changes</a></li>
+      <li><a href="#t8">8. Ending Access</a></li>
+      <li><a href="#t9">9. Disclaimers and Limits</a></li>
+      <li><a href="#t10">10. Contact</a></li>
+    </ul>
+  </aside>
+
+  <main class="content">
+    <section class="section" id="t1">
+      <span class="section-num">01 - Overview</span>
+      <h2>Using the site means agreeing to these terms</h2>
+      <div class="highlight">
+        <span class="highlight-label">Plain English</span>
+        <p>If you use beVivid, create an account, or post on the site, you are agreeing to these Terms and to the <a href="/privacy">Privacy Policy</a>. If you do not agree, do not use the site.</p>
+      </div>
+      <p>These Terms govern your use of beVivid and related features, including profiles, community posts, creator tools, ads, premium features, and any future updates to the site.</p>
+      <p>beVivid is independently owned and personally operated. That means some parts of the site may still be experimental, may change quickly, and may not have the resources of a large platform.</p>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="section" id="t2">
+      <span class="section-num">02 - Who Can Use beVivid</span>
+      <h2>Age and permission</h2>
+      <p>You must be at least 13 years old to use beVivid.</p>
+      <p>If you are under 18, you should use the site only with permission from a parent or guardian.</p>
+      <p>You may not use beVivid if doing so would break the law that applies to you or if your account has already been removed for serious abuse.</p>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="section" id="t3">
+      <span class="section-num">03 - Accounts</span>
+      <h2>Account basics</h2>
+      <ul>
+        <li><span class="bullet"></span>Give accurate information when creating your account.</li>
+        <li><span class="bullet"></span>Keep your login details private and do not share your password.</li>
+        <li><span class="bullet"></span>You are responsible for activity that happens through your account.</li>
+        <li><span class="bullet"></span>Do not create accounts to impersonate others, dodge moderation, or unfairly boost your own content.</li>
+      </ul>
+      <p>If you think someone accessed your account without permission, contact us as soon as you can.</p>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="section" id="t4">
+      <span class="section-num">04 - Community Rules</span>
+      <h2>What is not allowed</h2>
+      <p>beVivid is meant to be creative, social, and fair. Do not use it to harm others or manipulate the platform.</p>
+      <ul>
+        <li><span class="bullet"></span>Do not impersonate people, fake achievements, or mislead others.</li>
+        <li><span class="bullet"></span>Do not post illegal content, threats, harassment, hateful abuse, explicit exploitation, or content that violates someone else's rights.</li>
+        <li><span class="bullet"></span>Do not upload content you do not have the right to post.</li>
+        <li><span class="bullet"></span>Do not use bots, scripts, scraping, fake traffic, or coordinated self-engagement to inflate impressions, likes, comments, recognition, or creator earnings.</li>
+        <li><span class="bullet"></span>Do not spam users, overload the site, or interfere with site security.</li>
+      </ul>
+      <p>We may remove content or limit accounts that break these rules.</p>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="section" id="t5">
+      <span class="section-num">05 - Your Content</span>
+      <h2>You keep ownership of what you post</h2>
+      <p>You keep ownership of the content you create and post to beVivid.</p>
+      <p>By posting it, you give beVivid permission to host, display, format, copy, and share that content as needed to run the site and its community features.</p>
+      <p>You promise that you have the right to post your content and that posting it does not violate another person's rights.</p>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="section" id="t6">
+      <span class="section-num">06 - Ads, Paid Features, and Creator Tools</span>
+      <h2>Experimental monetization and premium features</h2>
+      <p>beVivid may show ads, offer premium features such as beVivid+, and provide creator-facing analytics or earnings displays.</p>
+      <div class="warning">
+        <span class="warning-label">Important</span>
+        <p>Creator balances, earnings estimates, engagement counts, and similar numbers are platform calculations. They are not bank accounts, guaranteed payments, or promises that money will be paid out.</p>
+      </div>
+      <ul>
+        <li><span class="bullet"></span>Only valid activity counts toward creator metrics or earnings. Self-generated or invalid activity may be ignored, reversed, or penalized.</li>
+        <li><span class="bullet"></span>Rates, eligibility, dashboard features, payout rules, and premium features may change, pause, or disappear at any time.</li>
+        <li><span class="bullet"></span>If payments are ever offered, extra verification, thresholds, tax information, or payment-method setup may be required first.</li>
+        <li><span class="bullet"></span>Ads may appear on the site, and ad providers may apply their own policies to what can be monetized.</li>
+      </ul>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="section" id="t7">
+      <span class="section-num">07 - Availability and Changes</span>
+      <h2>The site may change</h2>
+      <p>Because beVivid is a small independently run project, features may be added, redesigned, limited, paused, or removed at any time.</p>
+      <p>We try to keep the site available, but we do not promise constant uptime, perfect storage, or uninterrupted access.</p>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="section" id="t8">
+      <span class="section-num">08 - Ending Access</span>
+      <h2>Suspension, removal, or account deletion</h2>
+      <p>You can stop using beVivid at any time.</p>
+      <p>We may suspend, restrict, or remove access to accounts or content if we believe the site, other users, or the platform's integrity are being harmed.</p>
+      <p>Some records may still be kept after removal where reasonably needed for moderation, safety, fraud review, accounting, or legal reasons.</p>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="section" id="t9">
+      <span class="section-num">09 - Disclaimers and Limits</span>
+      <h2>Things we do not promise</h2>
+      <p>beVivid is provided on an "as is" and "as available" basis. We do not promise that the site will always be error-free, secure, available, or suitable for every purpose.</p>
+      <p>We do not guarantee that user content is accurate, that posts will always remain available, or that any creator feature will result in revenue or payment.</p>
+      <p>To the extent allowed by law, beVivid is not responsible for indirect losses, lost profits, lost data, or similar damages resulting from your use of the site.</p>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="section" id="t10">
+      <span class="section-num">10 - Contact</span>
+      <h2>Questions</h2>
+      <p>If you have a question about these Terms, reach out and we will try to help.</p>
+      <div class="contact">
+        <span class="contact-label">Terms Contact</span>
+        <p>Email: <a href="mailto:support@bevivid.com">support@bevivid.com</a></p>
+        <p style="margin-top: 10px;">If you are writing about a legal or policy issue, label your message clearly so it can be handled faster.</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer>
+  <div>
+    <div class="footer-logo">beVivid</div>
+    <div style="margin-top: 6px; color: rgba(245, 240, 235, 0.22); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase;">Be Vivid - Live Vivid</div>
+  </div>
+  <ul class="footer-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/privacy">Privacy Policy</a></li>
+    <li><a href="/tos">Terms of Service</a></li>
+  </ul>
+  <div class="footer-copy">&copy; 2026 beVivid. All rights reserved.</div>
+</footer>
+
+<script>
+const sections = document.querySelectorAll('.section');
+const links = document.querySelectorAll('.sidebar-nav a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(section => {
+    if (window.scrollY >= section.offsetTop - 120) current = section.id;
+  });
+  links.forEach(link => link.classList.toggle('active', link.getAttribute('href') === '#' + current));
+});
+</script>
+</body>
+</html>
