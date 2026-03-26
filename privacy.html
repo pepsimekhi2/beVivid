@@ -41,6 +41,45 @@ body::before {
     radial-gradient(circle at 82% 8%, rgba(52, 170, 220, 0.14), transparent 24%),
     radial-gradient(circle at 50% 100%, rgba(0, 229, 176, 0.10), transparent 28%);
 }
+body::before {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.04;
+  z-index: 500;
+  animation: grain .4s steps(1) infinite;
+}
+.scanline {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.024), transparent);
+  animation: scan 10s linear infinite;
+  pointer-events: none;
+  z-index: 499;
+}
+.orb-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(110px);
+  mix-blend-mode: screen;
+  opacity: 0;
+  animation: orbf linear infinite;
+}
+.orb:nth-child(1) { width: 620px; height: 620px; background: radial-gradient(circle, #ff2d55, transparent 70%); top: -15%; left: -8%; animation-duration: 22s; }
+.orb:nth-child(2) { width: 500px; height: 500px; background: radial-gradient(circle, #a259ff, transparent 70%); top: 56%; right: -12%; animation-duration: 28s; animation-delay: -9s; }
+.orb:nth-child(3) { width: 420px; height: 420px; background: radial-gradient(circle, #34aadc, transparent 70%); top: 26%; left: 38%; animation-duration: 20s; animation-delay: -13s; }
+.orb:nth-child(4) { width: 360px; height: 360px; background: radial-gradient(circle, #00e5b0, transparent 70%); bottom: -2%; left: 18%; animation-duration: 25s; animation-delay: -6s; }
+@keyframes grain { 0% { transform: translate(0,0); } 25% { transform: translate(-2px,1px); } 50% { transform: translate(1px,-1px); } 75% { transform: translate(-1px,2px); } 100% { transform: translate(2px,-2px); } }
+@keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+@keyframes orbf { 0%,100% { opacity: 0; transform: scale(.8) translateY(0); } 10%,90% { opacity: .14; } 50% { opacity: .2; transform: scale(1.06) translateY(-28px); } }
 nav {
   position: fixed;
   top: 0;
@@ -298,6 +337,13 @@ footer {
 </style>
 </head>
 <body>
+<div class="scanline"></div>
+<div class="orb-layer" aria-hidden="true">
+  <div class="orb"></div>
+  <div class="orb"></div>
+  <div class="orb"></div>
+  <div class="orb"></div>
+</div>
 <nav>
   <a href="/" class="nav-logo">beVivid</a>
   <a href="/" class="nav-back">Back to site</a>
