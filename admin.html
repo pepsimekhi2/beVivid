@@ -51,7 +51,11 @@
         <div class="eyebrow">Users</div>
         <h2 class="section-title">Accounts, bans, wallets, and vivid pages.</h2>
       </div>
-      <input class="search" id="userSearch" type="text" placeholder="Search handle, display name, or email">
+      <form class="toolbar" onsubmit="event.preventDefault(); searchUsers();">
+        <input class="search" id="userSearch" type="text" placeholder="Search handle, display name, or email">
+        <button class="ghost" type="submit">Search</button>
+        <button class="ghost" type="button" onclick="clearUserSearch()">Clear</button>
+      </form>
     </div>
     <div class="grid">
       <div class="list" id="userList"></div>
@@ -102,6 +106,7 @@ function setStatus(message,tone=''){const node=document.getElementById('adminSta
 async function api(path,options={}){const response=await fetch(path,Object.assign({credentials:'same-origin'},options));let data=null;try{data=await response.json()}catch(_){data=null}if(!response.ok)throw new Error(data&&data.error?data.error:'Request failed.');return data}
 function selectedUser(){return state.data.users.find(user=>user.handle===state.selectedHandle)||null}
 function filteredUsers(){const q=state.userSearch.trim().toLowerCase();if(!q)return state.data.users;return state.data.users.filter(user=>[user.handle,user.displayName,user.email].join(' ').toLowerCase().includes(q))}
+function pickBestUserMatch(users,query){const normalized=String(query||'').trim().toLowerCase().replace(/^@+/,'');if(!normalized)return users[0]||null;return users.find(user=>String(user.handle||'').toLowerCase()===normalized)||users.find(user=>String(user.handle||'').toLowerCase().startsWith(normalized))||users.find(user=>String(user.displayName||'').toLowerCase().startsWith(normalized))||users[0]||null}
 function filteredPosts(){const q=state.postSearch.trim().toLowerCase();if(!q)return state.data.posts;return state.data.posts.filter(post=>[post.authorHandle,post.authorDisplayName,post.text].join(' ').toLowerCase().includes(q))}
 function renderStats(){const users=state.data.users;const banned=users.filter(user=>user.banned).length;const pending=state.data.payoutRequests.filter(item=>item.status==='pending').length;document.getElementById('statsGrid').innerHTML=`<div class="card"><small>Total Users</small><strong>${num(users.length)}</strong><span>Accounts in Firebase right now.</span></div><div class="card"><small>Banned Users</small><strong>${num(banned)}</strong><span>Accounts currently blocked.</span></div><div class="card"><small>Community Posts</small><strong>${num(state.data.posts.length)}</strong><span>Posts available in the active feed.</span></div><div class="card"><small>Applications</small><strong>${num(state.data.applications.length)}</strong><span>Partner and business submissions waiting for review.</span></div><div class="card"><small>Pending Payouts</small><strong>${num(pending)}</strong><span>Creator payout requests still waiting on you.</span></div>`}
 function renderUsers(){const list=document.getElementById('userList');const users=filteredUsers();if(!users.length){list.innerHTML='<div class="empty">No users match that search yet.</div>';return}list.innerHTML=users.map(user=>`<button class="user-row ${state.selectedHandle===user.handle?'active':''}" type="button" onclick="selectUser('${attr(user.handle)}')"><div class="avatar">${user.profileImage?`<img src="${attr(user.profileImage)}" alt="">`:esc((user.displayName||user.handle||'?').charAt(0).toUpperCase())}</div><div class="user-meta"><div class="user-name">${esc(user.displayName||'Member')}</div><div class="tiny">@${esc(user.handle)}</div><div class="chips">${user.accountType?`<span class="chip ${attr(String(user.accountType).toLowerCase())}">${esc(user.accountType)}</span>`:''}${user.beVividPlus?'<span class="chip plus">beVivid+</span>':''}${user.banned?'<span class="chip banned">Banned</span>':''}</div></div></button>`).join('')}
@@ -112,6 +117,8 @@ function renderPayouts(){const list=document.getElementById('payoutList');const 
 function renderAll(){renderStats();renderUsers();renderUserEditor();renderPosts();renderApplications();renderPayouts()}
 function renderLoading(){const skeleton='<div class="entry"><div class="copy">Loading...</div></div>';document.getElementById('userList').innerHTML=skeleton+skeleton;document.getElementById('userEditor').innerHTML=skeleton;document.getElementById('postList').innerHTML=skeleton+skeleton;document.getElementById('applicationList').innerHTML=skeleton;document.getElementById('payoutList').innerHTML=skeleton}
 function selectUser(handle){state.selectedHandle=handle;renderUsers();renderUserEditor()}
+function searchUsers(){state.userSearch=document.getElementById('userSearch').value||'';const users=filteredUsers();const best=pickBestUserMatch(users,state.userSearch);if(best)state.selectedHandle=best.handle;renderUsers();renderUserEditor();setStatus(users.length?`Found ${users.length} matching user${users.length===1?'':'s'}.`:'No users matched that search.')}
+function clearUserSearch(){state.userSearch='';document.getElementById('userSearch').value='';if(!state.selectedHandle&&state.data.users[0])state.selectedHandle=state.data.users[0].handle;renderUsers();renderUserEditor();setStatus('User search cleared.','ok')}
 async function ensureAuth(){try{const data=await api('/api/admin-auth');state.authenticated=Boolean(data&&data.authenticated)}catch(_){state.authenticated=false}document.getElementById('loginOverlay').classList.toggle('open',!state.authenticated)}
 async function loginAdmin(event){event.preventDefault();const button=document.getElementById('loginBtn');const status=document.getElementById('loginStatus');button.disabled=true;button.textContent='Unlocking...';status.textContent='';try{await api('/api/admin-auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:document.getElementById('adminPassword').value})});document.getElementById('adminPassword').value='';await ensureAuth();await loadDashboard()}catch(error){status.textContent=error.message||'That password was not accepted.';status.className='status err'}finally{button.disabled=false;button.textContent='Unlock Dashboard'}}
 async function logoutAdmin(){try{await api('/api/admin-auth',{method:'DELETE'})}catch(_){}state.authenticated=false;document.getElementById('loginOverlay').classList.add('open');setStatus('Dashboard locked.')}
@@ -128,7 +135,7 @@ async function deleteApplication(id){try{await runAction({action:'delete-applica
 async function resolvePayout(id,status){try{await runAction({action:'resolve-payout-request',id,status},`Payout request marked ${status}.`)}catch(error){setStatus(error.message||'Could not update that payout request.','err')}}
 async function deletePayout(id){try{await runAction({action:'delete-payout-request',id},'Payout request removed.')}catch(error){setStatus(error.message||'Could not remove that payout request.','err')}}
 document.getElementById('loginForm').addEventListener('submit',loginAdmin);
-document.getElementById('userSearch').addEventListener('input',event=>{state.userSearch=event.target.value||'';renderUsers()});
+document.getElementById('userSearch').addEventListener('input',event=>{state.userSearch=event.target.value||'';const users=filteredUsers();const best=pickBestUserMatch(users,state.userSearch);if(best)state.selectedHandle=best.handle;renderUsers();renderUserEditor()});
 document.getElementById('postSearch').addEventListener('input',event=>{state.postSearch=event.target.value||'';renderPosts()});
 (async function init(){await ensureAuth();if(state.authenticated)await loadDashboard()})();
 </script>
