@@ -93,6 +93,12 @@ body::before { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512
 .audio-toggle { border: 1px solid rgba(245,240,235,.12); background: rgba(5,5,5,.55); color: #f5f0eb; border-radius: 999px; padding: 12px 16px; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; backdrop-filter: blur(14px); }
 .audio-note { color: rgba(245,240,235,.56); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
 .empty { padding: 26px; border-radius: 16px; border: 1px solid rgba(245,240,235,.08); background: rgba(245,240,235,.03); color: rgba(245,240,235,.56); line-height: 1.8; }
+.profile-tab-bar { display: flex; flex-wrap: wrap; gap: 10px; }
+.profile-tab-btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 18px; border-radius: 999px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: rgba(245,240,235,.72); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer; transition: transform .18s ease, border-color .18s ease, background .18s ease, color .18s ease; }
+.profile-tab-btn:hover { transform: translateY(-1px); border-color: rgba(255,149,0,.24); color: #f5f0eb; }
+.profile-tab-btn.active { background: linear-gradient(135deg, rgba(255,149,0,.96), rgba(245,240,235,.92)); color: #050505; border-color: transparent; }
+.profile-tab-panel { display: none; }
+.profile-tab-panel.active { display: block; }
 .posts-wrap { margin-top: 22px; display: grid; gap: 16px; }
 .section-card { border: 1px solid rgba(245,240,235,.08); border-radius: 28px; padding: 22px; background: rgba(245,240,235,.02); }
 .section-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
@@ -229,9 +235,17 @@ body::before { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512
     </div>
     <div class="profile-note" id="recognitionStatus"></div>
   </div>
-  <div class="stage-wrap"><div class="stage" id="stage"></div></div>
+  <div class="profile-tab-bar">
+    <button class="profile-tab-btn active" id="profileTabBtn-page" type="button" onclick="switchProfileTab('page')">Vivid Page</button>
+    <button class="profile-tab-btn" id="profileTabBtn-showroom" type="button" onclick="switchProfileTab('showroom')">Showroom</button>
+    <button class="profile-tab-btn" id="profileTabBtn-posts" type="button" onclick="switchProfileTab('posts')">Posts</button>
+  </div>
   <div class="posts-wrap">
-    <div class="section-card">
+    <div class="profile-tab-panel active" id="profileTab-page">
+      <div class="stage-wrap"><div class="stage" id="stage"></div></div>
+    </div>
+    <div class="profile-tab-panel" id="profileTab-showroom">
+      <div class="section-card">
       <div class="section-head">
         <div>
           <div class="eyebrow">Showroom</div>
@@ -240,8 +254,10 @@ body::before { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512
       </div>
       <div class="section-sub">Trophies, awards, certifications, and community proof points live here.</div>
       <div class="showroom-grid" id="showroomGrid"></div>
+      </div>
     </div>
-    <div class="section-card">
+    <div class="profile-tab-panel" id="profileTab-posts">
+      <div class="section-card">
       <div class="section-head">
         <div>
           <div class="eyebrow">Community Posts</div>
@@ -251,6 +267,7 @@ body::before { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512
       </div>
       <div class="section-sub">Recent posts from this profile appear here so their page and community presence stay connected.</div>
       <div class="mini-feed" id="profilePosts"></div>
+      </div>
     </div>
   </div>
   </div>
@@ -292,6 +309,10 @@ function escapeAttr(value) { return escapeHtml(value).replace(/'/g, '&#39;'); }
 function renderRichText(value) {
   const escaped = escapeHtml(value || '').replace(/\n/g, '<br>');
   return escaped.replace(/(^|[\s(>])@([a-z0-9_]{3,30})/gi, (match, prefix, handle) => `${prefix}<a class="mention-link" href="/profile?handle=${encodeURIComponent(handle.toLowerCase())}">@${escapeHtml(handle.toLowerCase())}</a>`);
+}
+function switchProfileTab(tab) {
+  document.querySelectorAll('.profile-tab-btn').forEach(button => button.classList.toggle('active', button.id === `profileTabBtn-${tab}`));
+  document.querySelectorAll('.profile-tab-panel').forEach(panel => panel.classList.toggle('active', panel.id === `profileTab-${tab}`));
 }
 function getSessionUser() { const raw = getCookie(AUTH_COOKIE_NAME); if (!raw) return null; try { return JSON.parse(raw); } catch (_) { return null; } }
 function todayKey() { return new Date().toISOString().slice(0, 10); }
@@ -417,6 +438,20 @@ function renderShowroom(user) {
       <div class="showroom-copy">${escapeHtml(item.description || 'Displayed on this profile as part of the user showcase.')}</div>
     </article>
   `).join('');
+}
+async function ensureShowroomField(handle, user) {
+  const nextUser = Object.assign({ showroom: [] }, user || {});
+  const hasShowroom = user && Object.prototype.hasOwnProperty.call(user, 'showroom');
+  if (!hasShowroom && activeUser && activeUser.handle === handle) {
+    try {
+      await fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(handle)}.json`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ showroom: [] })
+      });
+    } catch (_) {}
+  }
+  return nextUser;
 }
 function applyPageBackdrop(layout) {
   const background = (layout && layout.pageBackground) || '#050505';
@@ -919,7 +954,7 @@ async function loadProfile() {
     fetch(getPath(getCommunityPath(`social/${handle}`))).catch(() => null),
     loadCommunityPosts(handle).catch(() => [])
   ]);
-  const user = await userResponse.json();
+  let user = await userResponse.json();
   if (!user) {
     document.getElementById('profileTitle').textContent = 'Profile not found';
     document.getElementById('profileSub').textContent = 'That handle does not exist in Firebase yet.';
@@ -934,6 +969,7 @@ async function loadProfile() {
     setRecognitionStatus('Search for another handle or create this profile first.');
     return;
   }
+  user = await ensureShowroomField(handle, user);
   followData = socialResponse && socialResponse.ok ? (await socialResponse.json()) || { followers: {}, following: {} } : { followers: {}, following: {} };
   if (!Object.keys(followData.followers || {}).length && !Object.keys(followData.following || {}).length) {
     const legacySocial = await fetchJson('userSocial/' + handle).catch(() => null);
