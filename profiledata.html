@@ -134,6 +134,7 @@ body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opa
       <div class="nav-stack">
         <a class="nav-link" href="/">Home</a>
         <a class="nav-link" href="/community">Community</a>
+        <a class="nav-link" id="creatorDashboardLink" href="/creator" hidden>Creator Dashboard</a>
         <a class="nav-link" href="javascript:void(0)" onclick="goToPublicProfile()">Public Profile</a>
       </div>
     </div>
@@ -203,6 +204,8 @@ function decodeLayout(value) { return JSON.parse(decodeURIComponent(escape(atob(
 function makeId() { return 'el_' + Math.random().toString(36).slice(2, 9); }
 function clamp(num, min, max) { return Math.min(max, Math.max(min, num)); }
 function isBeVividPlus(user) { return Boolean(user && (user['bevivid+'] === true || user.bevividPlus === true)); }
+function getAccountType(user) { return String((user && user.accountType) || '').trim().toLowerCase(); }
+function isCreatorAccount(user) { return getAccountType(user) === 'creator'; }
 function normalizeSession() { const raw = getCookie(AUTH_COOKIE_NAME); if (!raw) return null; try { return JSON.parse(raw); } catch (_) { return null; } }
 function getUserPath(handle) { return `${FIREBASE_DB_URL}/users/${encodeURIComponent(handle)}.json`; }
 function getPublicIndexPath(handle) { return `${FIREBASE_DB_URL}/publicUserIndex/${encodeURIComponent(handle)}.json`; }
@@ -242,6 +245,11 @@ function sanitizeProfileDataForPlan(profileData, premium) {
 }
 function getCanvasBounds() {
   return { width: CANVAS_W, height: CANVAS_H };
+}
+function syncCreatorDashboardLink() {
+  const link = document.getElementById('creatorDashboardLink');
+  if (!link) return;
+  link.hidden = !isCreatorAccount(state.user);
 }
 function applyStudioBackdrop() {
   const hasSong = Boolean(state.profileData.songAudio);
@@ -707,6 +715,7 @@ document.getElementById('canvasPattern').addEventListener('input', e => { state.
 
 async function loadUserAndLayout() {
   state.user = normalizeSession();
+  syncCreatorDashboardLink();
   if (!state.user || !state.user.handle) { setStatus('No signed-in user was found in this browser. Log in on the homepage first.', 'err'); renderCanvas(); renderInspector(); return; }
   try {
     const [userResponse, audioResponse] = await Promise.all([
@@ -717,6 +726,7 @@ async function loadUserAndLayout() {
     const audioRecord = audioResponse.ok ? await audioResponse.json() : null;
     if (!user) throw new Error('Profile record not found.');
     state.user = Object.assign({}, state.user, user);
+    syncCreatorDashboardLink();
     state.profileData = user.profileLayoutEncoded ? decodeLayout(user.profileLayoutEncoded) : defaultLayout(state.user);
     state.profileData = sanitizeProfileDataForPlan(state.profileData, isBeVividPlus(state.user));
     state.profileData.songAudio = (audioRecord && audioRecord.audioData) || user.profileSongAudio || state.profileData.songAudio || '';
