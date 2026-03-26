@@ -1305,6 +1305,21 @@ async function fetchUserByHandle(handle) {
   return response.json();
 }
 
+async function ensureUserShowroom(handle, user) {
+  if (!user || Object.prototype.hasOwnProperty.call(user, 'showroom')) return user;
+  const nextUser = Object.assign({ showroom: [] }, user);
+  try {
+    await fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(handle)}.json`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ showroom: [] })
+    });
+  } catch (_) {}
+  return nextUser;
+}
+
 async function hashPassword(password) {
   const data = new TextEncoder().encode(password);
   const digest = await crypto.subtle.digest('SHA-256', data);
@@ -1345,6 +1360,7 @@ async function saveSignupToFirebase(payload) {
     acceptedTermsAt: payload.acceptedTermsAt || null,
     acceptedPrivacyAt: payload.acceptedPrivacyAt || null,
     legalAcceptedVersion: payload.legalAcceptedVersion || '',
+    showroom: [],
     createdAt: Date.now()
   };
 
@@ -1398,12 +1414,13 @@ async function loginUser(button) {
   }
 
   try {
-    const user = await fetchUserByHandle(handle);
+    let user = await fetchUserByHandle(handle);
     if (!user) throw new Error('No profile was found for that handle.');
     const passwordHash = await hashPassword(password);
     if (!user.passwordHash || user.passwordHash !== passwordHash) {
       throw new Error('That password does not match the saved profile for this handle.');
     }
+    user = await ensureUserShowroom(handle, user);
 
     setCurrentUser({
       displayName: user.displayName || user.handle || handle,
