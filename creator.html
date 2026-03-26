@@ -37,10 +37,13 @@ body::before { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512
 .section-title { font-size: 38px; }
 .copy, .muted, .post-meta { color: rgba(245,240,235,.56); line-height: 1.75; }
 .sidebar-links { display: grid; gap: 10px; margin-top: 16px; }
+.sidebar-group { display: grid; gap: 12px; padding-top: 14px; border-top: 1px solid rgba(245,240,235,.08); margin-top: 14px; }
+.sidebar-mini { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: rgba(245,240,235,.42); }
 .nav-link { display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 13px 16px; border-radius: 16px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; transition: transform .18s ease, border-color .18s ease, background .18s ease; }
 .nav-link:hover { transform: translateY(-1px); border-color: rgba(255,149,0,.24); background: rgba(245,240,235,.06); }
 .nav-link.primary { background: linear-gradient(135deg, rgba(255,149,0,.98), rgba(245,240,235,.94)); color: #050505; border-color: transparent; }
 .nav-link.primary:hover { background: #ff9500; }
+.hero-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: flex-start; margin-top: 10px; }
 .hero-top { display: grid; gap: 16px; }
 .wallet-card { display: grid; gap: 12px; padding: 24px; border-radius: 24px; background: linear-gradient(135deg, rgba(255,149,0,.22), rgba(162,89,255,.16), rgba(52,170,220,.12)); border: 1px solid rgba(255,255,255,.08); box-shadow: inset 0 1px 0 rgba(255,255,255,.06); }
 .wallet-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: rgba(245,240,235,.64); }
@@ -95,11 +98,19 @@ body::before { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512
       <div class="eyebrow">Navigate</div>
       <h1 class="sidebar-title">Creator tools.</h1>
       <div class="copy">Track what your posts are earning and keep the payout math in one place.</div>
-      <div class="sidebar-links">
-        <a class="nav-link" href="/">Back To beVivid</a>
-        <a class="nav-link" href="/community">Community</a>
-        <a class="nav-link" id="myProfileLink" href="/profile">My Profile</a>
-        <a class="nav-link" id="studioLink" href="/profiledata">Open Studio</a>
+      <div class="sidebar-group">
+        <div class="sidebar-mini">Main</div>
+        <div class="sidebar-links" style="margin-top:0;">
+          <a class="nav-link" href="/">Back To beVivid</a>
+          <a class="nav-link" href="/community">Community</a>
+        </div>
+      </div>
+      <div class="sidebar-group">
+        <div class="sidebar-mini">Creator Space</div>
+        <div class="sidebar-links" style="margin-top:0;">
+          <a class="nav-link" id="myProfileLink" href="/profile">My Profile</a>
+          <a class="nav-link primary" id="studioLink" href="/profiledata">Open Studio</a>
+        </div>
       </div>
     </div>
     <div class="sidebar-card">
@@ -115,6 +126,11 @@ body::before { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512
           <div class="eyebrow">Creator Dashboard</div>
           <h2 class="hero-title">Earn from every vivid post.</h2>
           <div class="wallet-sub" id="dashboardIntro">Pulling your creator totals and payout balance now.</div>
+          <div class="hero-actions">
+            <a class="pill" href="/community">Open Community</a>
+            <a class="pill" id="heroProfileLink" href="/profile">View Profile</a>
+            <a class="pill" id="heroStudioLink" href="/profiledata">Open Studio</a>
+          </div>
         </div>
         <div class="wallet-card">
           <div class="wallet-label">Wallet Balance</div>
@@ -136,7 +152,10 @@ body::before { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512
           <div class="eyebrow">Payout Breakdown</div>
           <h3 class="section-title">Where the money comes from.</h3>
         </div>
-        <a class="pill" href="/community">Open Community</a>
+        <div class="chip-row">
+          <a class="pill" href="/community">Open Community</a>
+          <a class="pill" id="breakdownStudioLink" href="/profiledata">Back To Studio</a>
+        </div>
       </div>
       <div class="breakdown-grid">
         <div class="stat-card"><small>Impression Earnings</small><strong id="impressionEarnings">$0.00</strong><span id="impressionBreakdown">0 impressions x $0.01 / 100</span></div>
@@ -423,6 +442,9 @@ async function requestPayout(button) {
   const handle = session && session.handle;
   document.getElementById('myProfileLink').href = handle ? `/profile?handle=${encodeURIComponent(handle)}` : '/profile';
   document.getElementById('studioLink').href = handle ? `/profiledata?handle=${encodeURIComponent(handle)}` : '/profiledata';
+  document.getElementById('heroProfileLink').href = handle ? `/profile?handle=${encodeURIComponent(handle)}` : '/profile';
+  document.getElementById('heroStudioLink').href = handle ? `/profiledata?handle=${encodeURIComponent(handle)}` : '/profiledata';
+  document.getElementById('breakdownStudioLink').href = handle ? `/profiledata?handle=${encodeURIComponent(handle)}` : '/profiledata';
   if (!handle) {
     renderLoggedOut();
     return;
