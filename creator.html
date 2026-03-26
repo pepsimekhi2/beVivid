@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>beVivid Creator Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;500;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; background: #050505; color: #f5f0eb; font-family: 'Syne', sans-serif; }
+body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opacity: .05; background-image: radial-gradient(circle at 14% 12%, rgba(255,45,85,.18), transparent 24%), radial-gradient(circle at 88% 8%, rgba(52,170,220,.16), transparent 22%), radial-gradient(circle at 50% 100%, rgba(0,229,176,.12), transparent 28%); }
+.shell { position: relative; z-index: 1; min-height: 100vh; max-width: 1680px; margin: 0 auto; padding: 28px; display: grid; grid-template-columns: 300px minmax(0,1fr); gap: 24px; align-items: start; }
+.sidebar { position: sticky; top: 24px; display: grid; gap: 16px; }
+.sidebar-card, .hero-card, .panel, .post-row, .empty-state { border: 1px solid rgba(245,240,235,.08); border-radius: 28px; background: rgba(245,240,235,.03); backdrop-filter: blur(18px); box-shadow: 0 24px 60px rgba(0,0,0,.24); }
+.sidebar-card, .hero-card, .panel, .empty-state { padding: 22px; }
+.sidebar-card, .hero-card, .panel, .post-row { animation: rise .7s cubic-bezier(.16,1,.3,1) both; }
+.hero-card { animation-delay: .04s; }
+.panel { animation-delay: .08s; }
+.main { min-width: 0; display: grid; gap: 22px; }
+.eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: #34aadc; margin-bottom: 12px; }
+.sidebar-title, .section-title, .hero-title { font-family: 'Bebas Neue', sans-serif; line-height: .9; margin: 0; }
+.sidebar-title { font-size: 40px; }
+.hero-title { font-size: clamp(64px, 9vw, 120px); }
+.section-title { font-size: 38px; }
+.copy, .muted, .post-meta { color: rgba(245,240,235,.56); line-height: 1.75; }
+.sidebar-links { display: grid; gap: 10px; margin-top: 16px; }
+.nav-link { display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 13px 16px; border-radius: 16px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; transition: transform .18s ease, border-color .18s ease, background .18s ease; }
+.nav-link:hover { transform: translateY(-1px); border-color: rgba(255,149,0,.24); background: rgba(245,240,235,.06); }
+.nav-link.primary { background: linear-gradient(135deg, rgba(255,149,0,.98), rgba(245,240,235,.94)); color: #050505; border-color: transparent; }
+.nav-link.primary:hover { background: #ff9500; }
+.hero-top { display: grid; gap: 16px; }
+.wallet-card { display: grid; gap: 12px; padding: 24px; border-radius: 24px; background: linear-gradient(135deg, rgba(255,149,0,.22), rgba(162,89,255,.16), rgba(52,170,220,.12)); border: 1px solid rgba(255,255,255,.08); box-shadow: inset 0 1px 0 rgba(255,255,255,.06); }
+.wallet-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: rgba(245,240,235,.64); }
+.wallet-balance { font-family: 'Bebas Neue', sans-serif; font-size: clamp(72px, 10vw, 136px); line-height: .86; }
+.wallet-sub { color: rgba(245,240,235,.72); line-height: 1.8; max-width: 780px; }
+.stats-grid, .breakdown-grid { display: grid; gap: 14px; grid-template-columns: repeat(4, minmax(0,1fr)); margin-top: 18px; }
+.breakdown-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+.stat-card { padding: 18px; border-radius: 20px; border: 1px solid rgba(245,240,235,.08); background: rgba(5,5,5,.34); }
+.stat-card small { display: block; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: rgba(245,240,235,.38); margin-bottom: 8px; }
+.stat-card strong { display: block; font-size: 32px; line-height: 1; }
+.stat-card span { display: block; margin-top: 8px; color: rgba(245,240,235,.54); line-height: 1.6; font-size: 13px; }
+.section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+.pill { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 18px; border-radius: 999px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; }
+.post-list { display: grid; gap: 14px; }
+.post-row { padding: 18px; display: grid; gap: 14px; }
+.post-row-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.post-title { font-weight: 700; font-size: 18px; line-height: 1.5; }
+.post-earnings { font-family: 'Bebas Neue', sans-serif; font-size: 40px; line-height: .9; text-align: right; }
+.chip-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.chip { padding: 8px 10px; border-radius: 999px; background: rgba(245,240,235,.05); color: rgba(245,240,235,.66); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .11em; text-transform: uppercase; }
+.empty-state { color: rgba(245,240,235,.58); line-height: 1.8; }
+@keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 1180px) {
+  .shell { grid-template-columns: 1fr; }
+  .sidebar { position: static; }
+  .stats-grid, .breakdown-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+@media (max-width: 760px) {
+  .shell { padding: 18px; }
+  .stats-grid, .breakdown-grid { grid-template-columns: 1fr; }
+  .post-row-top { flex-direction: column; }
+  .post-earnings { text-align: left; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <div class="eyebrow">Navigate</div>
+      <h1 class="sidebar-title">Creator tools.</h1>
+      <div class="copy">Track what your posts are earning and keep the payout math in one place.</div>
+      <div class="sidebar-links">
+        <a class="nav-link" href="/">Back To beVivid</a>
+        <a class="nav-link" href="/community">Community</a>
+        <a class="nav-link" id="myProfileLink" href="/profile">My Profile</a>
+        <a class="nav-link" id="studioLink" href="/profiledata">Open Studio</a>
+      </div>
+    </div>
+    <div class="sidebar-card">
+      <div class="eyebrow">Rates</div>
+      <div class="copy">Impressions pay <strong>$0.01 per 100</strong>. Likes from other users pay <strong>$0.0025</strong>. Comments from other users pay <strong>$0.005</strong>.</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <section class="hero-card">
+      <div class="hero-top">
+        <div>
+          <div class="eyebrow">Creator Dashboard</div>
+          <h2 class="hero-title">Earn from every vivid post.</h2>
+          <div class="wallet-sub" id="dashboardIntro">Pulling your creator totals and payout balance now.</div>
+        </div>
+        <div class="wallet-card">
+          <div class="wallet-label">Wallet Balance</div>
+          <div class="wallet-balance" id="walletBalance">$0.00</div>
+          <div class="wallet-sub" id="walletSub">Estimated from your live post performance.</div>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><small>Total Posts</small><strong id="totalPosts">0</strong><span>Published community posts attached to your account.</span></div>
+        <div class="stat-card"><small>Total Impressions</small><strong id="totalImpressions">0</strong><span>Every time your posts were loaded.</span></div>
+        <div class="stat-card"><small>Total Likes</small><strong id="totalLikes">0</strong><span>All likes collected across your posts.</span></div>
+        <div class="stat-card"><small>Total Comments</small><strong id="totalComments">0</strong><span>All comments left on your posts.</span></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Payout Breakdown</div>
+          <h3 class="section-title">Where the money comes from.</h3>
+        </div>
+        <a class="pill" href="/community">Open Community</a>
+      </div>
+      <div class="breakdown-grid">
+        <div class="stat-card"><small>Impression Earnings</small><strong id="impressionEarnings">$0.00</strong><span id="impressionBreakdown">0 impressions x $0.01 / 100</span></div>
+        <div class="stat-card"><small>Like Earnings</small><strong id="likeEarnings">$0.00</strong><span id="likeBreakdown">0 outside likes x $0.0025</span></div>
+        <div class="stat-card"><small>Comment Earnings</small><strong id="commentEarnings">$0.00</strong><span id="commentBreakdown">0 outside comments x $0.005</span></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Post Earnings</div>
+          <h3 class="section-title">How each post is performing.</h3>
+        </div>
+      </div>
+      <div class="post-list" id="postList">
+        <div class="empty-state">Loading your creator dashboard.</div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+const FIREBASE_DB_URL = 'https://bevivid-73a69-default-rtdb.firebaseio.com';
+const AUTH_COOKIE_NAME = 'bevivid_session';
+const COMMUNITY_ROOT = 'communityData';
+const IMPRESSION_RATE = 0.01 / 100;
+const LIKE_RATE = 0.0025;
+const COMMENT_RATE = 0.005;
+
+function getCookie(name) {
+  const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+  return match ? decodeURIComponent(match[1]) : '';
+}
+function normalizeSession() {
+  const raw = getCookie(AUTH_COOKIE_NAME);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch (_) {
+    return null;
+  }
+}
+function getPath(path) {
+  return `${FIREBASE_DB_URL}/${path}.json`;
+}
+function getUserPath(handle) {
+  return `${FIREBASE_DB_URL}/users/${encodeURIComponent(handle)}.json`;
+}
+function escapeHtml(value) {
+  return String(value || '').replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+}
+function getAccountType(user) {
+  return String((user && user.accountType) || '').trim().toLowerCase();
+}
+function isCreatorAccount(user) {
+  return getAccountType(user) === 'creator';
+}
+function formatCurrency(value) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(value || 0));
+}
+function formatNumber(value) {
+  return new Intl.NumberFormat('en-US').format(Number(value || 0));
+}
+function timeAgo(value) {
+  const diff = Math.max(1, Date.now() - Number(value || 0));
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d ago`;
+  return new Date(Number(value || 0)).toLocaleDateString();
+}
+async function fetchJson(path) {
+  const response = await fetch(getPath(path));
+  if (!response.ok) throw new Error(`Could not load ${path}.`);
+  return response.json();
+}
+function normalizePost(post) {
+  if (!post) return null;
+  return Object.assign({
+    stats: {
+      likeCount: Number(post.likeCount || 0),
+      commentCount: Number(post.commentCount || 0),
+      impressionCount: Number(post.impressionCount || 0),
+      reachCount: Number(post.reachCount || 0)
+    },
+    comments: post.comments || {},
+    likes: post.likes || {},
+    reach: post.reach || {}
+  }, post);
+}
+function getExternalLikeCount(post) {
+  return Object.keys(post.likes || {}).filter(handle => handle && handle !== post.authorHandle).length;
+}
+function getExternalCommentCount(post) {
+  return Object.values(post.comments || {}).filter(comment => comment && comment.authorHandle && comment.authorHandle !== post.authorHandle).length;
+}
+function getPostEarnings(post) {
+  const impressions = Number(post.stats?.impressionCount || 0);
+  const externalLikes = getExternalLikeCount(post);
+  const externalComments = getExternalCommentCount(post);
+  return {
+    impressions,
+    externalLikes,
+    externalComments,
+    impressionEarnings: impressions * IMPRESSION_RATE,
+    likeEarnings: externalLikes * LIKE_RATE,
+    commentEarnings: externalComments * COMMENT_RATE
+  };
+}
+function renderLoggedOut() {
+  document.getElementById('dashboardIntro').textContent = 'Log in on the homepage first so the dashboard knows which creator to load.';
+  document.getElementById('walletSub').textContent = 'Your balance appears here once a creator account is active.';
+  document.getElementById('postList').innerHTML = '<div class="empty-state">No creator session was found. Head to the homepage, log in, then come back here.</div>';
+}
+function renderCreatorLocked(accountType) {
+  const label = accountType ? accountType.charAt(0).toUpperCase() + accountType.slice(1) : 'Member';
+  document.getElementById('dashboardIntro').textContent = `Creator dashboard is locked. Your current account type is ${label}.`;
+  document.getElementById('walletBalance').textContent = '$0.00';
+  document.getElementById('walletSub').textContent = 'Switch into a creator account to unlock wallet tracking and earnings analytics.';
+  document.getElementById('postList').innerHTML = '<div class="empty-state">Only creator accounts can access the creator dashboard right now.</div>';
+}
+function renderDashboard(posts, handle) {
+  const totals = posts.reduce((acc, post) => {
+    const payout = getPostEarnings(post);
+    acc.posts += 1;
+    acc.impressions += Number(post.stats?.impressionCount || 0);
+    acc.likes += Number(post.stats?.likeCount || 0);
+    acc.comments += Number(post.stats?.commentCount || 0);
+    acc.externalLikes += payout.externalLikes;
+    acc.externalComments += payout.externalComments;
+    acc.impressionEarnings += payout.impressionEarnings;
+    acc.likeEarnings += payout.likeEarnings;
+    acc.commentEarnings += payout.commentEarnings;
+    return acc;
+  }, {
+    posts: 0,
+    impressions: 0,
+    likes: 0,
+    comments: 0,
+    externalLikes: 0,
+    externalComments: 0,
+    impressionEarnings: 0,
+    likeEarnings: 0,
+    commentEarnings: 0
+  });
+
+  const wallet = totals.impressionEarnings + totals.likeEarnings + totals.commentEarnings;
+  document.getElementById('dashboardIntro').textContent = `Showing creator earnings for @${handle}. Engagement payouts only count activity from other users.`;
+  document.getElementById('walletBalance').textContent = formatCurrency(wallet);
+  document.getElementById('walletSub').textContent = `${formatNumber(totals.impressions)} impressions, ${formatNumber(totals.externalLikes)} outside likes, and ${formatNumber(totals.externalComments)} outside comments are paying into this balance.`;
+
+  document.getElementById('totalPosts').textContent = formatNumber(totals.posts);
+  document.getElementById('totalImpressions').textContent = formatNumber(totals.impressions);
+  document.getElementById('totalLikes').textContent = formatNumber(totals.likes);
+  document.getElementById('totalComments').textContent = formatNumber(totals.comments);
+
+  document.getElementById('impressionEarnings').textContent = formatCurrency(totals.impressionEarnings);
+  document.getElementById('likeEarnings').textContent = formatCurrency(totals.likeEarnings);
+  document.getElementById('commentEarnings').textContent = formatCurrency(totals.commentEarnings);
+  document.getElementById('impressionBreakdown').textContent = `${formatNumber(totals.impressions)} impressions x $0.01 / 100`;
+  document.getElementById('likeBreakdown').textContent = `${formatNumber(totals.externalLikes)} outside likes x $0.0025`;
+  document.getElementById('commentBreakdown').textContent = `${formatNumber(totals.externalComments)} outside comments x $0.005`;
+
+  const list = document.getElementById('postList');
+  if (!posts.length) {
+    list.innerHTML = '<div class="empty-state">You have not published any community posts yet, so your wallet is still at zero.</div>';
+    return;
+  }
+
+  list.innerHTML = posts.map(post => {
+    const payout = getPostEarnings(post);
+    const total = payout.impressionEarnings + payout.likeEarnings + payout.commentEarnings;
+    return `
+      <article class="post-row">
+        <div class="post-row-top">
+          <div>
+            <div class="post-title">${escapeHtml((post.text || 'Untitled post').slice(0, 120))}${(post.text || '').length > 120 ? '...' : ''}</div>
+            <div class="post-meta">${escapeHtml(timeAgo(post.createdAt))}</div>
+          </div>
+          <div class="post-earnings">${formatCurrency(total)}</div>
+        </div>
+        <div class="chip-row">
+          <span class="chip">${formatNumber(post.stats?.impressionCount || 0)} impressions</span>
+          <span class="chip">${formatNumber(post.stats?.likeCount || 0)} likes</span>
+          <span class="chip">${formatNumber(post.stats?.commentCount || 0)} comments</span>
+          <span class="chip">${formatNumber(payout.externalLikes)} outside likes paid</span>
+          <span class="chip">${formatNumber(payout.externalComments)} outside comments paid</span>
+        </div>
+      </article>
+    `;
+  }).join('');
+}
+
+(async function init() {
+  const session = normalizeSession();
+  const handle = session && session.handle;
+  document.getElementById('myProfileLink').href = handle ? `/profile?handle=${encodeURIComponent(handle)}` : '/profile';
+  document.getElementById('studioLink').href = handle ? `/profiledata?handle=${encodeURIComponent(handle)}` : '/profiledata';
+  if (!handle) {
+    renderLoggedOut();
+    return;
+  }
+
+  try {
+    const userResponse = await fetch(getUserPath(handle));
+    if (!userResponse.ok) throw new Error('Could not verify your creator account right now.');
+    const user = await userResponse.json();
+    if (!user || !isCreatorAccount(user)) {
+      renderCreatorLocked(getAccountType(user || session));
+      return;
+    }
+    let data = await fetchJson(`${COMMUNITY_ROOT}/posts`).catch(() => null);
+    if (!data) data = await fetchJson('communityPosts').catch(() => null);
+    const posts = Object.values(data || {})
+      .map(normalizePost)
+      .filter(post => post && post.authorHandle === handle)
+      .sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
+    renderDashboard(posts, handle);
+  } catch (_) {
+    document.getElementById('dashboardIntro').textContent = 'The creator dashboard could not load your post data right now.';
+    document.getElementById('walletSub').textContent = 'Try again once Firebase is reachable.';
+    document.getElementById('postList').innerHTML = '<div class="empty-state">Your creator stats are temporarily unavailable.</div>';
+  }
+})();
+</script>
+</body>
+</html>
