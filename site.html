@@ -1058,7 +1058,7 @@ footer { position: relative; z-index: 1; padding: 44px clamp(24px,5vw,64px); bor
         </div>
 
         <div class="ob-captcha-wrap" id="onboarding-application-captcha" data-recaptcha-form="onboarding"></div>
-        <p class="ob-field-err" id="ob-app-captcha-err">Please complete the reCAPTCHA to continue.</p>
+        <p class="ob-field-err" id="ob-app-captcha-err">Security verification could not be completed. Please try again.</p>
         <p class="ob-submit-err" id="ob-app-submit-err"></p>
 
         <div class="ob-btn-row">
@@ -1102,7 +1102,7 @@ footer { position: relative; z-index: 1; padding: 44px clamp(24px,5vw,64px); bor
   </div>
 </div>
 
-<script src="https://www.google.com/recaptcha/api.js?render=explicit" async defer></script>
+<script src="https://www.google.com/recaptcha/enterprise.js?render=6LfyVJUsAAAAAFZ7eNAF8r2b58PUyZ_2hW56gKHh" async defer></script>
 <script>
 /* MARQUEE */
 const marqItems = [
@@ -1149,7 +1149,6 @@ function setAcct(type, btn) {
 const RECAPTCHA_SITE_KEY = '6LfyVJUsAAAAAFZ7eNAF8r2b58PUyZ_2hW56gKHh';
 const FIREBASE_DB_URL = 'https://bevivid-73a69-default-rtdb.firebaseio.com';
 const AUTH_COOKIE_NAME = 'bevivid_session';
-const recaptchaWidgets = {};
 let currentUser = null;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const PASSWORD_PATTERN = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
@@ -1161,34 +1160,25 @@ function setInlineError(id, message) {
   el.classList.toggle('show', Boolean(message));
 }
 
-function initRecaptchaWidgets() {
-  if (!window.grecaptcha || !window.grecaptcha.render) {
-    window.setTimeout(initRecaptchaWidgets, 250);
-    return;
-  }
-
+function initRecaptchaGuards() {
   document.querySelectorAll('[data-recaptcha-form]').forEach(container => {
-    const formKey = container.dataset.recaptchaForm;
-    if (recaptchaWidgets[formKey] !== undefined) return;
-    recaptchaWidgets[formKey] = window.grecaptcha.render(container.id, {
-      sitekey: RECAPTCHA_SITE_KEY,
-      theme: 'dark'
-    });
+    container.style.minHeight = '0';
+    container.innerHTML = '<div class="apply-fine">Protected by reCAPTCHA.</div>';
   });
 }
 
-function getRecaptchaToken(formKey) {
-  if (!window.grecaptcha) return '';
-  const widgetId = recaptchaWidgets[formKey];
-  if (widgetId === undefined) return '';
-  return window.grecaptcha.getResponse(widgetId);
+async function executeRecaptchaAction(action) {
+  if (!window.grecaptcha || !window.grecaptcha.enterprise || !window.grecaptcha.enterprise.execute) {
+    throw new Error('reCAPTCHA is still loading. Try again in a second.');
+  }
+
+  await new Promise(resolve => window.grecaptcha.enterprise.ready(resolve));
+  return window.grecaptcha.enterprise.execute(RECAPTCHA_SITE_KEY, { action });
 }
 
-function resetRecaptcha(formKey) {
-  if (!window.grecaptcha) return;
-  const widgetId = recaptchaWidgets[formKey];
-  if (widgetId === undefined) return;
-  window.grecaptcha.reset(widgetId);
+function getApplicationCaptchaAction(type) {
+  const normalized = String(type || 'application').replace(/[^a-z0-9_]/gi, '_').toLowerCase();
+  return `${normalized}_application`;
 }
 
 function splitNameParts(fullName) {
@@ -1483,12 +1473,6 @@ async function submitApply(type, button) {
     return;
   }
 
-  const captchaToken = getRecaptchaToken(type);
-  if (!captchaToken) {
-    setInlineError(type + '-error', 'Please complete the reCAPTCHA before sending your application.');
-    return;
-  }
-
   setInlineError(type + '-error', '');
   if (button) {
     button.disabled = true;
@@ -1498,6 +1482,9 @@ async function submitApply(type, button) {
   const parts = splitNameParts(name);
 
   try {
+    const captchaAction = getApplicationCaptchaAction(type);
+    const captchaToken = await executeRecaptchaAction(captchaAction);
+
     await postJson('/api/applications', {
       type,
       firstName: parts.firstName,
@@ -1505,7 +1492,8 @@ async function submitApply(type, button) {
       email,
       why: msg,
       optIn: true,
-      captchaToken
+      captchaToken,
+      captchaAction
     });
 
     document.getElementById(type + '-success').style.display = 'block';
@@ -1513,7 +1501,6 @@ async function submitApply(type, button) {
       const el = document.getElementById(type + '-' + f);
       if (el) el.value = '';
     });
-    resetRecaptcha(type);
   } catch (error) {
     setInlineError(type + '-error', error.message);
   } finally {
@@ -1672,7 +1659,6 @@ async function obSubmitApplication(button) {
   const email = document.getElementById('ob-app-email').value.trim();
   const why   = document.getElementById('ob-app-why').value.trim();
   const optin = document.getElementById('ob-app-optin').checked;
-  const captchaToken = getRecaptchaToken('onboarding');
   let ok = true;
 
   document.getElementById('ob-app-firstname-err').classList.toggle('show', !fn);   if (!fn) ok = false;
@@ -1681,7 +1667,7 @@ async function obSubmitApplication(button) {
   document.getElementById('ob-app-email-err').classList.toggle('show', !eOk);      if (!eOk) ok = false;
   document.getElementById('ob-app-why-err').classList.toggle('show', !why);        if (!why) ok = false;
   document.getElementById('ob-app-optin-err').classList.toggle('show', !optin);    if (!optin) ok = false;
-  document.getElementById('ob-app-captcha-err').classList.toggle('show', !captchaToken); if (!captchaToken) ok = false;
+  document.getElementById('ob-app-captcha-err').classList.remove('show');
   setInlineError('ob-app-submit-err', '');
   if (!ok) return;
 
@@ -1692,6 +1678,9 @@ async function obSubmitApplication(button) {
   }
 
   try {
+    const captchaAction = getApplicationCaptchaAction(ob.accountType || 'onboarding');
+    const captchaToken = await executeRecaptchaAction(captchaAction);
+
     await postJson('/api/applications', {
       type: ob.accountType,
       firstName: fn,
@@ -1700,10 +1689,10 @@ async function obSubmitApplication(button) {
       phone,
       why,
       optIn: true,
-      captchaToken
+      captchaToken,
+      captchaAction
     });
 
-    resetRecaptcha('onboarding');
     obGoTo(8);
 
     const bar = document.getElementById('obConfetti2');
@@ -1839,7 +1828,7 @@ async function obGoVivid(button) {
   }
 }
 
-document.addEventListener('DOMContentLoaded', initRecaptchaWidgets);
+document.addEventListener('DOMContentLoaded', initRecaptchaGuards);
 document.addEventListener('DOMContentLoaded', hydrateSessionFromCookie);
 document.addEventListener('DOMContentLoaded', () => { syncCurrentUserRecord(); });
 document.getElementById('ob-legal-consent').addEventListener('change', e => {
