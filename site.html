@@ -2,1166 +2,1856 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>beVivid Profile</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>beVivid — Be Vivid. Live Vivid.</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;500;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; }
-html, body { margin: 0; min-height: 100%; background: #050505; color: #f5f0eb; font-family: 'Syne', sans-serif; }
-body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opacity: .05; background-image: radial-gradient(circle at 20% 20%, rgba(255,45,85,.18), transparent 24%), radial-gradient(circle at 80% 10%, rgba(52,170,220,.18), transparent 26%), radial-gradient(circle at 50% 100%, rgba(0,229,176,.14), transparent 25%); }
-.scanline { position: fixed; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,.024), transparent); animation: scan 10s linear infinite; pointer-events: none; z-index: 499; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black: #050505;
+  --white: #f5f0eb;
+  --vivid-1: #ff2d55;
+  --vivid-2: #ff9500;
+  --vivid-3: #34aadc;
+  --vivid-4: #a259ff;
+  --vivid-5: #00e5b0;
+}
+
+html { scroll-behavior: smooth; }
+html, body { width: 100%; background: #050505; color: #f5f0eb; font-family: 'Syne', sans-serif; overflow-x: hidden; }
+
+/* GRAIN */
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.038; pointer-events: none; z-index: 500;
+  animation: grain .4s steps(1) infinite;
+}
+@keyframes grain {
+  0%   { transform: translate(0,0); }   25% { transform: translate(-2px,1px); }
+  50%  { transform: translate(1px,-1px); } 75% { transform: translate(-1px,2px); }
+  100% { transform: translate(2px,-2px); }
+}
+
+/* SCANLINE */
+.scanline { position: fixed; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.022), transparent); animation: scan 10s linear infinite; pointer-events: none; z-index: 499; }
+@keyframes scan { 0% { top: 0 } 100% { top: 100% } }
+
+/* ORBS */
 .orb-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-.orb { position: absolute; border-radius: 50%; filter: blur(110px); mix-blend-mode: screen; opacity: 0; animation: orbf linear infinite; }
-.orb:nth-child(1) { width: 620px; height: 620px; background: radial-gradient(circle, #ff2d55, transparent 70%); top: -15%; left: -8%; animation-duration: 22s; }
-.orb:nth-child(2) { width: 500px; height: 500px; background: radial-gradient(circle, #a259ff, transparent 70%); top: 56%; right: -12%; animation-duration: 28s; animation-delay: -9s; }
-.orb:nth-child(3) { width: 420px; height: 420px; background: radial-gradient(circle, #34aadc, transparent 70%); top: 26%; left: 38%; animation-duration: 20s; animation-delay: -13s; }
-.orb:nth-child(4) { width: 360px; height: 360px; background: radial-gradient(circle, #00e5b0, transparent 70%); bottom: -2%; left: 18%; animation-duration: 25s; animation-delay: -6s; }
-@keyframes grain { 0% { transform: translate(0,0); } 25% { transform: translate(-2px,1px); } 50% { transform: translate(1px,-1px); } 75% { transform: translate(-1px,2px); } 100% { transform: translate(2px,-2px); } }
-@keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
-@keyframes orbf { 0%,100% { opacity: 0; transform: scale(.8) translateY(0); } 10%,90% { opacity: .14; } 50% { opacity: .2; transform: scale(1.06) translateY(-28px); } }
-body::before { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"); opacity: .04; z-index: 500; animation: grain .4s steps(1) infinite; }
-.shell { position: relative; z-index: 1; min-height: 100vh; padding: 28px; max-width: 1560px; margin: 0 auto; }
-.shell, .header, .stage-wrap, .section-card, .modal-card { animation: pageRise .7s cubic-bezier(.16,1,.3,1) both; }
-.header { animation-delay: .05s; }
-.stage-wrap { animation-delay: .1s; }
-.section-card { animation-delay: .14s; }
-.topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
-.back, .studio { display: inline-flex; align-items: center; justify-content: center; padding: 12px 18px; border-radius: 999px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; }
-.header { margin: 0 auto 20px; max-width: 1280px; width: 100%; }
-.eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: #34aadc; margin-bottom: 12px; }
-.title-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-.title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(58px, 10vw, 120px); line-height: .88; margin: 0; }
-.plus-badge { display: inline-flex; align-items: center; justify-content: center; padding: 12px 16px; border-radius: 18px; border: 1px solid rgba(162,89,255,.24); background: linear-gradient(135deg, rgba(162,89,255,.24), rgba(122,108,224,.14)); box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 18px 40px rgba(74,40,142,.24); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #efeefe; }
-.plus-badge[hidden] { display: none; }
-.account-type-badge { display: inline-flex; align-items: center; justify-content: center; padding: 12px 16px; border-radius: 18px; border: 1px solid rgba(52,170,220,.22); background: rgba(52,170,220,.12); box-shadow: inset 0 1px 0 rgba(255,255,255,.06); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #eaf6ff; }
-.account-type-badge[hidden] { display: none; }
-.account-type-badge[data-type="creator"] { border-color: rgba(255,149,0,.26); background: rgba(255,149,0,.14); color: #ffe3bf; }
-.account-type-badge[data-type="partner"] { border-color: rgba(255,45,85,.24); background: rgba(255,45,85,.14); color: #ffd2dd; }
-.account-type-badge[data-type="business"] { border-color: rgba(0,229,176,.22); background: rgba(0,229,176,.12); color: #d4fff3; }
-.account-type-badge[data-type="student"] { border-color: rgba(52,170,220,.22); background: rgba(52,170,220,.12); color: #eaf6ff; }
-.sub { color: rgba(245,240,235,.46); max-width: 680px; line-height: 1.8; margin-top: 10px; }
-.topbar-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.profile-tools { display: grid; gap: 16px; margin-top: 22px; }
-.profile-stats { display: flex; flex-wrap: wrap; gap: 12px; align-items: stretch; }
-.profile-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; padding: 14px 16px; border-radius: 20px; border: 1px solid rgba(245,240,235,.08); background: rgba(245,240,235,.025); }
-.action-cluster { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
-.action-cluster--primary { margin-left: auto; }
-.search-form { display: flex; gap: 10px; flex-wrap: wrap; position: relative; }
-.search-input { min-width: 260px; border: 1px solid rgba(245,240,235,.12); background: rgba(10,10,10,.88); color: #f5f0eb; border-radius: 999px; padding: 12px 16px; font: inherit; outline: none; flex: 1; backdrop-filter: blur(14px); }
-.search-btn, .recognize-btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 18px; border-radius: 999px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer; }
-.recognize-btn { background: #f5f0eb; color: #050505; border-color: transparent; }
-.recognize-btn[disabled] { opacity: .6; cursor: not-allowed; }
-.search-results { display: none; position: absolute; top: calc(100% + 10px); left: 0; right: 0; border: 1px solid rgba(245,240,235,.1); border-radius: 18px; background: rgba(10,10,10,.96); backdrop-filter: blur(18px); overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,.35); }
-.search-results.open { display: block; }
-.search-result { display: flex; align-items: center; gap: 12px; width: 100%; border: 0; border-bottom: 1px solid rgba(245,240,235,.06); background: transparent; color: #f5f0eb; padding: 12px 14px; text-align: left; cursor: pointer; }
-.search-result:last-child { border-bottom: 0; }
-.search-result:hover { background: rgba(245,240,235,.05); }
-.search-avatar { width: 42px; height: 42px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg,#ff2d55,#34aadc); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: 'Bebas Neue', sans-serif; font-size: 20px; }
-.search-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.search-meta { min-width: 0; }
-.search-name { font-weight: 700; font-size: 14px; line-height: 1.2; }
-.search-handle { margin-top: 4px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: rgba(245,240,235,.42); }
-.search-empty { padding: 14px 16px; color: rgba(245,240,235,.48); font-size: 13px; line-height: 1.6; }
-.recognition-card { border: 1px solid rgba(245,240,235,.08); border-radius: 18px; padding: 14px 16px; background: rgba(245,240,235,.03); min-width: 210px; }
-.recognition-card small { display: block; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: rgba(245,240,235,.34); margin-bottom: 8px; }
-.recognition-card strong { font-size: 28px; line-height: 1; display: block; }
-.recognition-card span { display: block; margin-top: 8px; color: rgba(245,240,235,.56); font-size: 13px; line-height: 1.5; }
-.profile-note { color: rgba(245,240,235,.5); font-size: 13px; line-height: 1.6; }
-.social-action { background: rgba(245,240,235,.03); color: #f5f0eb; border-color: rgba(245,240,235,.12); }
-.social-action:hover { background: rgba(245,240,235,.08); }
-.stage-wrap { overflow: auto; border: 1px solid rgba(245,240,235,.08); border-radius: 28px; padding: 20px; background: rgba(245,240,235,.02); display: flex; justify-content: center; }
-.stage { position: relative; width: 1200px; min-height: 900px; border-radius: 24px; overflow: hidden; border: 1px solid rgba(245,240,235,.08); background: #111; box-shadow: 0 30px 90px rgba(0,0,0,.35); }
-.full-page-viz { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: .42; }
-.stage::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; }
-.pattern-layer { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: .42; mix-blend-mode: screen; }
-.el { position: absolute; overflow: hidden; }
-.el.anim-float { animation: profileFloat 4.8s ease-in-out infinite; }
-.el.anim-pulse { animation: profilePulse 2.8s ease-in-out infinite; }
-.el.anim-drift { animation: profileDrift 6.8s ease-in-out infinite; }
-.el.anim-flicker { animation: profileFlicker 2.6s steps(2, end) infinite; }
-.text-block { padding: 18px; white-space: pre-wrap; line-height: 1.45; }
-.image-block img, .embed-block iframe { width: 100%; height: 100%; border: 0; display: block; object-fit: cover; position: relative; z-index: 1; }
-.spotify-card { width: 100%; height: 100%; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; background: linear-gradient(135deg,#1db954,#111111 72%); color: #ffffff; }
-.spotify-card small { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; opacity: .7; }
-.spotify-card strong { font-size: 22px; line-height: 1.1; }
-.spotify-card span { font-size: 13px; line-height: 1.6; opacity: .85; }
-.spotify-card a { display: inline-flex; width: fit-content; margin-top: 12px; padding: 10px 14px; border-radius: 999px; background: rgba(255,255,255,.16); color: #fff; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
-.visualizer-bg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: .9; }
-.audio-pod { position: absolute; left: 20px; bottom: 20px; z-index: 4; display: grid; gap: 8px; padding: 12px; border-radius: 18px; border: 1px solid rgba(245,240,235,.12); background: rgba(5,5,5,.42); backdrop-filter: blur(14px); }
-.audio-toggle { border: 1px solid rgba(245,240,235,.12); background: rgba(5,5,5,.55); color: #f5f0eb; border-radius: 999px; padding: 12px 16px; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; backdrop-filter: blur(14px); }
-.audio-note { color: rgba(245,240,235,.56); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
-.empty { padding: 26px; border-radius: 16px; border: 1px solid rgba(245,240,235,.08); background: rgba(245,240,235,.03); color: rgba(245,240,235,.56); line-height: 1.8; }
-.profile-tab-bar { display: flex; flex-wrap: wrap; gap: 10px; }
-.profile-tab-btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 18px; border-radius: 999px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: rgba(245,240,235,.72); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer; transition: transform .18s ease, border-color .18s ease, background .18s ease, color .18s ease; }
-.profile-tab-btn:hover { transform: translateY(-1px); border-color: rgba(255,149,0,.24); color: #f5f0eb; }
-.profile-tab-btn.active { background: linear-gradient(135deg, rgba(255,149,0,.96), rgba(245,240,235,.92)); color: #050505; border-color: transparent; }
-.profile-tab-panel { display: none; }
-.profile-tab-panel.active { display: block; }
-.posts-wrap { margin-top: 22px; display: grid; gap: 16px; }
-.section-card { border: 1px solid rgba(245,240,235,.08); border-radius: 28px; padding: 22px; background: rgba(245,240,235,.02); }
-.section-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
-.section-title-sm { font-family: 'Bebas Neue', sans-serif; font-size: 36px; line-height: .9; margin: 0; }
-.section-sub { color: rgba(245,240,235,.48); line-height: 1.7; font-size: 13px; }
-.mini-feed { display: grid; gap: 12px; }
-.mini-post { border: 1px solid rgba(245,240,235,.08); border-radius: 20px; padding: 18px; background: rgba(5,5,5,.34); }
-.mini-post-text { white-space: pre-wrap; line-height: 1.75; color: #f5f0eb; }
-.mini-post-img { width: 100%; max-height: 340px; object-fit: cover; display: block; margin-top: 14px; border-radius: 16px; border: 1px solid rgba(245,240,235,.08); }
-.mini-post-meta, .follow-person-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
-.mini-chip { padding: 8px 10px; border-radius: 999px; background: rgba(245,240,235,.05); color: rgba(245,240,235,.6); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .11em; text-transform: uppercase; }
-.meta-copy { color: rgba(245,240,235,.42); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
-.showroom-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top: 16px; }
-.showroom-card { position: relative; min-height: 180px; padding: 18px; border: 1px solid rgba(245,240,235,.08); border-radius: 22px; background: linear-gradient(180deg, rgba(16,16,16,.92), rgba(6,6,6,.88)); overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,.03); }
-.showroom-card::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at top right, var(--award-accent, rgba(52,170,220,.16)), transparent 46%); pointer-events: none; opacity: .9; }
-.showroom-card > * { position: relative; z-index: 1; }
-.showroom-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.showroom-icon { width: 52px; height: 52px; border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; background: rgba(245,240,235,.08); color: #f5f0eb; font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: .04em; box-shadow: inset 0 1px 0 rgba(255,255,255,.06); }
-.showroom-type { display: inline-flex; align-items: center; justify-content: center; padding: 8px 10px; border-radius: 999px; border: 1px solid rgba(245,240,235,.1); background: rgba(245,240,235,.04); color: rgba(245,240,235,.64); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
-.showroom-title { margin-top: 18px; font-size: 22px; line-height: 1.15; font-weight: 700; }
-.showroom-copy { margin-top: 10px; color: rgba(245,240,235,.58); line-height: 1.7; font-size: 14px; }
-.showroom-empty { padding: 22px; border: 1px dashed rgba(245,240,235,.12); border-radius: 20px; color: rgba(245,240,235,.52); line-height: 1.8; background: rgba(245,240,235,.02); }
-.mention-link { color: #8fdfff; text-decoration: none; font-weight: 700; }
-.mention-link:hover { color: #f5f0eb; }
-.loading-stack { display: grid; gap: 12px; margin-top: 14px; }
-.loading-card { padding: 18px; border-radius: 20px; border: 1px solid rgba(245,240,235,.08); background: rgba(245,240,235,.025); overflow: hidden; }
-.loading-bar { height: 12px; border-radius: 999px; background: linear-gradient(90deg, rgba(245,240,235,.04), rgba(245,240,235,.14), rgba(245,240,235,.04)); background-size: 200% 100%; animation: shimmerBar 1.2s linear infinite; }
-.loading-bar + .loading-bar { margin-top: 10px; }
-.loading-bar.short { width: 46%; }
-.loading-bar.mid { width: 68%; }
-.modal { position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(5,5,5,.82); backdrop-filter: blur(14px); }
-.modal.open { display: flex; }
-.modal-card { width: min(720px, 100%); max-height: min(80vh, 900px); overflow: auto; border: 1px solid rgba(245,240,235,.12); border-radius: 28px; background: linear-gradient(180deg, rgba(18,18,18,.98), rgba(8,8,8,.98)); padding: 24px; box-shadow: 0 30px 80px rgba(0,0,0,.45); }
-.modal-close { margin-left: auto; }
-.follow-list { display: grid; gap: 12px; margin-top: 14px; }
-.follow-person { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 14px; border-radius: 18px; border: 1px solid rgba(245,240,235,.08); background: rgba(245,240,235,.03); }
-.follow-person-main { display: flex; gap: 12px; align-items: center; min-width: 0; }
-@keyframes pageRise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes profileFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
-@keyframes profilePulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.035); opacity: .88; } }
-@keyframes profileDrift { 0%, 100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(16px,-10px,0); } }
-@keyframes profileFlicker { 0%, 100% { opacity: 1; } 35% { opacity: .82; } 50% { opacity: .98; } 65% { opacity: .72; } }
-@keyframes shimmerBar { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-/* Sidebar refresh */
-.profile-layout-shell { display: grid; grid-template-columns: 300px minmax(0,1fr); gap: 24px; align-items: start; max-width: 1680px; }
-.profile-sidebar { position: sticky; top: 24px; display: grid; gap: 16px; }
-.profile-main { min-width: 0; display: grid; gap: 22px; }
-.profile-main .header { margin: 0; max-width: none; }
-.profile-main .stage-wrap { margin: 0; }
-.sidebar-card { border: 1px solid rgba(245,240,235,.08); border-radius: 28px; padding: 20px; background: rgba(245,240,235,.03); backdrop-filter: blur(18px); box-shadow: 0 22px 50px rgba(0,0,0,.22); }
-.sidebar-title { font-family: 'Bebas Neue', sans-serif; font-size: 38px; line-height: .92; margin: 0 0 10px; }
-.sidebar-copy, .sidebar-meta { color: rgba(245,240,235,.56); line-height: 1.7; font-size: 13px; }
-.sidebar-current { margin-top: 12px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: rgba(245,240,235,.72); }
-.sidebar-section { display: grid; gap: 10px; margin-top: 16px; }
-.sidebar-link { display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 13px 16px; border-radius: 16px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; transition: transform .18s ease, border-color .18s ease, background .18s ease; }
-.sidebar-link:hover { transform: translateY(-1px); border-color: rgba(255,149,0,.24); background: rgba(245,240,235,.06); }
-.sidebar-link--primary { background: linear-gradient(135deg, rgba(255,149,0,.98), rgba(245,240,235,.94)); color: #050505; border-color: transparent; }
-.sidebar-link--primary:hover { background: #ff9500; }
-.profile-sidebar .search-form { display: grid; gap: 10px; width: 100%; }
-.profile-sidebar .search-input { min-width: 0; width: 100%; }
-.profile-sidebar .search-btn { width: 100%; }
-@media (max-width: 1080px) { .profile-layout-shell { grid-template-columns: 1fr; } .profile-sidebar { position: static; } }
-@media (max-width: 760px) { .profile-layout-shell { padding: 18px; } .profile-tools { flex-direction: column; align-items: stretch; } .search-form { width: 100%; } .search-input { min-width: 0; width: 100%; } .search-btn { width: 100%; } .stage-wrap { padding: 10px; } .stage { width: 980px; min-height: 780px; } .audio-toggle { left: 12px; bottom: 12px; } .audio-note { left: 12px; right: auto; bottom: 58px; } }
+.orb { position: absolute; border-radius: 50%; filter: blur(110px); opacity: 0; animation: orbf linear infinite; }
+.orb:nth-child(1) { width:620px;height:620px; background:radial-gradient(circle,#ff2d55,transparent 70%); top:-15%;left:-8%; animation-duration:22s; }
+.orb:nth-child(2) { width:490px;height:490px; background:radial-gradient(circle,#a259ff,transparent 70%); top:55%;right:-12%; animation-duration:28s; animation-delay:-9s; }
+.orb:nth-child(3) { width:410px;height:410px; background:radial-gradient(circle,#34aadc,transparent 70%); top:28%;left:38%; animation-duration:20s; animation-delay:-14s; }
+.orb:nth-child(4) { width:350px;height:350px; background:radial-gradient(circle,#00e5b0,transparent 70%); bottom:0%;left:18%; animation-duration:26s; animation-delay:-6s; }
+@keyframes orbf {
+  0%,100% { opacity:0; transform:scale(.8) translateY(0); }
+  10%,90% { opacity:.15; }
+  50%      { opacity:.2; transform:scale(1.06) translateY(-28px); }
+}
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px clamp(24px,5vw,64px);
+  background: rgba(5,5,5,0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(245,240,235,0.10);
+}
+.nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: .05em; background: linear-gradient(135deg,#f5f0eb 40%,rgba(245,240,235,.38)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.nav-center { display: flex; align-items: center; gap: 32px; list-style: none; }
+.nav-center a { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: rgba(245,240,235,0.40); text-decoration: none; transition: color .2s; }
+.nav-center a:hover { color: #f5f0eb; }
+.nav-right { display: flex; align-items: center; gap: 10px; }
+.nav-passion { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: rgba(245,240,235,.18); border: 1px solid rgba(245,240,235,.08); padding: 6px 12px; border-radius: 100px; }
+.nav-cta { background: #f5f0eb; color: #050505; padding: 9px 20px; border-radius: 3px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; font-weight: 700; text-decoration: none; transition: background .2s; white-space: nowrap; cursor: pointer; border: none; }
+.nav-cta:hover { background: #ff9500; }
+.nav-secondary { background: transparent; color: rgba(245,240,235,.72); border: 1px solid rgba(245,240,235,.16); }
+.nav-secondary:hover { background: rgba(245,240,235,.08); color: #f5f0eb; }
+.nav-profile-btn { display: none; align-items: center; gap: 10px; background: rgba(245,240,235,.04); color: #f5f0eb; border: 1px solid rgba(245,240,235,.12); border-radius: 999px; padding: 7px 12px 7px 8px; cursor: pointer; }
+.nav-profile-btn.visible { display: inline-flex; }
+.nav-profile-avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg,#ff2d55,#34aadc); color: #f5f0eb; display: inline-flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: .04em; }
+.nav-profile-meta { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.2; }
+.nav-profile-name { font-size: 11px; font-weight: 700; }
+.nav-profile-handle { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: .14em; text-transform: uppercase; color: rgba(245,240,235,.42); }
+.nav-mobile-toggle { display: none; background: none; border: none; cursor: pointer; padding: 4px; }
+.nav-mobile-toggle span { display: block; width: 22px; height: 1.5px; background: rgba(245,240,235,0.40); margin: 5px 0; }
+
+/* HERO */
+#hero { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 120px clamp(24px,5vw,64px) 80px; }
+.hero-eyebrow { font-family: 'DM Mono', monospace; font-size: clamp(10px,1.1vw,12px); letter-spacing: .3em; text-transform: uppercase; color: #ff9500; margin-bottom: 28px; animation: fadeUp 1s ease both .2s; }
+.hero-headline { font-family: 'Bebas Neue', sans-serif; font-size: clamp(80px,15vw,210px); line-height: .88; letter-spacing: -.01em; }
+.hero-line { display: block; overflow: hidden; animation: slideUp .9s cubic-bezier(.16,1,.3,1) both; }
+.hero-line:nth-child(1) { animation-delay: .3s; }
+.hero-line:nth-child(2) { animation-delay: .44s; }
+.grad-word { position: relative; display: inline-block; }
+.grad-word::after { content: attr(data-t); position: absolute; inset: 0; background: linear-gradient(90deg,#ff2d55,#ff9500,#a259ff,#34aadc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; background-size: 300% 100%; animation: shimmer 5s linear infinite, reveal 1.6s 1s cubic-bezier(.16,1,.3,1) forwards; clip-path: inset(0 100% 0 0); }
+@keyframes shimmer { 0%{background-position:0% 50%} 100%{background-position:300% 50%} }
+@keyframes reveal  { 0%{clip-path:inset(0 100% 0 0)} 100%{clip-path:inset(0 0% 0 0)} }
+.hero-sub { max-width: 540px; margin-top: clamp(28px,4vh,52px); font-size: clamp(15px,1.6vw,18px); line-height: 1.7; font-weight: 400; color: rgba(245,240,235,0.40); animation: fadeUp 1s ease both .7s; }
+.hero-sub em { color: #f5f0eb; font-style: normal; font-weight: 700; }
+.hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-top: clamp(28px,4vh,48px); animation: fadeUp 1s ease both .88s; }
+.btn-primary { background: #f5f0eb; color: #050505; padding: 14px 30px; border-radius: 3px; text-decoration: none; border: none; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; font-weight: 700; transition: background .2s; white-space: nowrap; }
+.btn-primary:hover { background: #ff9500; }
+.btn-ghost { background: transparent; color: rgba(245,240,235,0.40); border: 1px solid rgba(245,240,235,0.20); padding: 14px 30px; border-radius: 3px; text-decoration: none; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; transition: all .2s; white-space: nowrap; }
+.btn-ghost:hover { border-color: rgba(245,240,235,0.40); color: #f5f0eb; }
+.hero-scroll { position: absolute; bottom: 36px; left: clamp(24px,5vw,64px); display: flex; align-items: center; gap: 14px; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .25em; text-transform: uppercase; color: rgba(245,240,235,.18); animation: fadeUp 1.2s ease both 1.3s; }
+.scroll-line { width: 36px; height: 1px; background: rgba(245,240,235,.18); }
+
+/* SECTIONS */
+section { position: relative; z-index: 1; }
+.section-pad { padding: clamp(80px,11vh,130px) clamp(24px,5vw,64px); }
+.section-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .3em; text-transform: uppercase; color: #34aadc; margin-bottom: 20px; display: block; }
+.section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(52px,8vw,108px); line-height: .9; letter-spacing: -.01em; }
+.section-body { font-size: clamp(14px,1.5vw,16px); line-height: 1.75; color: rgba(245,240,235,0.40); max-width: 520px; }
+.section-body em { color: #f5f0eb; font-style: normal; font-weight: 600; }
+.divider { width: 100%; height: 1px; background: rgba(245,240,235,0.10); position: relative; z-index: 1; }
+
+/* MARQUEE */
+.marquee-wrap { overflow: hidden; border-top: 1px solid rgba(245,240,235,0.10); border-bottom: 1px solid rgba(245,240,235,0.10); padding: 16px 0; position: relative; z-index: 1; }
+.marquee-track { display: flex; width: max-content; animation: marquee 30s linear infinite; }
+.marquee-track:hover { animation-play-state: paused; }
+@keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+.marquee-item { display: flex; align-items: center; gap: 18px; padding: 0 30px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: rgba(245,240,235,.2); white-space: nowrap; }
+.marquee-dot { width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0; }
+
+/* WHAT */
+.what-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(40px,6vw,96px); align-items: start; margin-top: clamp(52px,7vw,76px); }
+.what-right { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding-top: 8px; }
+.feature-card { border: 1px solid rgba(245,240,235,0.10); border-radius: 6px; padding: 26px 22px; position: relative; overflow: hidden; transition: border-color .3s, transform .3s; }
+.feature-card::before { content: ''; position: absolute; inset: 0; background: var(--card-glow, transparent); opacity: 0; transition: opacity .4s; }
+.feature-card:hover { border-color: rgba(245,240,235,0.20); transform: translateY(-3px); }
+.feature-card:hover::before { opacity: 1; }
+.fc-icon { font-size: 26px; margin-bottom: 14px; display: block; }
+.fc-title { font-size: 13px; font-weight: 700; letter-spacing: .03em; margin-bottom: 8px; color: #f5f0eb; }
+.fc-desc { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .07em; color: rgba(245,240,235,0.40); line-height: 1.7; }
+.fc-tag { display: inline-block; margin-top: 14px; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .18em; text-transform: uppercase; padding: 4px 10px; border-radius: 100px; border: 1px solid; }
+
+/* FOR YOU */
+.account-selector { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 48px; margin-bottom: 44px; }
+.acct-btn { background: transparent; border: 1px solid rgba(245,240,235,0.10); padding: 13px 20px 13px 16px; border-radius: 6px; font-family: 'Syne', sans-serif; cursor: pointer; transition: all .22s cubic-bezier(.16,1,.3,1); display: flex; align-items: center; gap: 10px; }
+.acct-btn:hover { border-color: rgba(245,240,235,.28); background: rgba(245,240,235,.04); transform: translateY(-2px); }
+.acct-btn.active { border-color: rgba(245,240,235,.42); background: rgba(245,240,235,.07); }
+.acct-dot { width: 5px; height: 5px; border-radius: 50%; opacity: 0; transform: scale(0); transition: all .22s; flex-shrink: 0; }
+.acct-btn.active .acct-dot { opacity: 1; transform: scale(1); }
+.acct-btn[data-type="student"]  .acct-dot { background: #34aadc; }
+.acct-btn[data-type="creator"]  .acct-dot { background: #ff9500; }
+.acct-btn[data-type="partner"]  .acct-dot { background: #a259ff; }
+.acct-btn[data-type="business"] .acct-dot { background: #00e5b0; }
+.acct-label-wrap { display: flex; flex-direction: column; gap: 2px; }
+.acct-name { font-size: 13px; font-weight: 700; line-height: 1; color: rgba(245,240,235,0.40); transition: color .2s; }
+.acct-btn.active .acct-name, .acct-btn:hover .acct-name { color: #f5f0eb; }
+.acct-sub { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: rgba(245,240,235,.28); font-style: italic; font-weight: 300; }
+.apply-note { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .1em; line-height: 1.8; color: rgba(245,240,235,.26); font-style: italic; max-width: 480px; margin-bottom: 24px; display: none; }
+.apply-note.visible { display: block; }
+.tab-panel { display: none; }
+.tab-panel.active { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+.apply-panel { display: none; }
+.apply-panel.active { display: block; }
+.benefit-item { border: 1px solid rgba(245,240,235,0.10); border-radius: 6px; padding: 28px 22px; transition: border-color .3s, transform .3s; }
+.benefit-item:hover { border-color: rgba(245,240,235,0.20); transform: translateY(-2px); }
+.benefit-num { font-family: 'Bebas Neue', sans-serif; font-size: 54px; line-height: 1; background: linear-gradient(135deg, #ff2d55, #ff9500, #a259ff, #34aadc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 12px; }
+.benefit-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+.benefit-desc { font-size: 13px; color: rgba(245,240,235,0.40); line-height: 1.65; }
+.apply-card { border: 1px solid rgba(245,240,235,0.10); border-radius: 8px; padding: 40px 36px; max-width: 500px; position: relative; overflow: hidden; }
+.apply-card::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at top left, rgba(162,89,255,.055) 0%, transparent 65%); pointer-events: none; }
+.apply-card-title { font-family: 'Bebas Neue', sans-serif; font-size: 34px; letter-spacing: .03em; margin-bottom: 10px; }
+.apply-card-desc { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .09em; color: rgba(245,240,235,0.40); line-height: 1.8; margin-bottom: 30px; }
+.apply-form-row { display: flex; border: 1px solid rgba(245,240,235,.12); border-radius: 4px; overflow: hidden; transition: border-color .3s; margin-bottom: 10px; }
+.apply-form-row:focus-within { border-color: rgba(245,240,235,.36); }
+.apply-form-row input, .apply-form-row textarea { flex: 1; background: rgba(245,240,235,.03); border: none; outline: none; padding: 13px 16px; font-family: 'Syne', sans-serif; font-size: 13px; color: #f5f0eb; resize: none; }
+.apply-form-row input::placeholder, .apply-form-row textarea::placeholder { color: rgba(245,240,235,.2); }
+.apply-submit { width: 100%; background: #f5f0eb; border: none; border-radius: 4px; padding: 14px 24px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; font-weight: 700; color: #050505; cursor: pointer; transition: background .2s; margin-top: 6px; }
+.apply-submit[disabled] { opacity: .6; cursor: wait; }
+.apply-submit:hover { background: #ff9500; }
+.apply-captcha { margin-top: 14px; min-height: 78px; }
+.apply-error { display: none; margin-top: 10px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .08em; line-height: 1.7; color: #ff8fa7; }
+.apply-error.show { display: block; }
+.apply-fine { margin-top: 12px; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .1em; color: rgba(245,240,235,.18); font-style: italic; }
+.apply-success { display: none; margin-top: 14px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .16em; color: #00e5b0; }
+
+/* HOW */
+#how { background: rgba(245,240,235,.012); border-top: 1px solid rgba(245,240,235,0.10); border-bottom: 1px solid rgba(245,240,235,0.10); }
+.steps-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 64px; position: relative; }
+.steps-row::before { content: ''; position: absolute; top: 27px; left: 12.5%; right: 12.5%; height: 1px; background: linear-gradient(90deg, transparent, rgba(245,240,235,0.20), transparent); }
+.step { padding: 0 24px 0 0; }
+.step-circle { width: 54px; height: 54px; border-radius: 50%; border: 1px solid rgba(245,240,235,0.20); background: #050505; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 700; color: #f5f0eb; margin-bottom: 22px; position: relative; z-index: 1; transition: border-color .3s; }
+.step:hover .step-circle { border-color: rgba(245,240,235,0.40); }
+.step-title { font-size: 15px; font-weight: 700; margin-bottom: 9px; }
+.step-desc { font-size: 13px; color: rgba(245,240,235,0.40); line-height: 1.65; }
+
+/* PRICING */
+.pricing-intro { max-width: 500px; margin-top: 16px; }
+.plans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 52px; max-width: 800px; }
+.plan-card { border: 1px solid rgba(245,240,235,0.10); border-radius: 8px; padding: 38px 34px; position: relative; overflow: hidden; transition: border-color .3s; }
+.plan-card.featured { border-color: rgba(162,89,255,.38); background: rgba(162,89,255,.035); }
+.plan-card.featured::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at top left, rgba(162,89,255,.09) 0%, transparent 60%); pointer-events: none; }
+.plan-badge { position: absolute; top: 20px; right: 20px; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .2em; text-transform: uppercase; padding: 5px 12px; border-radius: 100px; background: linear-gradient(90deg, #a259ff, #ff2d55); color: #f5f0eb; font-weight: 700; }
+.plan-name { font-family: 'Bebas Neue', sans-serif; font-size: 34px; letter-spacing: .04em; margin-bottom: 7px; color: #f5f0eb; }
+.plan-tagline { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .15em; text-transform: uppercase; color: rgba(245,240,235,0.40); margin-bottom: 28px; }
+.plan-price { margin-bottom: 28px; }
+.price-amount { font-family: 'Bebas Neue', sans-serif; font-size: 68px; line-height: 1; letter-spacing: -.02em; }
+.price-amount.gradient { background: linear-gradient(135deg, #ff2d55, #ff9500, #a259ff, #34aadc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; background-size: 300% 100%; animation: shimmer 5s linear infinite; }
+.price-per { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .1em; color: rgba(245,240,235,0.40); margin-left: 5px; vertical-align: middle; }
+.price-alt { margin-top: 7px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .1em; color: rgba(245,240,235,0.40); }
+.price-alt .strikethrough { text-decoration: line-through; color: rgba(245,240,235,.2); }
+.price-alt .save { color: #00e5b0; margin-left: 6px; }
+.plan-toggle { display: flex; gap: 0; margin-bottom: 20px; border: 1px solid rgba(245,240,235,0.10); border-radius: 4px; overflow: hidden; width: fit-content; }
+.plan-toggle-btn { background: none; border: none; cursor: pointer; padding: 7px 18px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .15em; text-transform: uppercase; color: rgba(245,240,235,0.40); transition: all .2s; }
+.plan-toggle-btn.active { background: rgba(245,240,235,0.10); color: #f5f0eb; }
+.plan-features { list-style: none; margin-bottom: 34px; }
+.plan-features li { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(245,240,235,0.06); font-size: 13px; color: rgba(245,240,235,0.40); line-height: 1.45; }
+.plan-features li:last-child { border-bottom: none; }
+.check { flex-shrink: 0; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+.check.yes { background: rgba(0,229,176,.14); color: #00e5b0; font-size: 9px; }
+.check.no  { background: rgba(245,240,235,0.06); color: rgba(245,240,235,.2); font-size: 9px; }
+.plan-btn { display: block; text-align: center; text-decoration: none; padding: 14px 24px; border-radius: 4px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; font-weight: 700; transition: all .2s; border: none; cursor: pointer; }
+.plan-btn.solid { background: #f5f0eb; color: #050505; }
+.plan-btn.solid:hover { background: #ff9500; }
+.plan-btn.outline { background: none; border: 1px solid rgba(162,89,255,.45); color: #a259ff; }
+.plan-btn.outline:hover { background: rgba(162,89,255,.1); border-color: #a259ff; }
+.passion-note { margin-top: 28px; max-width: 480px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .1em; line-height: 1.8; color: rgba(245,240,235,.2); font-style: italic; }
+
+/* COMMUNITY */
+#community { background: #050505; border-top: 1px solid rgba(245,240,235,0.10); }
+.comm-inner { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(40px,6vw,96px); align-items: center; }
+.comm-right { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.stat-card { border: 1px solid rgba(245,240,235,0.10); border-radius: 6px; padding: 26px 20px; transition: border-color .3s, transform .3s; }
+.stat-card:hover { border-color: rgba(245,240,235,0.20); transform: translateY(-2px); }
+.stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 48px; line-height: 1; background: linear-gradient(135deg, #ff2d55, #ff9500, #a259ff, #34aadc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 6px; }
+.stat-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: rgba(245,240,235,0.40); }
+.site-footer { border-top: 1px solid rgba(245,240,235,0.10); padding: 28px clamp(24px,5vw,64px) 44px; display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; position: relative; z-index: 1; }
+.site-footer-brand { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: .04em; }
+.site-footer-copy { color: rgba(245,240,235,.34); max-width: 460px; line-height: 1.8; font-size: 13px; }
+.site-footer-links { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.site-footer-links a { color: rgba(245,240,235,.54); text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; padding: 10px 14px; border-radius: 999px; border: 1px solid rgba(245,240,235,.10); }
+.site-footer-links a:hover { color: #f5f0eb; border-color: rgba(245,240,235,.24); background: rgba(245,240,235,.04); }
+
+/* CTA */
+#cta { background: #050505; text-align: center; border-top: 1px solid rgba(245,240,235,0.10); }
+.cta-inner { max-width: 680px; margin: 0 auto; }
+.cta-super { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .32em; text-transform: uppercase; color: #ff9500; margin-bottom: 22px; display: block; }
+.cta-headline { font-family: 'Bebas Neue', sans-serif; font-size: clamp(72px,12vw,158px); line-height: .88; letter-spacing: -.01em; margin-bottom: 28px; }
+.cta-headline span { background: linear-gradient(135deg, #ff2d55, #ff9500, #a259ff, #34aadc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; background-size: 300% 100%; animation: shimmer 5s linear infinite; }
+.cta-sub { font-size: 16px; line-height: 1.7; color: rgba(245,240,235,0.40); margin-bottom: 40px; }
+.cta-sub em { color: #f5f0eb; font-style: normal; font-weight: 700; }
+.cta-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+/* FOOTER */
+footer { position: relative; z-index: 1; padding: 44px clamp(24px,5vw,64px); border-top: 1px solid rgba(245,240,235,0.10); display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 22px; }
+.footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 30px; letter-spacing: .04em; background: linear-gradient(135deg,#f5f0eb 40%,rgba(245,240,235,.3)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.footer-slogan { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: rgba(245,240,235,.18); margin-top: 5px; }
+.footer-passion { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .14em; color: rgba(245,240,235,.1); margin-top: 4px; font-style: italic; }
+.footer-links { display: flex; gap: 26px; list-style: none; flex-wrap: wrap; align-items: center; }
+.footer-links a { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .15em; text-transform: uppercase; color: rgba(245,240,235,.2); text-decoration: none; transition: color .2s; }
+.footer-links a:hover { color: rgba(245,240,235,0.40); }
+.footer-copy { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .1em; color: rgba(245,240,235,.1); text-align: right; line-height: 1.8; }
+
+/* ACCOUNT */
+#account-overlay { position: fixed; inset: 0; z-index: 410; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(5,5,5,.72); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+#account-overlay.open { display: flex; }
+.account-panel { width: min(520px, 100%); border: 1px solid rgba(245,240,235,.12); background: linear-gradient(180deg,rgba(18,18,18,.98),rgba(8,8,8,.98)); border-radius: 14px; box-shadow: 0 30px 80px rgba(0,0,0,.45); overflow: hidden; }
+.account-top { padding: 28px 28px 18px; border-bottom: 1px solid rgba(245,240,235,.08); display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.account-kicker { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: #34aadc; margin-bottom: 12px; }
+.account-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(34px,5vw,48px); line-height: .92; }
+.account-close { background: none; border: none; color: rgba(245,240,235,.34); font-size: 28px; cursor: pointer; line-height: 1; }
+.account-close:hover { color: #f5f0eb; }
+.account-body { padding: 24px 28px 30px; }
+.account-pane { display: none; }
+.account-pane.active { display: block; }
+.account-desc { color: rgba(245,240,235,.46); line-height: 1.75; margin-bottom: 18px; font-size: 14px; }
+.account-group { margin-bottom: 14px; }
+.account-label { display: block; margin-bottom: 8px; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: rgba(245,240,235,.34); }
+.account-input { width: 100%; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; border-radius: 6px; outline: none; padding: 14px 16px; font-family: 'Syne', sans-serif; font-size: 14px; }
+.account-input:focus { border-color: rgba(245,240,235,.28); }
+.account-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 18px; }
+.account-btn { background: #f5f0eb; color: #050505; border: none; border-radius: 999px; padding: 12px 22px; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; font-weight: 700; }
+.account-btn:hover { background: #ff9500; }
+.account-btn.ghost { background: transparent; color: rgba(245,240,235,.56); border: 1px solid rgba(245,240,235,.16); }
+.account-btn.ghost:hover { background: rgba(245,240,235,.06); color: #f5f0eb; }
+.account-error { display: none; margin-top: 12px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .08em; line-height: 1.7; color: #ff8fa7; }
+.account-error.show { display: block; }
+.profile-card { border: 1px solid rgba(245,240,235,.1); border-radius: 10px; padding: 18px; background: rgba(245,240,235,.03); }
+.profile-head { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.profile-avatar { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg,#ff2d55,#34aadc); display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 28px; }
+.profile-name { font-size: 22px; font-weight: 700; line-height: 1.1; }
+.profile-handle { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: rgba(245,240,235,.34); margin-top: 5px; }
+.profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+.profile-stat { border: 1px solid rgba(245,240,235,.08); border-radius: 8px; padding: 12px; background: rgba(0,0,0,.16); }
+.profile-stat-label { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: .18em; text-transform: uppercase; color: rgba(245,240,235,.26); margin-bottom: 8px; }
+.profile-stat-value { color: rgba(245,240,235,.9); font-size: 13px; line-height: 1.5; word-break: break-word; }
+
+/* VERT TEXT */
+.vert-text { position: fixed; right: clamp(14px,2.5vw,36px); top: 50%; transform: translateY(-50%) rotate(90deg); transform-origin: center; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .35em; text-transform: uppercase; color: rgba(245,240,235,.07); white-space: nowrap; pointer-events: none; z-index: 2; }
+
+/* ANIMATIONS */
+@keyframes fadeUp  { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
+@keyframes slideUp { from{transform:translateY(110%)} to{transform:translateY(0)} }
+.reveal { opacity: 0; transform: translateY(26px); transition: opacity .8s ease, transform .8s cubic-bezier(.16,1,.3,1); }
+.reveal.in-view { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: .1s; }
+.reveal-delay-2 { transition-delay: .22s; }
+.reveal-delay-3 { transition-delay: .34s; }
+.reveal-delay-4 { transition-delay: .46s; }
+
+/* ═══ ONBOARDING OVERLAY ═══ */
+#onboarding-overlay {
+  position: fixed; inset: 0; z-index: 9000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  opacity: 0; pointer-events: none;
+  transition: opacity .4s cubic-bezier(.16,1,.3,1);
+  isolation: isolate;
+}
+#onboarding-overlay.open { opacity: 1; pointer-events: all; }
+
+.ob-backdrop {
+  position: absolute; inset: 0; z-index: 0;
+  background: rgba(5,5,5,.97);
+}
+
+.ob-panel {
+  position: relative; z-index: 1;
+  width: 100%; max-width: 1040px;
+  background: #0d0d0d;
+  border: 1px solid rgba(245,240,235,0.12);
+  border-radius: 10px;
+  display: flex; align-items: stretch;
+  overflow: hidden;
+  max-height: calc(100vh - 48px); max-height: calc(100dvh - 48px);
+  transform: translateY(32px) scale(.97);
+  transition: transform .45s cubic-bezier(.16,1,.3,1);
+  box-shadow: 0 0 0 1px rgba(245,240,235,0.06), 0 40px 80px rgba(0,0,0,0.8);
+}
+#onboarding-overlay.open .ob-panel { transform: translateY(0) scale(1); }
+
+.ob-close { position: absolute; top: 18px; right: 18px; z-index: 10; width: 32px; height: 32px; border-radius: 50%; background: rgba(245,240,235,0.06); border: 1px solid rgba(245,240,235,0.10); cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 14px; color: rgba(245,240,235,0.40); transition: all .2s; }
+.ob-close:hover { background: rgba(245,240,235,0.10); color: #f5f0eb; }
+
+/* Left sidebar */
+.ob-left { display: none; }
+.ob-left::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at bottom left, rgba(162,89,255,.05) 0%, transparent 65%); pointer-events: none; }
+.ob-logo { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: .05em; background: linear-gradient(135deg,#f5f0eb 40%,rgba(245,240,235,.38)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 36px; }
+.ob-steps-nav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.ob-step-item { display: flex; align-items: flex-start; gap: 14px; padding: 12px 10px; border-radius: 6px; cursor: default; transition: background .2s; position: relative; }
+.ob-step-item.clickable { cursor: pointer; }
+.ob-step-item.clickable:hover { background: rgba(245,240,235,0.06); }
+.ob-connector { position: absolute; left: 20px; top: 42px; width: 1px; height: calc(100% - 4px); background: rgba(245,240,235,0.10); }
+.ob-step-item:last-child .ob-connector { display: none; }
+.ob-num { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; border: 1px solid rgba(245,240,235,0.20); display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 8px; font-weight: 700; color: rgba(245,240,235,0.40); transition: all .3s; margin-top: 2px; }
+.ob-step-item.active .ob-num { background: #f5f0eb; color: #050505; border-color: #f5f0eb; }
+.ob-step-item.done .ob-num { background: rgba(0,229,176,.15); color: #00e5b0; border-color: rgba(0,229,176,.4); font-size: 10px; }
+.ob-step-item.done .ob-num::after { content: '✓'; }
+.ob-step-item.done .ob-num span { display: none; }
+.ob-step-label { font-size: 11px; font-weight: 700; color: rgba(245,240,235,0.40); transition: color .2s; margin-top: 1px; }
+.ob-step-item.active .ob-step-label { color: #f5f0eb; }
+.ob-step-sub { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .09em; color: rgba(245,240,235,.18); margin-top: 2px; line-height: 1.4; }
+.ob-left-bottom { border-top: 1px solid rgba(245,240,235,0.10); padding-top: 18px; margin-top: 16px; }
+.ob-passion-tag { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: .18em; text-transform: uppercase; color: rgba(245,240,235,.18); border: 1px solid rgba(245,240,235,.08); padding: 4px 10px; border-radius: 100px; display: inline-block; }
+
+/* Right content */
+.ob-right { flex: 1; overflow-y: auto; display: flex; align-items: flex-start; justify-content: center; padding: 40px clamp(28px,4vw,56px); }
+
+/* Step views */
+.ob-step { display: none; width: 100%; max-width: 460px; padding: 12px 0 40px; }
+.ob-step.active { display: block; animation: obStepIn .38s cubic-bezier(.16,1,.3,1) both; }
+@keyframes obStepIn { from{opacity:0;transform:translateX(24px)} to{opacity:1;transform:translateX(0)} }
+
+.ob-progress-wrap { height: 2px; background: rgba(245,240,235,0.10); border-radius: 2px; margin-bottom: 32px; overflow: hidden; }
+.ob-progress-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, #ff2d55, #ff9500, #a259ff); background-size: 200% 100%; animation: shimmer 3s linear infinite; transition: width .5s cubic-bezier(.16,1,.3,1); }
+
+.ob-eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .28em; text-transform: uppercase; color: #ff9500; margin-bottom: 12px; }
+.ob-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(44px,6vw,72px); line-height: .9; letter-spacing: -.01em; margin-bottom: 12px; }
+.ob-title .g { background: linear-gradient(90deg,#ff2d55,#ff9500,#a259ff,#34aadc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; background-size: 300% 100%; animation: shimmer 5s linear infinite; }
+.ob-desc { font-size: 13px; line-height: 1.75; color: rgba(245,240,235,0.40); margin-bottom: 28px; }
+.ob-desc em { color: #f5f0eb; font-style: normal; font-weight: 700; }
+
+.ob-form-group { margin-bottom: 14px; }
+.ob-label { display: block; margin-bottom: 7px; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: rgba(245,240,235,0.40); }
+.ob-input-row { display: flex; border: 1px solid rgba(245,240,235,.12); border-radius: 4px; overflow: hidden; transition: border-color .3s; background: rgba(245,240,235,.02); }
+.ob-input-row:focus-within { border-color: rgba(245,240,235,.36); }
+.ob-input-row input, .ob-input-row textarea { flex: 1; background: transparent; border: none; outline: none; padding: 12px 14px; font-family: 'Syne', sans-serif; font-size: 13px; color: #f5f0eb; resize: none; }
+.ob-input-row input::placeholder, .ob-input-row textarea::placeholder { color: rgba(245,240,235,.2); }
+.ob-field-err { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .1em; color: #ff2d55; margin-top: 5px; display: none; }
+.ob-field-err.show { display: block; }
+
+.ob-type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 24px; }
+.ob-type-card { border: 1px solid rgba(245,240,235,0.10); border-radius: 6px; padding: 18px 16px; cursor: pointer; transition: all .22s cubic-bezier(.16,1,.3,1); position: relative; overflow: hidden; }
+.ob-type-card:hover { border-color: rgba(245,240,235,0.20); transform: translateY(-2px); }
+.ob-type-card.selected { border-color: rgba(245,240,235,.42); background: rgba(245,240,235,.05); }
+.ob-type-card::before { content: ''; position: absolute; inset: 0; background: var(--tglow, transparent); opacity: 0; transition: opacity .3s; }
+.ob-type-card.selected::before { opacity: 1; }
+.ob-type-check { position: absolute; top: 10px; right: 10px; width: 14px; height: 14px; border-radius: 50%; background: rgba(0,229,176,.2); border: 1px solid rgba(0,229,176,.5); display: flex; align-items: center; justify-content: center; font-size: 7px; color: #00e5b0; opacity: 0; transform: scale(0); transition: all .22s cubic-bezier(.34,1.56,.64,1); }
+.ob-type-card.selected .ob-type-check { opacity: 1; transform: scale(1); }
+.ob-type-icon { font-size: 20px; margin-bottom: 8px; display: block; }
+.ob-type-name { font-size: 12px; font-weight: 700; color: rgba(245,240,235,0.40); margin-bottom: 3px; transition: color .2s; }
+.ob-type-card.selected .ob-type-name { color: #f5f0eb; }
+.ob-type-hint { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .07em; color: rgba(245,240,235,.22); line-height: 1.5; }
+
+.ob-avatar-zone { border: 1px dashed rgba(245,240,235,.18); border-radius: 8px; padding: 28px 20px; text-align: center; cursor: pointer; transition: border-color .3s, background .3s; position: relative; overflow: hidden; margin-bottom: 14px; }
+.ob-avatar-zone:hover { border-color: rgba(245,240,235,.36); background: rgba(245,240,235,.02); }
+.ob-av-preview { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #ff2d55, #a259ff); margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: #f5f0eb; position: relative; overflow: hidden; }
+.ob-av-preview img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.ob-av-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: rgba(245,240,235,0.40); line-height: 1.7; }
+.ob-av-hint { color: rgba(245,240,235,.2); font-size: 8px; }
+.ob-avatar-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+.ob-interest-grid { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 24px; }
+.ob-interest-tag { border: 1px solid rgba(245,240,235,0.10); border-radius: 100px; padding: 6px 14px; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: rgba(245,240,235,0.40); transition: all .2s; }
+.ob-interest-tag:hover { border-color: rgba(245,240,235,0.20); color: #f5f0eb; }
+.ob-interest-tag.selected { border-color: rgba(245,240,235,.42); background: rgba(245,240,235,.07); color: #f5f0eb; }
+
+.ob-preview-card { border: 1px solid rgba(245,240,235,0.10); border-radius: 8px; padding: 20px 18px; margin-bottom: 20px; position: relative; overflow: hidden; background: rgba(245,240,235,.02); }
+.ob-preview-card::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at top left, rgba(162,89,255,.04) 0%, transparent 65%); }
+.ob-prev-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.ob-prev-avatar { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; background: linear-gradient(135deg,#ff2d55,#a259ff); display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 16px; overflow: hidden; position: relative; }
+.ob-prev-avatar img { position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%; }
+.ob-prev-name { font-size: 14px; font-weight: 700; }
+.ob-prev-handle { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .1em; color: rgba(245,240,235,0.40); margin-top: 2px; }
+.ob-prev-badge { margin-left: auto; flex-shrink: 0; font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: .15em; text-transform: uppercase; padding: 3px 9px; border-radius: 100px; border: 1px solid; }
+.ob-prev-bio { font-size: 12px; color: rgba(245,240,235,0.40); line-height: 1.6; margin-bottom: 12px; }
+.ob-prev-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+.ob-prev-tag { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: .1em; text-transform: uppercase; padding: 2px 8px; border-radius: 100px; background: rgba(245,240,235,0.06); color: rgba(245,240,235,0.40); border: 1px solid rgba(245,240,235,0.10); }
+.ob-legal-consent { margin: 18px 0 4px; padding: 16px 18px; border-radius: 8px; border: 1px solid rgba(245,240,235,.10); background: rgba(245,240,235,.04); }
+.ob-legal-check { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+.ob-legal-check input { margin-top: 3px; accent-color: #ff9500; flex-shrink: 0; }
+.ob-legal-copy { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .08em; line-height: 1.8; color: rgba(245,240,235,.42); }
+.ob-legal-copy a { color: #f5f0eb; text-decoration: none; border-bottom: 1px solid rgba(245,240,235,.24); }
+.ob-legal-copy a:hover { color: #ff9500; border-bottom-color: rgba(255,149,0,.48); }
+
+.ob-btn-primary { display: inline-flex; align-items: center; gap: 8px; background: #f5f0eb; color: #050505; padding: 13px 26px; border-radius: 3px; border: none; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; font-weight: 700; transition: background .2s; white-space: nowrap; }
+.ob-btn-primary[disabled] { opacity: .6; cursor: wait; }
+.ob-btn-primary:hover { background: #ff9500; }
+.ob-btn-ghost { display: inline-flex; align-items: center; gap: 6px; background: transparent; color: rgba(245,240,235,0.40); border: 1px solid rgba(245,240,235,0.20); padding: 13px 26px; border-radius: 3px; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; transition: all .2s; white-space: nowrap; }
+.ob-btn-ghost:hover { border-color: rgba(245,240,235,0.40); color: #f5f0eb; }
+.ob-btn-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.ob-skip { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: rgba(245,240,235,.2); cursor: pointer; transition: color .2s; padding: 4px 0; }
+.ob-skip:hover { color: rgba(245,240,235,0.40); }
+.ob-captcha-wrap { margin-bottom: 14px; min-height: 78px; }
+.ob-submit-err { display: none; margin-top: 12px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .08em; line-height: 1.7; color: #ff8fa7; }
+.ob-submit-err.show { display: block; }
+
+.ob-welcome-blob { width: 68px; height: 68px; border-radius: 50%; background: linear-gradient(135deg, #ff2d55, #a259ff); display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 22px; box-shadow: 0 0 50px rgba(162,89,255,.22); animation: obPulse 3s ease-in-out infinite; }
+@keyframes obPulse { 0%,100% { box-shadow: 0 0 30px rgba(162,89,255,.18); transform: scale(1); } 50% { box-shadow: 0 0 70px rgba(162,89,255,.3); transform: scale(1.05); } }
+
+.ob-completion { text-align: center; padding: 10px 0; }
+.ob-rings { position: relative; width: 88px; height: 88px; margin: 0 auto 24px; }
+.ob-ring { position: absolute; border-radius: 50%; border: 1.5px solid transparent; animation: obRingPop .6s cubic-bezier(.34,1.56,.64,1) both; }
+.ob-ring:nth-child(1) { inset:0; border-color: #00e5b0; animation-delay:.1s; }
+.ob-ring:nth-child(2) { inset:11px; border-color: #a259ff; animation-delay:.2s; }
+.ob-ring:nth-child(3) { inset:22px; border-color: #ff9500; animation-delay:.3s; }
+.ob-ring-center { position: absolute; inset:30px; background: linear-gradient(135deg,#ff2d55,#a259ff); border-radius:50%; display:flex;align-items:center;justify-content:center;font-size:12px;animation:obRingPop .6s cubic-bezier(.34,1.56,.64,1) both .4s; }
+@keyframes obRingPop { from{opacity:0;transform:scale(0) rotate(-90deg)} to{opacity:1;transform:scale(1) rotate(0)} }
+.ob-confetti { display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin-bottom:20px; }
+.ob-confetti-dot { width:5px;height:5px;border-radius:50%;animation:obConfettiFall .8s ease both; }
+@keyframes obConfettiFall { from{opacity:0;transform:translateY(-10px) scale(0)} to{opacity:1;transform:translateY(0) scale(1)} }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .nav-center { display: none; }
+  .nav-passion { display: none; }
+  .nav-mobile-toggle { display: block; }
+  .nav-right { gap: 8px; }
+  .nav-profile-meta { display: none; }
+  .what-grid, .comm-inner { grid-template-columns: 1fr; }
+  .what-right { grid-template-columns: 1fr 1fr; }
+  .tab-panel.active { grid-template-columns: 1fr 1fr; }
+  .steps-row { grid-template-columns: 1fr 1fr; gap: 40px; }
+  .steps-row::before { display: none; }
+  .plans-grid { grid-template-columns: 1fr; max-width: 460px; }
+  .comm-right { grid-template-columns: 1fr 1fr; }
+  .site-footer { flex-direction: column; }
+  .ob-left { width: 200px; padding: 24px 18px; }
+  .ob-step-sub { display: none; }
+}
+@media (max-width: 640px) {
+  .ob-left { display: none; }
+  .ob-panel { border-radius: 8px; max-height: 92vh; max-height: 92dvh; }
+  #onboarding-overlay { padding: 16px; }
+  .ob-right { padding: 24px 18px 48px; }
+  .account-top, .account-body { padding-left: 20px; padding-right: 20px; }
+  .what-right { grid-template-columns: 1fr; }
+  .tab-panel.active { grid-template-columns: 1fr; }
+  .steps-row { grid-template-columns: 1fr; }
+  .hero-actions { flex-direction: column; }
+  .profile-grid { grid-template-columns: 1fr; }
+  .account-selector { gap: 8px; }
+  .acct-sub { display: none; }
+}
 </style>
 </head>
 <body>
+
 <div class="scanline"></div>
-<div class="orb-layer" aria-hidden="true">
-  <div class="orb"></div>
-  <div class="orb"></div>
-  <div class="orb"></div>
-  <div class="orb"></div>
+<div class="orb-layer">
+  <div class="orb"></div><div class="orb"></div>
+  <div class="orb"></div><div class="orb"></div>
 </div>
-<div class="shell profile-layout-shell">
-  <aside class="profile-sidebar">
-    <div class="sidebar-card">
-      <div class="eyebrow">Navigate</div>
-      <h2 class="sidebar-title">Keep the profile focused.</h2>
-      <div class="sidebar-copy">Everything important sits in one calm lane now, so the actual page has room to breathe.</div>
-      <div class="sidebar-section">
-        <a class="sidebar-link" href="/">Back To beVivid</a>
-        <a class="sidebar-link" href="/community">Community</a>
-        <a class="sidebar-link" id="creatorDashboardLink" href="/creator" hidden>Creator Dashboard</a>
-        <a class="sidebar-link sidebar-link--primary" id="studioLink" href="/profiledata">Open Studio</a>
-      </div>
-    </div>
-    <div class="sidebar-card">
-      <div class="eyebrow">Find Profiles</div>
-      <div class="sidebar-meta" id="sidebarViewMeta">Search by handle or display name to jump into another page.</div>
-      <div class="sidebar-current" id="sidebarCurrentHandle">@loading</div>
-      <form class="search-form" onsubmit="event.preventDefault(); searchProfiles();">
-        <input class="search-input" id="searchHandle" type="text" placeholder="Find a user by handle" />
-        <button class="search-btn" type="submit">Search User</button>
-        <div class="search-results" id="searchResults"></div>
-      </form>
-    </div>
-  </aside>
-  <div class="profile-main">
-  <div class="header">
-    <div class="eyebrow">Profile</div>
-    <div class="title-row">
-      <h1 class="title" id="profileTitle">Loading...</h1>
-      <div class="account-type-badge" id="accountTypeBadge" hidden>Member</div>
-      <div class="plus-badge" id="plusBadge" hidden>beVivid+</div>
-    </div>
-    <div class="sub" id="profileSub">Pulling the latest profile layout.</div>
-    <div class="profile-tools">
-      <div class="profile-stats">
-        <div class="recognition-card">
-          <small>Recognition Points</small>
-          <strong id="recognitionPoints">0</strong>
-          <span id="recognitionMeta">Lifetime appreciation from the community.</span>
-        </div>
-        <div class="recognition-card">
-          <small>Posts</small>
-          <strong id="postCount">0</strong>
-          <span id="postMeta">Community updates shared by this profile.</span>
-        </div>
-        <div class="recognition-card">
-          <small>Total Likes</small>
-          <strong id="totalLikeCount">0</strong>
-          <span id="likeMeta">All likes collected across published posts.</span>
-        </div>
-      </div>
-      <div class="profile-actions">
-        <div class="action-cluster">
-          <button class="search-btn social-action" id="followersBtn" type="button" onclick="openFollowModal('followers')">Followers 0</button>
-          <button class="search-btn social-action" id="followingBtn" type="button" onclick="openFollowModal('following')">Following 0</button>
-        </div>
-        <div class="action-cluster action-cluster--primary">
-          <button class="recognize-btn" id="recognizeBtn" onclick="grantRecognition()">Grant Recognition</button>
-        </div>
-      </div>
-    </div>
-    <div class="profile-note" id="recognitionStatus"></div>
+<span class="vert-text">Recognition · Feeling · Clarity · You</span>
+
+<nav>
+  <div class="nav-logo">beVivid</div>
+  <ul class="nav-center">
+    <li><a href="#what">About</a></li>
+    <li><a href="#foryou">Who it's for</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="/community">Community</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+  </ul>
+  <div class="nav-right">
+    <span class="nav-passion">passion project</span>
+    <button class="nav-cta nav-secondary" id="navLoginBtn" onclick="openAccountModal('login')">Log In</button>
+    <button class="nav-profile-btn" id="navProfileBtn" onclick="openAccountModal('profile')">
+      <span class="nav-profile-avatar" id="navProfileAvatar">?</span>
+      <span class="nav-profile-meta">
+        <span class="nav-profile-name" id="navProfileName">Profile</span>
+        <span class="nav-profile-handle" id="navProfileHandle">@you</span>
+      </span>
+    </button>
+    <button class="nav-cta" id="navJoinBtn" onclick="openOnboarding()">Join Free</button>
   </div>
-  <div class="profile-tab-bar">
-    <button class="profile-tab-btn active" id="profileTabBtn-page" type="button" onclick="switchProfileTab('page')">Vivid Page</button>
-    <button class="profile-tab-btn" id="profileTabBtn-showroom" type="button" onclick="switchProfileTab('showroom')">Showroom</button>
-    <button class="profile-tab-btn" id="profileTabBtn-posts" type="button" onclick="switchProfileTab('posts')">Posts</button>
+  <button class="nav-mobile-toggle" id="mobileToggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<section id="hero">
+  <p class="hero-eyebrow">Be Vivid · Live Vivid</p>
+  <div class="hero-headline">
+    <span class="hero-line">Be</span>
+    <span class="hero-line"><span class="grad-word" data-t="Vivid.">Vivid.</span></span>
   </div>
-  <div class="posts-wrap">
-    <div class="profile-tab-panel active" id="profileTab-page">
-      <div class="stage-wrap"><div class="stage" id="stage"></div></div>
-    </div>
-    <div class="profile-tab-panel" id="profileTab-showroom">
-      <div class="section-card">
-      <div class="section-head">
-        <div>
-          <div class="eyebrow">Showroom</div>
-          <h2 class="section-title-sm">Awards on display.</h2>
-        </div>
-      </div>
-      <div class="section-sub">Trophies, awards, certifications, and community proof points live here.</div>
-      <div class="showroom-grid" id="showroomGrid"></div>
-      </div>
-    </div>
-    <div class="profile-tab-panel" id="profileTab-posts">
-      <div class="section-card">
-      <div class="section-head">
-        <div>
-          <div class="eyebrow">Community Posts</div>
-          <h2 class="section-title-sm">What they’ve shared.</h2>
-        </div>
-        <a class="studio" href="/community">Open Community</a>
-      </div>
-      <div class="section-sub">Recent posts from this profile appear here so their page and community presence stay connected.</div>
-      <div class="mini-feed" id="profilePosts"></div>
-      </div>
-    </div>
+  <p class="hero-sub">
+    A platform where <em>people who stand out</em> finally get recognized. Earn real trophies, awards &amp; certifications. Students unlock <em>scholarships</em>. Creators build a legacy worth showing.
+  </p>
+  <div class="hero-actions">
+    <button class="btn-primary" onclick="openOnboarding()">Join for Free</button>
+    <a href="#what" class="btn-ghost">See how it works</a>
   </div>
+  <div class="hero-scroll">
+    <span class="scroll-line"></span>
+    <span>Scroll to explore</span>
   </div>
+</section>
+
+<div class="marquee-wrap">
+  <div class="marquee-track" id="marqueeTrack"></div>
 </div>
-<div class="modal" id="followModal">
-  <div class="modal-card">
-    <div class="section-head">
+
+<section id="what">
+  <div class="section-pad">
+    <span class="section-label reveal">What is beVivid</span>
+    <div class="what-grid">
+      <div class="what-left">
+        <div class="section-title reveal reveal-delay-1">More than<br>a profile.</div>
+        <p class="section-body reveal reveal-delay-2" style="margin-top:28px;">
+          beVivid is the platform where <em>your impact is the currency</em>. Share your work, earn recognition that actually means something — real awards, real certifications, real trophies for real people.
+          <br><br>
+          Whether you're a student chasing <em>scholarships</em> or a creator building your legacy, beVivid is the space designed for people who refuse to go unnoticed.
+        </p>
+        <div style="margin-top:38px;" class="reveal reveal-delay-3">
+          <a href="#how" class="btn-ghost">See how it works →</a>
+        </div>
+      </div>
+      <div class="what-right">
+        <div class="feature-card reveal reveal-delay-1" style="--card-glow:radial-gradient(ellipse at top left,rgba(255,45,85,.08),transparent 70%);">
+          <span class="fc-icon">🏆</span>
+          <div class="fc-title">Vivid Trophies</div>
+          <div class="fc-desc">Real recognition for real impact. Earn trophies that live on your profile and mean something.</div>
+          <span class="fc-tag" style="color:#ff2d55;border-color:rgba(255,45,85,.3);">Earn</span>
+        </div>
+        <div class="feature-card reveal reveal-delay-2" style="--card-glow:radial-gradient(ellipse at top left,rgba(52,170,220,.08),transparent 70%);">
+          <span class="fc-icon">🎓</span>
+          <div class="fc-title">Scholarships</div>
+          <div class="fc-desc">Students can apply for scholarships directly through the platform — funded by the community.</div>
+          <span class="fc-tag" style="color:#34aadc;border-color:rgba(52,170,220,.3);">Students</span>
+        </div>
+        <div class="feature-card reveal reveal-delay-3" style="--card-glow:radial-gradient(ellipse at top left,rgba(162,89,255,.08),transparent 70%);">
+          <span class="fc-icon">📜</span>
+          <div class="fc-title">Certifications</div>
+          <div class="fc-desc">Complete challenges and earn verifiable certifications that go wherever you go.</div>
+          <span class="fc-tag" style="color:#a259ff;border-color:rgba(162,89,255,.3);">Verify</span>
+        </div>
+        <div class="feature-card reveal reveal-delay-4" style="--card-glow:radial-gradient(ellipse at top left,rgba(0,229,176,.08),transparent 70%);">
+          <span class="fc-icon">✦</span>
+          <div class="fc-title">Your Legacy</div>
+          <div class="fc-desc">Build a profile that travels with you — one that actually reflects who you are and what you've done.</div>
+          <span class="fc-tag" style="color:#00e5b0;border-color:rgba(0,229,176,.3);">Legacy</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="foryou">
+  <div class="section-pad">
+    <span class="section-label reveal">Who is beVivid for</span>
+    <div class="section-title reveal reveal-delay-1">Built for<br>every vivid<br>person.</div>
+    <div class="account-selector reveal reveal-delay-2">
+      <button class="acct-btn active" data-type="student" onclick="setAcct('student',this)">
+        <span class="acct-dot"></span>
+        <span class="acct-label-wrap"><span class="acct-name">Student</span><span class="acct-sub">here to grow</span></span>
+      </button>
+      <button class="acct-btn" data-type="creator" onclick="setAcct('creator',this)">
+        <span class="acct-dot"></span>
+        <span class="acct-label-wrap"><span class="acct-name">Creator</span><span class="acct-sub">here to express</span></span>
+      </button>
+      <button class="acct-btn" data-type="partner" onclick="setAcct('partner',this)">
+        <span class="acct-dot"></span>
+        <span class="acct-label-wrap"><span class="acct-name">Partner</span><span class="acct-sub">apply to collaborate</span></span>
+      </button>
+      <button class="acct-btn" data-type="business" onclick="setAcct('business',this)">
+        <span class="acct-dot"></span>
+        <span class="acct-label-wrap"><span class="acct-name">Business</span><span class="acct-sub">apply for access</span></span>
+      </button>
+    </div>
+    <p class="apply-note" id="applyNote"></p>
+    <div class="tab-panel active" id="panel-student">
+      <div class="benefit-item reveal reveal-delay-1"><div class="benefit-num">01</div><div class="benefit-title">Apply for Scholarships</div><div class="benefit-desc">Access scholarships funded through the beVivid community. Your profile speaks for you.</div></div>
+      <div class="benefit-item reveal reveal-delay-2"><div class="benefit-num">02</div><div class="benefit-title">Earn Certifications</div><div class="benefit-desc">Complete skill challenges and earn certifications that hold real weight on your resume.</div></div>
+      <div class="benefit-item reveal reveal-delay-3"><div class="benefit-num">03</div><div class="benefit-title">Build Your Vivid Profile</div><div class="benefit-desc">Showcase your work, achievements, and awards in one place that actually represents you.</div></div>
+    </div>
+    <div class="tab-panel" id="panel-creator">
+      <div class="benefit-item reveal reveal-delay-1"><div class="benefit-num">01</div><div class="benefit-title">Share Your Work</div><div class="benefit-desc">Post your creations to a community that appreciates originality and celebrates it openly.</div></div>
+      <div class="benefit-item reveal reveal-delay-2"><div class="benefit-num">02</div><div class="benefit-title">Win Vivid Awards</div><div class="benefit-desc">Community-voted awards and platform trophies recognize the most vibrant work.</div></div>
+      <div class="benefit-item reveal reveal-delay-3"><div class="benefit-num">03</div><div class="benefit-title">Grow Your Audience</div><div class="benefit-desc">Connect with others who get it — a platform built for people who leave impressions.</div></div>
+    </div>
+    <div class="apply-panel" id="panel-partner">
+      <div class="apply-card">
+        <div class="apply-card-title">Partner Application</div>
+        <div class="apply-card-desc">Looking to collaborate or co-build with beVivid? Every application is reviewed personally.</div>
+        <div class="apply-form-row"><input type="text" id="partner-name" placeholder="Your name" /></div>
+        <div class="apply-form-row"><input type="email" id="partner-email" placeholder="Your email" /></div>
+        <div class="apply-form-row"><textarea rows="3" id="partner-msg" placeholder="Tell us what you have in mind..."></textarea></div>
+        <div class="apply-captcha" id="partner-captcha" data-recaptcha-form="partner"></div>
+        <p class="apply-error" id="partner-error"></p>
+        <button class="apply-submit" onclick="submitApply('partner', this)">Send Application</button>
+        <p class="apply-fine">We'll reach out directly. No middlemen, no forms that go nowhere.</p>
+        <p class="apply-success" id="partner-success">✦ &nbsp;Application received. We'll be in touch.</p>
+      </div>
+    </div>
+    <div class="apply-panel" id="panel-business">
+      <div class="apply-card">
+        <div class="apply-card-title">Business Application</div>
+        <div class="apply-card-desc">Brands and teams wanting a presence on beVivid go through here. We're selective — quality over quantity.</div>
+        <div class="apply-form-row"><input type="text" id="business-name" placeholder="Business or brand name" /></div>
+        <div class="apply-form-row"><input type="email" id="business-email" placeholder="Contact email" /></div>
+        <div class="apply-form-row"><textarea rows="3" id="business-msg" placeholder="What are you looking to do on beVivid?"></textarea></div>
+        <div class="apply-captcha" id="business-captcha" data-recaptcha-form="business"></div>
+        <p class="apply-error" id="business-error"></p>
+        <button class="apply-submit" onclick="submitApply('business', this)">Send Application</button>
+        <p class="apply-fine">Reviewed personally. We'll reach out if it's a fit.</p>
+        <p class="apply-success" id="business-success">✦ &nbsp;Application received. We'll be in touch.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="section-pad">
+    <span class="section-label reveal">How it works</span>
+    <div class="section-title reveal reveal-delay-1">Four steps<br>to vivid.</div>
+    <div class="steps-row">
+      <div class="step reveal reveal-delay-1"><div class="step-circle">01</div><div class="step-title">Create your profile</div><div class="step-desc">Sign up free and build your Vivid Profile — your work, your story, your achievements in one place.</div></div>
+      <div class="step reveal reveal-delay-2"><div class="step-circle">02</div><div class="step-title">Show what you've got</div><div class="step-desc">Share your work, apply for certifications and scholarships, and make your mark on the community.</div></div>
+      <div class="step reveal reveal-delay-3"><div class="step-circle">03</div><div class="step-title">Earn recognition</div><div class="step-desc">Win trophies, awards, and certifications that live on your profile and travel with you everywhere.</div></div>
+      <div class="step reveal reveal-delay-4"><div class="step-circle">04</div><div class="step-title">Live vivid</div><div class="step-desc">Level up with beVivid+ for premium features, early access, and even more ways to shine.</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="section-pad">
+    <span class="section-label reveal">Pricing</span>
+    <div class="section-title reveal reveal-delay-1">Start free.<br>Go vivid.</div>
+    <p class="section-body pricing-intro reveal reveal-delay-2" style="margin-top:18px;">
+      beVivid is <em>free to join</em> — always. Upgrade to beVivid+ for premium recognition, exclusive awards, and early access to everything coming next.
+    </p>
+    <div class="plans-grid">
+      <div class="plan-card reveal reveal-delay-2">
+        <div class="plan-name">beVivid</div>
+        <div class="plan-tagline">Free forever</div>
+        <div class="plan-price"><span class="price-amount">$0</span><span class="price-per">/ month</span></div>
+        <ul class="plan-features">
+          <li><span class="check yes">✓</span> Vivid Profile</li>
+          <li><span class="check yes">✓</span> Share your work &amp; projects</li>
+          <li><span class="check yes">✓</span> Earn community badges</li>
+          <li><span class="check yes">✓</span> Student scholarship access</li>
+          <li><span class="check yes">✓</span> Community access</li>
+          <li><span class="check no">—</span> Premium trophies &amp; awards</li>
+          <li><span class="check no">—</span> Priority certification review</li>
+          <li><span class="check no">—</span> Early feature access</li>
+        </ul>
+        <button class="plan-btn solid" onclick="openOnboarding()">Get Started Free</button>
+      </div>
+      <div class="plan-card featured reveal reveal-delay-3">
+        <div class="plan-badge">Most Vivid</div>
+        <div class="plan-name" style="background:linear-gradient(135deg,#ff2d55,#ff9500,#a259ff,#34aadc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:300% 100%;animation:shimmer 5s linear infinite;">beVivid+</div>
+        <div class="plan-tagline">Premium recognition</div>
+        <div class="plan-toggle">
+          <button class="plan-toggle-btn active" onclick="setBilling('monthly')">Monthly</button>
+          <button class="plan-toggle-btn" onclick="setBilling('yearly')">Yearly</button>
+        </div>
+        <div class="plan-price">
+          <span class="price-amount gradient" id="priceAmt">$1.99</span>
+          <span class="price-per" id="pricePer">/ month</span>
+          <div class="price-alt" id="priceAlt" style="opacity:0;height:0;overflow:hidden;transition:opacity .3s,height .3s">
+            <span class="strikethrough">$23.88 / yr</span>
+            <span class="save">Save $3.89 →</span>
+          </div>
+        </div>
+        <ul class="plan-features">
+          <li><span class="check yes">✓</span> Everything in free</li>
+          <li><span class="check yes">✓</span> Premium trophies &amp; awards</li>
+          <li><span class="check yes">✓</span> Priority certification review</li>
+          <li><span class="check yes">✓</span> Early feature access</li>
+          <li><span class="check yes">✓</span> Exclusive beVivid+ badge</li>
+          <li><span class="check yes">✓</span> Scholarship priority boost</li>
+          <li><span class="check yes">✓</span> Supporter status on profile</li>
+          <li><span class="check yes">✓</span> Direct community impact</li>
+        </ul>
+        <button class="plan-btn outline" onclick="openOnboarding()">Upgrade to beVivid+</button>
+      </div>
+    </div>
+    <p class="passion-note reveal reveal-delay-2">beVivid is an independent passion project — not a corporation. Pricing is kept intentionally accessible because this platform is built for people, not investors.</p>
+  </div>
+</section>
+
+<section id="community">
+  <div class="section-pad">
+    <div class="comm-inner">
+      <div class="comm-left">
+        <span class="section-label reveal">The community</span>
+        <div class="section-title reveal reveal-delay-1">Vivid people<br>move in<br>groups.</div>
+        <p class="section-body reveal reveal-delay-2" style="margin-top:26px;">
+          beVivid isn't just a profile. It's a movement. Join a community of people who <em>create, show up, and leave impressions</em> — and get recognized for it. This is your people.
+        </p>
+        <div style="margin-top:34px; display:flex; gap:12px; flex-wrap:wrap;" class="reveal reveal-delay-3">
+          <button class="btn-primary" onclick="openOnboarding()">Join the Community</button>
+          <a class="btn-ghost" href="/community">Browse Community</a>
+        </div>
+      </div>
+      <div class="comm-right">
+        <div class="stat-card reveal reveal-delay-1"><div class="stat-num">100%</div><div class="stat-label">Free to join</div></div>
+        <div class="stat-card reveal reveal-delay-2"><div class="stat-num">∞</div><div class="stat-label">Ways to be vivid</div></div>
+        <div class="stat-card reveal reveal-delay-3"><div class="stat-num">Real</div><div class="stat-label">Trophies &amp; awards</div></div>
+        <div class="stat-card reveal reveal-delay-4"><div class="stat-num">You</div><div class="stat-label">Are the platform</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="cta">
+  <div class="section-pad">
+    <div class="cta-inner">
+      <span class="cta-super reveal">Your moment starts now</span>
+      <div class="cta-headline reveal reveal-delay-1"><span>Live<br>Vivid.</span></div>
+      <p class="cta-sub reveal reveal-delay-2">Join beVivid free. Earn recognition. <em>Be unforgettable.</em></p>
+      <div class="cta-actions reveal reveal-delay-3">
+        <button class="btn-primary" onclick="openOnboarding()">Join for Free</button>
+        <a href="#pricing" class="btn-ghost">View beVivid+</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-left">
+    <div class="footer-logo">beVivid</div>
+    <div class="footer-slogan">Be Vivid · Live Vivid</div>
+    <div class="footer-passion">an independent passion project</div>
+  </div>
+  <ul class="footer-links">
+    <li><a href="#what">About</a></li>
+    <li><a href="#foryou">For students</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#">Privacy</a></li>
+    <li><a href="#">Terms</a></li>
+  </ul>
+  <div class="footer-copy">© 2025 beVivid<br>All rights reserved.</div>
+</footer>
+
+<div id="account-overlay" role="dialog" aria-modal="true">
+  <div class="account-panel">
+    <div class="account-top">
       <div>
-        <div class="eyebrow" id="followModalEyebrow">Connections</div>
-        <h2 class="section-title-sm" id="followModalTitle">Following</h2>
+        <div class="account-kicker" id="accountKicker">Member Access</div>
+        <div class="account-title" id="accountTitle">Log in to<br>beVivid.</div>
       </div>
-      <button class="search-btn modal-close" type="button" onclick="closeFollowModal()">Close</button>
+      <button class="account-close" onclick="closeAccountModal()" aria-label="Close">×</button>
     </div>
-    <div class="section-sub" id="followModalSub">People connected to this profile.</div>
-    <div class="follow-list" id="followModalList"></div>
+    <div class="account-body">
+      <div class="account-pane active" id="account-login-pane">
+        <p class="account-desc">Use the handle and password you signed up with. Once you're in, your profile stays saved in this browser.</p>
+        <div class="account-group">
+          <label class="account-label" for="login-handle">Handle</label>
+          <input class="account-input" type="text" id="login-handle" placeholder="yourhandle" />
+        </div>
+        <div class="account-group">
+          <label class="account-label" for="login-password">Password</label>
+          <input class="account-input" type="password" id="login-password" placeholder="Your password" />
+        </div>
+        <p class="account-error" id="login-error"></p>
+        <div class="account-actions">
+          <button class="account-btn" onclick="loginUser(this)">Log In</button>
+          <button class="account-btn ghost" onclick="closeAccountModal()">Cancel</button>
+        </div>
+      </div>
+
+      <div class="account-pane" id="account-profile-pane">
+        <p class="account-desc">You're signed in on this browser. Your vivid profile snapshot lives right here until you log out.</p>
+        <div class="profile-card">
+          <div class="profile-head">
+            <div class="profile-avatar" id="profileAvatar">?</div>
+            <div>
+              <div class="profile-name" id="profileName">Your Name</div>
+              <div class="profile-handle" id="profileHandle">@handle</div>
+            </div>
+          </div>
+          <div class="profile-grid">
+            <div class="profile-stat">
+              <div class="profile-stat-label">Email</div>
+              <div class="profile-stat-value" id="profileEmail">you@example.com</div>
+            </div>
+            <div class="profile-stat">
+              <div class="profile-stat-label">Account Type</div>
+              <div class="profile-stat-value" id="profileType">Member</div>
+            </div>
+            <div class="profile-stat">
+              <div class="profile-stat-label">Bio</div>
+              <div class="profile-stat-value" id="profileBio">No bio yet.</div>
+            </div>
+            <div class="profile-stat">
+              <div class="profile-stat-label">Interests</div>
+              <div class="profile-stat-value" id="profileInterests">Still choosing your vibe.</div>
+            </div>
+          </div>
+        </div>
+        <div class="account-actions">
+          <button class="account-btn ghost" onclick="openProfileStudio()">Profile Studio</button>
+          <button class="account-btn ghost" onclick="logoutUser()">Log Out</button>
+          <button class="account-btn ghost" onclick="viewPublicProfile()">View Profile</button>
+          <button class="account-btn" onclick="closeAccountModal()">Done</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
+<!-- ONBOARDING OVERLAY -->
+<div id="onboarding-overlay" role="dialog" aria-modal="true">
+  <div class="ob-backdrop" id="obBackdrop"></div>
+  <div class="ob-panel">
+    <button class="ob-close" onclick="closeOnboarding()" aria-label="Close">✕</button>
+    <div class="ob-left">
+      <div class="ob-logo">beVivid</div>
+      <nav class="ob-steps-nav" id="obStepsNav"></nav>
+      <div class="ob-left-bottom"><span class="ob-passion-tag">passion project</span></div>
+    </div>
+    <div class="ob-right" id="obRight">
+
+      <!-- Step 0: Welcome -->
+      <div class="ob-step active" id="ob-step-0">
+        <div class="ob-welcome-blob">✦</div>
+        <p class="ob-eyebrow">Welcome to beVivid</p>
+        <div class="ob-title">Let's get<br>you <span class="g">set up.</span></div>
+        <p class="ob-desc">Takes about <em>2 minutes</em> to build your Vivid Profile. We'll personalize your experience along the way.</p>
+        <div class="ob-btn-row"><button class="ob-btn-primary" onclick="obNext()">Let's Go →</button></div>
+      </div>
+
+      <!-- Step 1: Account type -->
+      <div class="ob-step" id="ob-step-1">
+        <div class="ob-progress-wrap"><div class="ob-progress-fill" style="width:16%"></div></div>
+        <p class="ob-eyebrow">Step 1 of 5</p>
+        <div class="ob-title">Who are<br>you <span class="g">here as?</span></div>
+        <p class="ob-desc">Pick the type that fits you — you can always change this later.</p>
+        <div class="ob-type-grid">
+          <div class="ob-type-card" data-type="student" style="--tglow:radial-gradient(ellipse at top left,rgba(52,170,220,.08),transparent 70%);" onclick="obSelectType(this)">
+            <div class="ob-type-check">✓</div><span class="ob-type-icon">🎓</span>
+            <div class="ob-type-name">Student</div><div class="ob-type-hint">Grow, earn certifications &amp; scholarships.</div>
+          </div>
+          <div class="ob-type-card" data-type="creator" style="--tglow:radial-gradient(ellipse at top left,rgba(255,149,0,.08),transparent 70%);" onclick="obSelectType(this)">
+            <div class="ob-type-check">✓</div><span class="ob-type-icon">✦</span>
+            <div class="ob-type-name">Creator</div><div class="ob-type-hint">Express, share work &amp; earn recognition.</div>
+          </div>
+          <div class="ob-type-card" data-type="partner" style="--tglow:radial-gradient(ellipse at top left,rgba(162,89,255,.08),transparent 70%);" onclick="obSelectType(this)">
+            <div class="ob-type-check">✓</div><span class="ob-type-icon">🤝</span>
+            <div class="ob-type-name">Partner</div><div class="ob-type-hint">Collaborate or co-build with beVivid.</div>
+          </div>
+          <div class="ob-type-card" data-type="business" style="--tglow:radial-gradient(ellipse at top left,rgba(0,229,176,.08),transparent 70%);" onclick="obSelectType(this)">
+            <div class="ob-type-check">✓</div><span class="ob-type-icon">🏢</span>
+            <div class="ob-type-name">Business</div><div class="ob-type-hint">Brand or team presence on beVivid.</div>
+          </div>
+        </div>
+        <p class="ob-field-err" id="ob-type-err">Please select an account type to continue.</p>
+        <div class="ob-btn-row">
+          <button class="ob-btn-primary" onclick="obValidateStep1()">Continue →</button>
+          <span class="ob-skip" onclick="obPrev()">← Back</span>
+        </div>
+      </div>
+
+      <!-- Step 2: Identity -->
+      <div class="ob-step" id="ob-step-2">
+        <div class="ob-progress-wrap"><div class="ob-progress-fill" style="width:32%"></div></div>
+        <p class="ob-eyebrow">Step 2 of 5</p>
+        <div class="ob-title">Your<br><span class="g">identity.</span></div>
+        <p class="ob-desc">This is what the community sees. Make it <em>unforgettable.</em></p>
+        <div class="ob-form-group">
+          <label class="ob-label">Display Name</label>
+          <div class="ob-input-row"><input type="text" id="ob-displayName" placeholder="How you want to be known" oninput="obUpdateInit()" /></div>
+          <p class="ob-field-err" id="ob-name-err">Display name is required.</p>
+        </div>
+        <div class="ob-form-group">
+          <label class="ob-label">Handle</label>
+          <div class="ob-input-row" style="align-items:center;">
+            <span style="padding-left:12px;font-family:'DM Mono',monospace;font-size:12px;color:rgba(245,240,235,0.40);flex-shrink:0;">@</span>
+            <input type="text" id="ob-handle" placeholder="yourhandle" oninput="obSanitizeHandle(this)" />
+          </div>
+          <p class="ob-field-err" id="ob-handle-err">Handle is required.</p>
+        </div>
+        <div class="ob-form-group">
+          <label class="ob-label">Email</label>
+          <div class="ob-input-row"><input type="email" id="ob-email" placeholder="you@example.com" /></div>
+          <p class="ob-field-err" id="ob-email-err">Please enter a valid email.</p>
+        </div>
+        <div class="ob-form-group">
+          <label class="ob-label">Password</label>
+          <div class="ob-input-row"><input type="password" id="ob-password" placeholder="At least 8 characters" /></div>
+          <p class="ob-field-err" id="ob-password-err">Use at least 8 characters with a letter and a number.</p>
+        </div>
+        <div class="ob-btn-row" style="margin-top:8px;">
+          <button class="ob-btn-primary" onclick="obValidateStep2()">Continue →</button>
+          <span class="ob-skip" onclick="obPrev()">← Back</span>
+        </div>
+      </div>
+
+      <!-- Step 3: Avatar & Bio -->
+      <div class="ob-step" id="ob-step-3">
+        <div class="ob-progress-wrap"><div class="ob-progress-fill" style="width:52%"></div></div>
+        <p class="ob-eyebrow">Step 3 of 5</p>
+        <div class="ob-title">Your<br><span class="g">look.</span></div>
+        <p class="ob-desc">A strong photo and bio make you <em>2× more likely</em> to earn recognition.</p>
+        <div class="ob-avatar-zone" id="obAvatarZone">
+          <div class="ob-av-preview" id="obAvPreview"><span id="obAvInitial">?</span></div>
+          <p class="ob-av-label">Click to upload a photo<br><span class="ob-av-hint">PNG, JPG up to 5MB</span></p>
+          <input type="file" accept="image/*" onchange="obHandleAvatar(event)" />
+        </div>
+        <div class="ob-form-group">
+          <label class="ob-label">Bio <span style="color:rgba(245,240,235,.2);font-size:8px;letter-spacing:.1em;">(Optional)</span></label>
+          <div class="ob-input-row"><textarea rows="3" id="ob-bio" placeholder="Tell the community who you are in a sentence or two..."></textarea></div>
+        </div>
+        <div class="ob-btn-row" style="margin-top:8px;">
+          <button class="ob-btn-primary" onclick="obNext()">Continue →</button>
+          <span class="ob-skip" onclick="obPrev()">← Back</span>
+        </div>
+      </div>
+
+      <!-- Step 4: Interests -->
+      <div class="ob-step" id="ob-step-4">
+        <div class="ob-progress-wrap"><div class="ob-progress-fill" style="width:72%"></div></div>
+        <p class="ob-eyebrow">Step 4 of 5</p>
+        <div class="ob-title">What's<br>your <span class="g">vibe?</span></div>
+        <p class="ob-desc">Pick a few things you're into. We'll use this to surface the right content &amp; people for you.</p>
+        <div class="ob-interest-grid" id="obInterestGrid"></div>
+        <div class="ob-btn-row">
+          <button class="ob-btn-primary" onclick="obNext()">Continue →</button>
+          <span class="ob-skip" onclick="obPrev()">← Back</span>
+        </div>
+      </div>
+
+      <!-- Step 5: Review -->
+      <div class="ob-step" id="ob-step-5">
+        <div class="ob-progress-wrap"><div class="ob-progress-fill" style="width:92%"></div></div>
+        <p class="ob-eyebrow">Step 5 of 5</p>
+        <div class="ob-title">Looking<br><span class="g">vivid.</span></div>
+        <p class="ob-desc">Here's your profile preview. Hit <em>Go Vivid</em> to launch your profile.</p>
+        <div class="ob-preview-card">
+          <div class="ob-prev-head">
+            <div class="ob-prev-avatar" id="obPrevAvatar"><span id="obPrevInitial">?</span></div>
+            <div>
+              <div class="ob-prev-name" id="obPrevName">Your Name</div>
+              <div class="ob-prev-handle" id="obPrevHandle">@handle</div>
+            </div>
+            <div class="ob-prev-badge" id="obPrevBadge" style="color:#34aadc;border-color:rgba(52,170,220,.3);">Student</div>
+          </div>
+          <div class="ob-prev-bio" id="obPrevBio">Your bio will appear here.</div>
+          <div class="ob-prev-tags" id="obPrevTags"></div>
+        </div>
+        <div class="ob-legal-consent">
+          <label class="ob-legal-check">
+            <input type="checkbox" id="ob-legal-consent" />
+            <span class="ob-legal-copy">I agree to the <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a> and <a href="/tos" target="_blank" rel="noopener noreferrer">Terms of Service</a>.</span>
+          </label>
+          <p class="ob-field-err" id="ob-legal-err">You must agree to the Privacy Policy and Terms of Service to create your account.</p>
+        </div>
+        <div class="ob-btn-row">
+          <button class="ob-btn-primary" onclick="obGoVivid(this)">Go Vivid ✦</button>
+          <span class="ob-skip" onclick="obPrev()">← Edit</span>
+        </div>
+        <p class="ob-submit-err" id="ob-review-err"></p>
+      </div>
+
+      <!-- Step 6: Done -->
+      <div class="ob-step" id="ob-step-6">
+        <div class="ob-completion">
+          <div class="ob-rings">
+            <div class="ob-ring"></div><div class="ob-ring"></div><div class="ob-ring"></div>
+            <div class="ob-ring-center">✦</div>
+          </div>
+          <div class="ob-confetti" id="obConfetti"></div>
+          <p class="ob-eyebrow" style="text-align:center;">You're in.</p>
+          <div class="ob-title" style="font-size:clamp(44px,7vw,80px);text-align:center;">Welcome<br><span class="g">to vivid.</span></div>
+          <p class="ob-desc" style="max-width:340px;margin:0 auto 28px;text-align:center;">Your profile is live. Earn your first <em>Vivid Trophy</em> and make your mark.</p>
+          <div class="ob-btn-row" style="justify-content:center;">
+            <button class="ob-btn-primary" onclick="closeOnboarding()">Start Exploring →</button>
+          </div>
+          <p style="margin-top:16px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.13em;color:rgba(245,240,235,.18);text-align:center;">Check your email to verify your account.</p>
+        </div>
+      </div>
+
+      <!-- Step 7: Partner / Business Application -->
+      <div class="ob-step" id="ob-step-7">
+        <div class="ob-progress-wrap"><div class="ob-progress-fill" style="width:60%"></div></div>
+        <p class="ob-eyebrow" id="ob-app-eyebrow">Partner Application</p>
+        <div class="ob-title">Apply to<br><span class="g">beVivid.</span></div>
+        <p class="ob-desc" id="ob-app-desc">We review every application personally. Tell us who you are and why you're a fit — no templates, just be real.</p>
+
+        <div class="ob-form-group">
+          <label class="ob-label">First Name</label>
+          <div class="ob-input-row"><input type="text" id="ob-app-firstname" placeholder="First name" /></div>
+          <p class="ob-field-err" id="ob-app-firstname-err">First name is required.</p>
+        </div>
+        <div class="ob-form-group">
+          <label class="ob-label">Last Name</label>
+          <div class="ob-input-row"><input type="text" id="ob-app-lastname" placeholder="Last name" /></div>
+          <p class="ob-field-err" id="ob-app-lastname-err">Last name is required.</p>
+        </div>
+        <div class="ob-form-group">
+          <label class="ob-label">Email</label>
+          <div class="ob-input-row"><input type="email" id="ob-app-email" placeholder="you@example.com" /></div>
+          <p class="ob-field-err" id="ob-app-email-err">A valid email is required.</p>
+        </div>
+        <div class="ob-form-group">
+          <label class="ob-label">Phone <span style="color:rgba(245,240,235,.2);font-size:8px;">(Optional)</span></label>
+          <div class="ob-input-row" style="align-items:center;">
+            <span style="padding: 0 10px 0 14px;font-family:'DM Mono',monospace;font-size:12px;color:rgba(245,240,235,0.35);flex-shrink:0;border-right:1px solid rgba(245,240,235,.1);">+1</span>
+            <input type="tel" id="ob-app-phone" placeholder="(201) 555-0123" inputmode="numeric" />
+          </div>
+        </div>
+        <div class="ob-form-group">
+          <label class="ob-label" id="ob-app-why-label">Why should we accept you?</label>
+          <div class="ob-input-row"><textarea rows="4" id="ob-app-why" placeholder="Be real. What do you bring to beVivid?"></textarea></div>
+          <p class="ob-field-err" id="ob-app-why-err">Please tell us a bit about yourself.</p>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
+            <input type="checkbox" id="ob-app-optin" style="margin-top:3px;accent-color:#00e5b0;flex-shrink:0;" />
+            <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;color:rgba(245,240,235,.3);line-height:1.7;">I agree to receive updates from beVivid and accept the data privacy policy. You can unsubscribe anytime.</span>
+          </label>
+          <p class="ob-field-err" id="ob-app-optin-err">You must agree to continue.</p>
+        </div>
+
+        <div class="ob-captcha-wrap" id="onboarding-application-captcha" data-recaptcha-form="onboarding"></div>
+        <p class="ob-field-err" id="ob-app-captcha-err">Security verification could not be completed. Please try again.</p>
+        <p class="ob-submit-err" id="ob-app-submit-err"></p>
+
+        <div class="ob-btn-row">
+          <button class="ob-btn-primary" onclick="obSubmitApplication(this)">Send Application ✦</button>
+          <span class="ob-skip" onclick="obPrev()">← Back</span>
+        </div>
+
+        <!-- Hidden Brevo iframe + form -->
+        <iframe name="brevo-app-hidden" style="display:none;" aria-hidden="true"></iframe>
+        <form id="brevo-app-form" method="POST" action="https://cd7a2b82.sibforms.com/serve/MUIFAGgwe4qV-IxqspEyp3ljcxbiCrqT6KWUEv4FaZNKGdHzsP0jypvUup0xJk_qs857A1tlNt_cBCWcUzlZLoMxOGeu3UQp2ALppEqTSLSa7DWfc1FM_CFHy_-mfh2FZZUPwpA2NoCzbUX9v63NFB6Mf4-28K7Yp1rh_UgJuzlLJLtaIu5GtvKF20DuQ_0thprANV1qmNbphP4uBw==" target="brevo-app-hidden" style="display:none;">
+          <input type="text"   name="FIRSTNAME"          id="brevo-app-fn" />
+          <input type="text"   name="LASTNAME"           id="brevo-app-ln" />
+          <input type="text"   name="EMAIL"              id="brevo-app-em" />
+          <input type="hidden" name="SMS__COUNTRY_CODE"  value="+1" />
+          <input type="text"   name="SMS"                id="brevo-app-sms" />
+          <textarea            name="JOB_TITLE"          id="brevo-app-jt"></textarea>
+          <input type="checkbox" name="OPT_IN" value="1" checked />
+          <input type="text"   name="email_address_check" value="" />
+          <input type="hidden" name="locale"             value="en" />
+        </form>
+      </div>
+
+      <!-- Step 8: Application Received -->
+      <div class="ob-step" id="ob-step-8">
+        <div class="ob-completion">
+          <div class="ob-rings">
+            <div class="ob-ring"></div><div class="ob-ring"></div><div class="ob-ring"></div>
+            <div class="ob-ring-center">✦</div>
+          </div>
+          <div class="ob-confetti" id="obConfetti2"></div>
+          <p class="ob-eyebrow" style="text-align:center;">Application received.</p>
+          <div class="ob-title" style="font-size:clamp(36px,6vw,64px);text-align:center;">We'll be<br><span class="g">in touch.</span></div>
+          <p class="ob-desc" style="max-width:340px;margin:0 auto 28px;text-align:center;">Every application is reviewed personally. Expect a reply within a few days — no automated responses.</p>
+          <div class="ob-btn-row" style="justify-content:center;">
+            <button class="ob-btn-primary" onclick="closeOnboarding()">Back to beVivid →</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://www.google.com/recaptcha/enterprise.js?render=6LfyVJUsAAAAAFZ7eNAF8r2b58PUyZ_2hW56gKHh" async defer></script>
 <script>
+/* MARQUEE */
+const marqItems = [
+  { text: 'Be Recognized', color: '#ff2d55' }, { text: 'Win Trophies', color: '#ff9500' },
+  { text: 'Earn Certifications', color: '#34aadc' }, { text: 'Get Scholarships', color: '#a259ff' },
+  { text: 'Share Your Work', color: '#ff2d55' }, { text: 'Live Vivid', color: '#ff9500' },
+  { text: 'Be Unforgettable', color: '#34aadc' }, { text: 'Join the Movement', color: '#00e5b0' },
+  { text: 'beVivid+', color: '#a259ff' }, { text: 'Your Legacy', color: '#00e5b0' },
+];
+const track = document.getElementById('marqueeTrack');
+[...marqItems, ...marqItems, ...marqItems].forEach(item => {
+  const el = document.createElement('div');
+  el.className = 'marquee-item';
+  el.innerHTML = `<span class="marquee-dot" style="background:${item.color}"></span>${item.text}`;
+  track.appendChild(el);
+});
+
+/* SCROLL REVEAL */
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in-view'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+/* ACCOUNT TABS */
+const applyNotes = {
+  partner: "Partner accounts are for people looking to collaborate or co-build with beVivid. Every application is reviewed personally.",
+  business: "Business accounts are for brands or teams wanting a presence on beVivid. We're selective on purpose — reviewed case-by-case.",
+};
+function setAcct(type, btn) {
+  document.querySelectorAll('.acct-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.tab-panel, .apply-panel').forEach(p => p.classList.remove('active'));
+  const note = document.getElementById('applyNote');
+  if (type === 'partner' || type === 'business') {
+    document.getElementById('panel-' + type).classList.add('active');
+    note.textContent = applyNotes[type]; note.classList.add('visible');
+  } else {
+    document.getElementById('panel-' + type).classList.add('active');
+    note.textContent = ''; note.classList.remove('visible');
+  }
+}
+
+/* APPLY FORMS */
+const RECAPTCHA_SITE_KEY = '6LfyVJUsAAAAAFZ7eNAF8r2b58PUyZ_2hW56gKHh';
 const FIREBASE_DB_URL = 'https://bevivid-73a69-default-rtdb.firebaseio.com';
 const AUTH_COOKIE_NAME = 'bevivid_session';
-const COMMUNITY_ROOT = 'communityData';
-const params = new URLSearchParams(window.location.search);
-const requestedHandle = params.get('handle');
-let activeUser = null;
-let viewingHandle = null;
-let viewingUser = null;
-let viewingPosts = [];
-let followData = { followers: {}, following: {} };
-let profileSearchTimer = null;
-const audioState = { el: null, ctx: null, analyser: null, data: null, raf: null, playing: false, sourceLoaded: false, pendingSource: '' };
-let autoPlayAttempted = false;
-let pageVisualizer = null;
+let currentUser = null;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const PASSWORD_PATTERN = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
 
-function getCookie(name) { const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)')); return match ? decodeURIComponent(match[1]) : ''; }
-function decodeLayout(value) { return JSON.parse(decodeURIComponent(escape(atob(value)))); }
-function escapeHtml(value) { return String(value || '').replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch])); }
-function escapeAttr(value) { return escapeHtml(value).replace(/'/g, '&#39;'); }
-function renderRichText(value) {
-  const escaped = escapeHtml(value || '').replace(/\n/g, '<br>');
-  return escaped.replace(/(^|[\s(>])@([a-z0-9_]{3,30})/gi, (match, prefix, handle) => `${prefix}<a class="mention-link" href="/profile?handle=${encodeURIComponent(handle.toLowerCase())}">@${escapeHtml(handle.toLowerCase())}</a>`);
+function setInlineError(id, message) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = message || '';
+  el.classList.toggle('show', Boolean(message));
 }
-function switchProfileTab(tab) {
-  document.querySelectorAll('.profile-tab-btn').forEach(button => button.classList.toggle('active', button.id === `profileTabBtn-${tab}`));
-  document.querySelectorAll('.profile-tab-panel').forEach(panel => panel.classList.toggle('active', panel.id === `profileTab-${tab}`));
-}
-function getSessionUser() { const raw = getCookie(AUTH_COOKIE_NAME); if (!raw) return null; try { return JSON.parse(raw); } catch (_) { return null; } }
-function todayKey() { return new Date().toISOString().slice(0, 10); }
-function isBeVividPlus(user) { return Boolean(user && (user['bevivid+'] === true || user.bevividPlus === true)); }
-function getAccountType(user) { return String((user && user.accountType) || '').trim().toLowerCase(); }
-function isCreatorAccount(user) { return getAccountType(user) === 'creator'; }
-function formatAccountTypeLabel(type) {
-  const value = String(type || '').trim().toLowerCase();
-  if (!value) return 'Member';
-  return value.charAt(0).toUpperCase() + value.slice(1);
-}
-function syncCreatorDashboardLink() {
-  const link = document.getElementById('creatorDashboardLink');
-  if (!link) return;
-  link.hidden = !isCreatorAccount(activeUser);
-}
-function sanitizePublicLayout(layout, premium) {
-  const next = Object.assign({}, layout || {});
-  next.canvasWidth = 1200;
-  next.canvasHeight = 900;
-  next.pageMode = 'framed';
-  next.pageBackground = next.pageBackground || '#050505';
-  next.pageAccent = next.pageAccent || '#a259ff';
-  next.pagePattern = next.pagePattern || 'none';
-  next.visualizerVariant = premium
-    ? (next.visualizerVariant || 'halo')
-    : ((next.visualizerVariant === 'bars' || next.visualizerVariant === 'wave') ? next.visualizerVariant : 'bars');
-  return next;
-}
-function getProfileAudioPath(handle) { return `${FIREBASE_DB_URL}/profileAudio/${encodeURIComponent(handle)}.json`; }
-function getPath(path) { return `${FIREBASE_DB_URL}/${path}.json`; }
-function getCommunityPath(path) { return `${COMMUNITY_ROOT}/${path}`; }
-function setRecognitionStatus(message) { document.getElementById('recognitionStatus').textContent = message || ''; }
-function closeSearchResults() { document.getElementById('searchResults').classList.remove('open'); }
-function getLoadingMarkup(count = 3) {
-  return `<div class="loading-stack">${new Array(count).fill(0).map(() => `<div class="loading-card"><div class="loading-bar mid"></div><div class="loading-bar short"></div></div>`).join('')}</div>`;
-}
-function setProfileLoadingState() {
-  document.getElementById('stage').innerHTML = getLoadingMarkup(2);
-  document.getElementById('showroomGrid').innerHTML = getLoadingMarkup(3);
-  document.getElementById('profilePosts').innerHTML = getLoadingMarkup(2);
-}
-function resetStagePresentation() {
-  const stageWrap = document.querySelector('.stage-wrap');
-  const stage = document.getElementById('stage');
-  stageWrap.style.border = '1px solid rgba(245,240,235,.08)';
-  stageWrap.style.background = 'rgba(245,240,235,.02)';
-  stageWrap.style.padding = '20px';
-  stage.style.width = '1200px';
-  stage.style.minHeight = '900px';
-  stage.style.height = '900px';
-  stage.style.borderRadius = '24px';
-  stage.style.border = '1px solid rgba(245,240,235,.08)';
-  stage.style.boxShadow = '0 30px 90px rgba(0,0,0,.35)';
-  stage.style.background = '#111111';
-}
-function showProfileState(config) {
-  const accountTypeBadge = document.getElementById('accountTypeBadge');
-  const plusBadge = document.getElementById('plusBadge');
-  const followersBtn = document.getElementById('followersBtn');
-  const followingBtn = document.getElementById('followingBtn');
-  const recognizeBtn = document.getElementById('recognizeBtn');
 
-  viewingUser = null;
-  viewingPosts = [];
-  followData = { followers: {}, following: {} };
-  resetStagePresentation();
-  applyPageBackdrop({});
-  syncPageVisualizer(false);
+function initRecaptchaGuards() {
+  document.querySelectorAll('[data-recaptcha-form]').forEach(container => {
+    container.style.minHeight = '0';
+    container.innerHTML = '<div class="apply-fine">Protected by reCAPTCHA.</div>';
+  });
+}
 
-  accountTypeBadge.hidden = true;
-  plusBadge.hidden = true;
-  document.getElementById('profileTitle').textContent = config.title;
-  document.getElementById('profileSub').textContent = config.sub;
-  document.getElementById('stage').innerHTML = `<div class="empty">${config.stage}</div>`;
-  document.getElementById('showroomGrid').innerHTML = `<div class="showroom-empty">${config.showroom}</div>`;
-  document.getElementById('profilePosts').innerHTML = `<div class="empty">${config.posts}</div>`;
-  document.getElementById('sidebarCurrentHandle').textContent = config.sidebarHandle;
-  document.getElementById('sidebarViewMeta').textContent = config.sidebarMeta;
-  document.getElementById('recognitionPoints').textContent = '0';
-  document.getElementById('postCount').textContent = '0';
-  document.getElementById('totalLikeCount').textContent = '0';
-  followersBtn.textContent = 'Followers 0';
-  followingBtn.textContent = 'Following 0';
-  followersBtn.disabled = true;
-  followingBtn.disabled = true;
-  recognizeBtn.disabled = true;
-  recognizeBtn.textContent = config.recognizeLabel || 'Unavailable';
-  setRecognitionStatus(config.status);
-}
-function getAwardAccent(type) {
-  const key = String(type || '').toLowerCase();
-  if (key.includes('trophy')) return 'rgba(255,149,0,.28)';
-  if (key.includes('cert')) return 'rgba(52,170,220,.26)';
-  if (key.includes('recogn')) return 'rgba(0,229,176,.24)';
-  return 'rgba(162,89,255,.24)';
-}
-function getAwardIcon(type) {
-  const key = String(type || '').toLowerCase();
-  if (key.includes('trophy')) return 'T';
-  if (key.includes('cert')) return 'C';
-  if (key.includes('recogn')) return 'R';
-  return 'A';
-}
-function unwrapAwardCollection(value) {
-  if (!value) return [];
-  if (Array.isArray(value)) return value;
-  if (typeof value === 'object') return Object.values(value);
-  return [value];
-}
-function normalizeAwardItem(item, fallbackType = 'Award') {
-  if (!item) return null;
-  if (typeof item === 'string') {
-    return { title: item, type: fallbackType, description: '', icon: getAwardIcon(fallbackType), accent: getAwardAccent(fallbackType) };
+async function executeRecaptchaAction(action) {
+  if (!window.grecaptcha || !window.grecaptcha.enterprise || !window.grecaptcha.enterprise.execute) {
+    throw new Error('reCAPTCHA is still loading. Try again in a second.');
   }
-  const title = item.title || item.name || item.label || item.award || item.id;
-  if (!title) return null;
-  const type = item.type || item.category || fallbackType;
+
+  await new Promise(resolve => window.grecaptcha.enterprise.ready(resolve));
+  return window.grecaptcha.enterprise.execute(RECAPTCHA_SITE_KEY, { action });
+}
+
+function getApplicationCaptchaAction(type) {
+  const normalized = String(type || 'application').replace(/[^a-z0-9_]/gi, '_').toLowerCase();
+  return `${normalized}_application`;
+}
+
+function splitNameParts(fullName) {
+  const parts = (fullName || '').trim().split(/\s+/).filter(Boolean);
   return {
-    title,
-    type,
-    description: item.description || item.copy || item.reason || item.subtitle || '',
-    icon: item.icon || item.emoji || getAwardIcon(type),
-    accent: item.accent || getAwardAccent(type)
+    firstName: parts[0] || '',
+    lastName: parts.slice(1).join(' ')
   };
 }
-function getShowroomItems(user) {
-  const buckets = [
-    ['Award', user && user.awards],
-    ['Trophy', user && user.trophies],
-    ['Certification', user && user.certifications],
-    ['Showcase', user && (user.showroom || user.showcase || user.badges)]
-  ];
-  const seen = new Set();
-  const items = [];
-  buckets.forEach(([type, source]) => {
-    unwrapAwardCollection(source).forEach(entry => {
-      const item = normalizeAwardItem(entry, type);
-      if (!item) return;
-      const key = `${String(item.type).toLowerCase()}::${String(item.title).toLowerCase()}`;
-      if (seen.has(key)) return;
-      seen.add(key);
-      items.push(item);
-    });
-  });
-  if (!items.length && Number(user && user.recognitionPoints || 0) > 0) {
-    items.push({
-      title: 'Community Recognition',
-      type: 'Recognition',
-      description: `${Number(user.recognitionPoints || 0)} lifetime recognition points from other users.`,
-      icon: 'R',
-      accent: getAwardAccent('recognition')
-    });
-  }
-  return items.slice(0, 12);
+
+function setCookie(name, value, days) {
+  const expires = new Date(Date.now() + days * 86400000).toUTCString();
+  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
 }
-function renderShowroom(user) {
-  const box = document.getElementById('showroomGrid');
-  const items = getShowroomItems(user);
-  if (!items.length) {
-    box.innerHTML = '<div class="showroom-empty">This profile has not added any awards to its showroom yet.</div>';
-    return;
-  }
-  box.innerHTML = items.map(item => `
-    <article class="showroom-card" style="--award-accent:${escapeAttr(item.accent || getAwardAccent(item.type))};">
-      <div class="showroom-top">
-        <div class="showroom-icon">${escapeHtml(item.icon || getAwardIcon(item.type))}</div>
-        <div class="showroom-type">${escapeHtml(item.type || 'Award')}</div>
-      </div>
-      <div class="showroom-title">${escapeHtml(item.title || 'Untitled Award')}</div>
-      <div class="showroom-copy">${escapeHtml(item.description || 'Displayed on this profile as part of the user showcase.')}</div>
-    </article>
-  `).join('');
+
+function getCookie(name) {
+  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : '';
 }
-async function ensureShowroomField(handle, user) {
-  const nextUser = Object.assign({ showroom: [] }, user || {});
-  const hasShowroom = user && Object.prototype.hasOwnProperty.call(user, 'showroom');
-  if (!hasShowroom && activeUser && activeUser.handle === handle) {
-    try {
-      await fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(handle)}.json`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ showroom: [] })
-      });
-    } catch (_) {}
-  }
-  return nextUser;
+
+function deleteCookie(name) {
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax`;
 }
-function applyPageBackdrop(layout) {
-  const background = (layout && layout.pageBackground) || '#050505';
-  const accent = (layout && layout.pageAccent) || '#a259ff';
-  const patternName = (layout && layout.pagePattern) || 'none';
-  const pattern = getPatternStyle(patternName, accent);
-  document.documentElement.style.background = background;
-  document.body.style.background = background;
-  document.body.style.backgroundImage = `radial-gradient(circle at 18% 12%, ${accent}22, transparent 26%), ${pattern.image === 'none' ? 'none' : pattern.image}`;
-  document.body.style.backgroundSize = `auto, ${pattern.size}`;
-  document.body.style.backgroundRepeat = `no-repeat, ${patternName === 'waves' ? 'no-repeat' : 'repeat'}`;
+
+function normalizeHandle(handle) {
+  return String(handle || '').replace(/[^a-z0-9_]/gi, '').toLowerCase();
 }
-function syncPageVisualizer(enabled, variant) {
-  if (!pageVisualizer) {
-    pageVisualizer = document.createElement('canvas');
-    pageVisualizer.className = 'full-page-viz';
-    document.body.appendChild(pageVisualizer);
-  }
-  pageVisualizer.style.display = enabled ? 'block' : 'none';
-  if (enabled) drawVisualizer(pageVisualizer, variant || 'bars');
+
+function getPublicIndexPath(handle) {
+  return `${FIREBASE_DB_URL}/publicUserIndex/${encodeURIComponent(handle)}.json`;
 }
-function getProfilePreviewImage(user) {
-  if (user.profileImage) return user.profileImage;
-  if (!user.profileLayoutEncoded) return '';
-  try {
-    const layout = decodeLayout(user.profileLayoutEncoded);
-    const imageEl = (layout.elements || []).find(el => el.type === 'image' && el.url);
-    return imageEl ? imageEl.url : '';
-  } catch (_) {
-    return '';
-  }
+
+function showAccountPane(mode) {
+  document.getElementById('account-login-pane').classList.toggle('active', mode === 'login');
+  document.getElementById('account-profile-pane').classList.toggle('active', mode === 'profile');
+  document.getElementById('accountKicker').textContent = mode === 'profile' ? 'Your Profile' : 'Member Access';
+  document.getElementById('accountTitle').innerHTML = mode === 'profile' ? 'Your vivid<br>profile.' : 'Log in to<br>beVivid.';
 }
-function renderSearchResults(users) {
-  const box = document.getElementById('searchResults');
-  if (!users.length) {
-    box.innerHTML = '<div class="search-empty">No matching profiles yet.</div>';
-    box.classList.add('open');
-    return;
-  }
-  box.innerHTML = users.map(user => {
-    const avatar = getProfilePreviewImage(user);
-    const avatarMarkup = avatar
-      ? `<div class="search-avatar"><img src="${escapeAttr(avatar)}" alt=""></div>`
-      : `<div class="search-avatar">${escapeHtml((user.displayName || user.handle || '?').charAt(0).toUpperCase())}</div>`;
-    return `<button class="search-result" type="button" data-handle="${escapeAttr(user.handle || '')}">${avatarMarkup}<div class="search-meta"><div class="search-name">${escapeHtml(user.displayName || 'Unknown User')}</div><div class="search-handle">@${escapeHtml(user.handle || '')}</div></div></button>`;
-  }).join('');
-  box.classList.add('open');
-  box.querySelectorAll('.search-result').forEach(button => {
-    button.addEventListener('click', () => {
-      const handle = button.dataset.handle;
-      if (!handle) return;
-      window.location.href = `/profile?handle=${encodeURIComponent(handle)}`;
-    });
-  });
-}
-function normalizeSearchQuery(value) {
-  return String(value || '').trim().replace(/^@+/, '').replace(/[^a-z0-9_ ]/gi, '').toLowerCase();
-}
-async function getSearchIndex() {
-  const cached = sessionStorage.getItem('bevivid_profile_search_index');
-  if (cached) {
-    try {
-      return JSON.parse(cached);
-    } catch (_) {
-      sessionStorage.removeItem('bevivid_profile_search_index');
+
+function setCurrentUser(user, persist = true) {
+  currentUser = user;
+
+  const loginBtn = document.getElementById('navLoginBtn');
+  const profileBtn = document.getElementById('navProfileBtn');
+  const joinBtn = document.getElementById('navJoinBtn');
+
+  if (user) {
+    if (persist) setCookie(AUTH_COOKIE_NAME, JSON.stringify(user), 30);
+    loginBtn.style.display = 'none';
+    profileBtn.classList.add('visible');
+    if (joinBtn) joinBtn.style.display = 'none';
+    document.getElementById('navProfileAvatar').textContent = (user.displayName || '?').charAt(0).toUpperCase();
+    document.getElementById('navProfileName').textContent = user.displayName || 'Member';
+    document.getElementById('navProfileHandle').textContent = '@' + (user.handle || 'member');
+    document.getElementById('profileAvatar').textContent = (user.displayName || '?').charAt(0).toUpperCase();
+    document.getElementById('profileName').textContent = user.displayName || 'Member';
+    document.getElementById('profileHandle').textContent = '@' + (user.handle || 'member');
+    document.getElementById('profileEmail').textContent = user.email || 'No email saved';
+    document.getElementById('profileType').textContent = user.accountType || 'Member';
+    document.getElementById('profileBio').textContent = user.bio || 'No bio yet.';
+    document.getElementById('profileInterests').textContent = user.interests || 'Still choosing your vibe.';
+  } else {
+    deleteCookie(AUTH_COOKIE_NAME);
+    loginBtn.style.display = 'inline-flex';
+    profileBtn.classList.remove('visible');
+    if (joinBtn) {
+      joinBtn.style.display = 'inline-flex';
+      joinBtn.textContent = 'Join Free';
+      joinBtn.onclick = () => openOnboarding();
     }
   }
-  const response = await fetch(`${FIREBASE_DB_URL}/publicUserIndex.json`);
-  if (!response.ok) throw new Error('Could not read public search index.');
-  const data = await response.json();
-  sessionStorage.setItem('bevivid_profile_search_index', JSON.stringify(data || {}));
-  return data || {};
 }
-function getSearchRank(user, query) {
-  const handle = normalizeSearchQuery(user.handle);
-  const displayName = normalizeSearchQuery(user.displayName);
-  const words = displayName.split(/\s+/).filter(Boolean);
-  if (handle.startsWith(query)) return 0;
-  if (words.some(word => word.startsWith(query))) return 1;
-  if (displayName.startsWith(query)) return 2;
-  if (handle.includes(query)) return 3;
-  if (displayName.includes(query)) return 4;
-  return 9;
+
+function hydrateSessionFromCookie() {
+  const raw = getCookie(AUTH_COOKIE_NAME);
+  if (!raw) return;
+  try {
+    setCurrentUser(JSON.parse(raw), false);
+  } catch (_) {
+    deleteCookie(AUTH_COOKIE_NAME);
+  }
 }
-async function queryUsersByPrefix(query) {
+
+function openAccountModal(mode = 'login') {
+  const overlay = document.getElementById('account-overlay');
+  showAccountPane(mode === 'profile' && currentUser ? 'profile' : 'login');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeAccountModal() {
+  document.getElementById('account-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function logoutUser() {
+  setCurrentUser(null, false);
+  closeAccountModal();
+}
+
+function openProfileStudio() {
+  if (!currentUser || !currentUser.handle) return;
+  window.location.href = `/profiledata?handle=${encodeURIComponent(currentUser.handle)}`;
+}
+
+function viewPublicProfile() {
+  if (!currentUser || !currentUser.handle) return;
+  window.location.href = `/profile?handle=${encodeURIComponent(currentUser.handle)}`;
+}
+
+async function fetchUserByHandle(handle) {
+  const response = await fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(handle)}.json`);
+  if (!response.ok) throw new Error('Could not reach your profile right now.');
+  return response.json();
+}
+
+async function ensureUserShowroom(handle, user) {
+  if (!user || Object.prototype.hasOwnProperty.call(user, 'showroom')) return user;
+  const nextUser = Object.assign({ showroom: [] }, user);
+  try {
+    await fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(handle)}.json`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ showroom: [] })
+    });
+  } catch (_) {}
+  return nextUser;
+}
+
+async function syncCurrentUserRecord() {
+  if (!currentUser || !currentUser.handle) return;
+  try {
+    let user = await fetchUserByHandle(currentUser.handle);
+    if (!user || user.banned) {
+      setCurrentUser(null, false);
+      return;
+    }
+    user = await ensureUserShowroom(currentUser.handle, user);
+    setCurrentUser({
+      displayName: user.displayName || user.handle || currentUser.handle,
+      handle: user.handle || currentUser.handle,
+      email: user.email || '',
+      accountType: user.accountType || 'Member',
+      bio: user.bio || '',
+      interests: user.interests || ''
+    });
+  } catch (_) {}
+}
+
+async function hashPassword(password) {
+  const data = new TextEncoder().encode(password);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(digest)).map(byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
+async function postJson(url, payload) {
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+
   let data = null;
   try {
-    const response = await fetch(`${FIREBASE_DB_URL}/publicUserIndex.json?orderBy=%22%24key%22&limitToFirst=200`);
-    if (response.ok) data = await response.json();
+    data = await response.json();
   } catch (_) {
     data = null;
   }
-  if (!data) data = await getSearchIndex();
-  return Object.values(data || {})
-    .filter(user => user && (user.handle || user.displayName))
-    .map(user => ({
-      ...user,
-      _rank: getSearchRank(user, query)
-    }))
-    .filter(user => user._rank < 9)
-    .sort((a, b) => {
-      if (a._rank !== b._rank) return a._rank - b._rank;
-      return normalizeSearchQuery(a.handle).localeCompare(normalizeSearchQuery(b.handle));
-    })
-    .slice(0, 7);
-}
-async function handleSearchInput() {
-  const query = normalizeSearchQuery(document.getElementById('searchHandle').value);
-  if (!query) {
-    closeSearchResults();
-    return;
+
+  if (!response.ok) {
+    throw new Error(data && data.error ? data.error : 'Something went wrong. Please try again.');
   }
-  if (profileSearchTimer) clearTimeout(profileSearchTimer);
-  profileSearchTimer = setTimeout(async () => {
-    try {
-      const matches = await queryUsersByPrefix(query);
-      renderSearchResults(matches);
-    } catch (_) {
-      document.getElementById('searchResults').innerHTML = '<div class="search-empty">Search could not read the public profile index right now.</div>';
-      document.getElementById('searchResults').classList.add('open');
-    }
-  }, 120);
+
+  return data;
 }
-function withAlpha(color, alpha) {
-  const hex = /^#[0-9a-fA-F]{6}$/.test(String(color || '').trim()) ? color : '#161616';
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
-function getPatternStyle(pattern, accent) {
-  if (pattern === 'dots') return { image: `radial-gradient(${accent}88 1.6px, transparent 1.6px)`, size: '22px 22px' };
-  if (pattern === 'stripes') return { image: `repeating-linear-gradient(135deg, ${accent}55 0 10px, transparent 10px 24px)`, size: 'auto' };
-  if (pattern === 'waves') return { image: `radial-gradient(circle at 0 100%, ${accent}66, transparent 34%), radial-gradient(circle at 100% 0, ${accent}44, transparent 28%), radial-gradient(circle at 50% 50%, ${accent}22, transparent 38%)`, size: 'cover' };
-  if (pattern === 'none') return { image: 'none', size: 'auto' };
-  return { image: `linear-gradient(${accent}55 1px, transparent 1px), linear-gradient(90deg, ${accent}55 1px, transparent 1px)`, size: '40px 40px' };
-}
-async function fetchJson(path) {
-  const response = await fetch(getPath(path));
-  if (!response.ok) throw new Error(`Could not load ${path}.`);
+
+async function saveSignupToFirebase(payload) {
+  const userRecord = {
+    displayName: payload.displayName,
+    handle: payload.handle,
+    email: payload.email,
+    passwordHash: payload.passwordHash,
+    accountType: payload.accountType || '',
+    bio: payload.bio || '',
+    interests: (payload.interests || []).join(', '),
+    acceptedLegal: Boolean(payload.acceptedLegal),
+    acceptedTermsAt: payload.acceptedTermsAt || null,
+    acceptedPrivacyAt: payload.acceptedPrivacyAt || null,
+    legalAcceptedVersion: payload.legalAcceptedVersion || '',
+    showroom: [],
+    createdAt: Date.now()
+  };
+
+  const response = await fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(payload.handle)}.json`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(userRecord)
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || 'Firebase could not save this signup.');
+  }
+
+  const publicIndexResponse = await fetch(getPublicIndexPath(payload.handle), {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      handle: payload.handle,
+      displayName: payload.displayName,
+      profileImage: payload.profileImage || '',
+      updatedAt: Date.now()
+    })
+  });
+
+  if (!publicIndexResponse.ok) {
+    const errorText = await publicIndexResponse.text();
+    throw new Error(errorText || 'The public profile index could not be updated.');
+  }
+
   return response.json();
 }
-async function loadCommunityPosts(handle) {
-  let data = await fetchJson(getCommunityPath('posts')).catch(() => null);
-  if (!data) data = await fetchJson('communityPosts').catch(() => null);
-  return Object.values(data || {}).filter(post => post && post.authorHandle === handle).map(post => Object.assign({ stats: { likeCount: Number(post.likeCount || 0), commentCount: Number(post.commentCount || 0), impressionCount: Number(post.impressionCount || 0), reachCount: Number(post.reachCount || 0) } }, post)).sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
-}
-function canSeeProfilePostAnalytics() {
-  return Boolean(activeUser && viewingUser && activeUser.handle === viewingUser.handle);
-}
-function getProfilePostEngagement(post) {
-  const likes = Number(post.stats?.likeCount || 0);
-  const comments = Number(post.stats?.commentCount || 0);
-  const reach = Math.max(1, Number(post.stats?.reachCount || 0));
-  return Math.round(((likes + comments) / reach) * 100);
-}
-function toggleProfilePostAnalytics(id) {
-  const box = document.getElementById(`profile-post-analytics-${id}`);
-  if (box) box.style.display = box.style.display === 'none' ? 'flex' : 'none';
-}
-function formatTimeAgo(value) {
-  const diff = Math.max(1, Date.now() - Number(value || 0));
-  const mins = Math.floor(diff / 60000);
-  if (mins < 60) return `${mins}m ago`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
-  return new Date(Number(value || 0)).toLocaleDateString();
-}
-function renderProfilePosts(posts) {
-  const box = document.getElementById('profilePosts');
-  if (!posts.length) {
-    box.innerHTML = '<div class="empty">No community posts yet from this profile.</div>';
+
+async function loginUser(button) {
+  const handle = normalizeHandle(document.getElementById('login-handle').value.trim());
+  const password = document.getElementById('login-password').value;
+  setInlineError('login-error', '');
+
+  if (!handle || !password) {
+    setInlineError('login-error', 'Enter the handle and password you used when you joined.');
     return;
   }
-  box.innerHTML = posts.slice(0, 8).map(post => `
-    <article class="mini-post">
-      <div class="meta-copy">${escapeHtml(formatTimeAgo(post.createdAt))}</div>
-      <div class="mini-post-text">${renderRichText(post.text || '')}</div>
-      ${post.imageUrl ? `<img class="mini-post-img" src="${escapeAttr(post.imageUrl)}" alt="">` : ''}
-      <div class="mini-post-meta">
-        <span class="mini-chip">${escapeHtml(String(post.stats?.likeCount || 0))} likes</span>
-        <span class="mini-chip">${escapeHtml(String(post.stats?.commentCount || 0))} comments</span>
-        ${canSeeProfilePostAnalytics() ? `<button class="search-btn social-action" type="button" onclick="toggleProfilePostAnalytics('${escapeAttr(post.id)}')">Analytics</button>` : ''}
-      </div>
-      ${canSeeProfilePostAnalytics() ? `<div class="mini-post-meta" id="profile-post-analytics-${escapeAttr(post.id)}" style="display:none;"><span class="mini-chip">${escapeHtml(String(post.stats?.impressionCount || 0))} impressions</span><span class="mini-chip">${escapeHtml(String(post.stats?.reachCount || 0))} reach</span><span class="mini-chip">${escapeHtml(String(getProfilePostEngagement(post)))}% engagement</span></div>` : ''}
-    </article>
-  `).join('');
-}
-function renderSocialStats(posts, social) {
-  const totalLikes = posts.reduce((sum, post) => sum + Number(post.stats?.likeCount || 0), 0);
-  const followers = Object.keys((social && social.followers) || {}).length;
-  const following = Object.keys((social && social.following) || {}).length;
-  document.getElementById('postCount').textContent = String(posts.length);
-  document.getElementById('totalLikeCount').textContent = String(totalLikes);
-  document.getElementById('followersBtn').textContent = `Followers ${followers}`;
-  document.getElementById('followingBtn').textContent = `Following ${following}`;
-  document.getElementById('followersBtn').disabled = false;
-  document.getElementById('followingBtn').disabled = false;
-}
-async function openFollowModal(type) {
-  const source = Object.keys((followData && followData[type]) || {});
-  const modal = document.getElementById('followModal');
-  document.getElementById('followModalEyebrow').textContent = type === 'followers' ? 'Followers' : 'Following';
-  document.getElementById('followModalTitle').textContent = type === 'followers' ? 'People following this profile.' : 'People this profile follows.';
-  document.getElementById('followModalSub').textContent = source.length ? 'Open any profile from here.' : 'No one is in this list yet.';
-  const list = document.getElementById('followModalList');
-  if (!source.length) {
-    list.innerHTML = '<div class="empty">No profiles to show yet.</div>';
-    modal.classList.add('open');
-    return;
-  }
-  const users = await Promise.all(source.map(async handle => {
-    const user = await fetchJson(`publicUserIndex/${handle}`).catch(() => null);
-    return user || { handle, displayName: handle, profileImage: '' };
-  }));
-  list.innerHTML = users.map(user => `
-    <div class="follow-person">
-      <div class="follow-person-main">
-        ${user.profileImage ? `<div class="search-avatar"><img src="${escapeAttr(user.profileImage)}" alt=""></div>` : `<div class="search-avatar">${escapeHtml((user.displayName || user.handle || '?').charAt(0).toUpperCase())}</div>`}
-        <div>
-          <div class="author-name">${escapeHtml(user.displayName || user.handle || 'Member')}</div>
-          <div class="author-handle">@${escapeHtml(user.handle || '')}</div>
-        </div>
-      </div>
-      <a class="studio" href="/profile?handle=${encodeURIComponent(user.handle || '')}">View Profile</a>
-    </div>
-  `).join('');
-  modal.classList.add('open');
-}
-function closeFollowModal() {
-  document.getElementById('followModal').classList.remove('open');
-}
-function updateRecognitionUi(user) {
-  document.getElementById('recognitionPoints').textContent = String(user.recognitionPoints || 0);
-  const btn = document.getElementById('recognizeBtn');
-  const viewer = activeUser;
-  const log = (user.recognitionLog && user.recognitionLog[todayKey()]) || {};
-  if (!viewer || !viewer.handle) {
-    btn.disabled = true;
-    btn.textContent = 'Log In To Recognize';
-    setRecognitionStatus('Sign in first to give one recognition point per day.');
-    return;
-  }
-  if (viewer.handle === (user.handle || viewingHandle)) {
-    btn.disabled = true;
-    btn.textContent = 'Your Profile';
-    setRecognitionStatus('You cannot give recognition to yourself.');
-    return;
-  }
-  if (log[viewer.handle]) {
-    btn.disabled = true;
-    btn.textContent = 'Already Given Today';
-    setRecognitionStatus('You already gave this profile a recognition point today.');
-    return;
-  }
-  btn.disabled = false;
-  btn.textContent = 'Grant Recognition';
-  setRecognitionStatus('You can grant this profile one lifetime recognition point today.');
-}
-function getEmbedUrl(type, url) {
-  const raw = String(url || '').trim();
-  if (!raw) return '';
-  if (type === 'spotify' || type === 'song') return raw;
-  if (type === 'soundcloud' && raw.includes('soundcloud.com') && !raw.includes('w.soundcloud.com')) return `https://w.soundcloud.com/player/?url=${encodeURIComponent(raw)}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=false&show_user=true&show_reposts=false&visual=true`;
-  return raw;
-}
-function getEmbedMarkup(url, type) {
-  const src = getEmbedUrl(type, url);
-  if (!src) return '';
-  if (type === 'spotify' || type === 'song') {
-    return `<div class="spotify-card"><small>Spotify</small><strong>Open on Spotify</strong><span>Spotify embeds can return 429s, so this profile uses a direct play link instead.</span><a href="${escapeAttr(src)}" target="_blank" rel="noreferrer">Play</a></div>`;
-  }
-  return `<iframe src="${escapeAttr(src)}" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
-}
 
-function drawVisualizer(canvas, styleVariant = 'bars') {
-  const ctx = canvas.getContext('2d');
-  const dpr = window.devicePixelRatio || 1;
-  const width = canvas.clientWidth;
-  const height = canvas.clientHeight;
-  canvas.width = width * dpr;
-  canvas.height = height * dpr;
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const bars = 54;
-  const gap = width / bars;
-  const accent = (styleVariant === 'halo' || styleVariant === 'orbit')
-    ? ((viewingUser && (viewingUser.pageAccent || viewingUser.profileAccent)) || '#a259ff')
-    : '#ff2d55';
-
-  function frame() {
-    ctx.clearRect(0, 0, width, height);
-    let values = new Array(bars).fill(0).map((_, i) => 0.25 + Math.sin((Date.now() / 420) + i * 0.35) * 0.12);
-    if (audioState.analyser && audioState.data) {
-      audioState.analyser.getByteFrequencyData(audioState.data);
-      values = values.map((_, i) => (audioState.data[Math.min(audioState.data.length - 1, i * 2)] || 0) / 255);
-    }
-    if (styleVariant === 'halo' || styleVariant === 'orbit') {
-      const centerX = width / 2;
-      const centerY = height / 2;
-      const ring = Math.min(width, height) * (styleVariant === 'orbit' ? 0.16 : 0.2);
-      ctx.save();
-      ctx.translate(centerX, centerY);
-      values.forEach((value, i) => {
-        const angle = (Math.PI * 2 * i) / bars;
-        const motion = 0.18 + value * 0.26;
-        const outer = ring + motion * Math.min(width, height) * (styleVariant === 'orbit' ? 0.12 : 0.18);
-        const inner = ring * (styleVariant === 'orbit' ? 0.28 : 0.58);
-        ctx.strokeStyle = `${accent}${i % 2 ? '88' : 'cc'}`;
-        ctx.lineWidth = Math.max(2.4, Math.min(8, 2.4 + value * 8));
-        ctx.beginPath();
-        ctx.moveTo(Math.cos(angle) * inner, Math.sin(angle) * inner);
-        ctx.lineTo(Math.cos(angle) * outer, Math.sin(angle) * outer);
-        ctx.stroke();
-      });
-      const orb = ctx.createRadialGradient(0, 0, ring * 0.08, 0, 0, ring * (styleVariant === 'orbit' ? 1.6 : 1.1));
-      orb.addColorStop(0, `${accent}cc`);
-      orb.addColorStop(.45, `${accent}2a`);
-      orb.addColorStop(1, `${accent}00`);
-      ctx.fillStyle = orb;
-      ctx.beginPath();
-      ctx.arc(0, 0, ring * 1.05, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    } else if (styleVariant === 'wave') {
-      ctx.beginPath();
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = '#ff2d55cc';
-      values.forEach((value, i) => {
-        const x = i * gap;
-        const y = height * 0.55 - (value * height * 0.28);
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      });
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = '#34aadc99';
-      values.forEach((value, i) => {
-        const x = i * gap;
-        const y = height * 0.7 - (value * height * 0.18);
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      });
-      ctx.stroke();
-    } else {
-      const gradient = ctx.createLinearGradient(0, height, width, 0);
-      gradient.addColorStop(0, '#ff2d5500');
-      gradient.addColorStop(0.4, '#ff2d5555');
-      gradient.addColorStop(1, '#34aadc20');
-      ctx.fillStyle = gradient;
-      values.forEach((value, i) => {
-        const barHeight = Math.max(20, value * (height * 0.65));
-        const x = i * gap;
-        const y = height - barHeight;
-        ctx.fillRect(x + 3, y, Math.max(6, gap - 6), barHeight);
-      });
-    }
-
-    audioState.raf = requestAnimationFrame(frame);
+  if (button) {
+    button.disabled = true;
+    button.textContent = 'Checking...';
   }
 
-  if (audioState.raf) cancelAnimationFrame(audioState.raf);
-  frame();
-}
-
-function setupAudioPlayback(src) {
-  if (!src) return;
-  if (!audioState.el) {
-    audioState.el = new Audio();
-    audioState.el.loop = true;
-    audioState.el.crossOrigin = 'anonymous';
-  }
-  audioState.el.src = src;
-  audioState.sourceLoaded = true;
-}
-
-async function tryAutoPlayProfileSong() {
-  if (autoPlayAttempted || !viewingUser) return;
-  autoPlayAttempted = true;
   try {
-    await toggleProfileAudio();
-    const note = document.querySelector('.audio-note');
-    if (note && audioState.playing) note.textContent = viewingUser.profileSongLabel || 'Auto-playing for beVivid+';
-  } catch (_) {
-    const note = document.querySelector('.audio-note');
-    if (note) note.textContent = 'Autoplay is ready. Tap play if your browser blocks it.';
-  }
-}
-
-async function toggleProfileAudio() {
-  if (!audioState.sourceLoaded) {
-    let source = audioState.pendingSource || '';
-    if (!source && viewingHandle) {
-      const response = await fetch(getProfileAudioPath(viewingHandle));
-      const record = response.ok ? await response.json() : null;
-      source = (record && record.audioData) || '';
+    let user = await fetchUserByHandle(handle);
+    if (!user) throw new Error('No profile was found for that handle.');
+    const passwordHash = await hashPassword(password);
+    if (!user.passwordHash || user.passwordHash !== passwordHash) {
+      throw new Error('That password does not match the saved profile for this handle.');
     }
-    if (!source) return;
-    setupAudioPlayback(source);
-  }
-  if (!audioState.el) return;
-  if (!audioState.ctx) {
-    audioState.ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const source = audioState.ctx.createMediaElementSource(audioState.el);
-    audioState.analyser = audioState.ctx.createAnalyser();
-    audioState.analyser.fftSize = 128;
-    audioState.data = new Uint8Array(audioState.analyser.frequencyBinCount);
-    source.connect(audioState.analyser);
-    audioState.analyser.connect(audioState.ctx.destination);
-  }
-  if (audioState.ctx.state === 'suspended') await audioState.ctx.resume();
-  if (audioState.playing) {
-    audioState.el.pause();
-    audioState.playing = false;
-  } else {
-    await audioState.el.play();
-    audioState.playing = true;
-  }
-  const btn = document.getElementById('audioToggle');
-  if (btn) btn.textContent = audioState.playing ? 'Pause Audio' : 'Play Audio';
-}
+    if (user.banned) {
+      throw new Error('This account is currently banned from using beVivid.');
+    }
+    user = await ensureUserShowroom(handle, user);
 
-function searchProfiles() {
-  const handle = document.getElementById('searchHandle').value.trim().replace(/[^a-z0-9_]/gi, '').toLowerCase();
-  if (!handle) return;
-  window.location.href = `/profile?handle=${encodeURIComponent(handle)}`;
-}
-
-async function grantRecognition() {
-  if (!activeUser || !activeUser.handle || !viewingHandle) return;
-  const btn = document.getElementById('recognizeBtn');
-  btn.disabled = true;
-  btn.textContent = 'Granting...';
-  try {
-    const response = await fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(viewingHandle)}.json`);
-    const user = await response.json();
-    if (!user) throw new Error('Profile not found.');
-    if ((user.handle || viewingHandle) === activeUser.handle) throw new Error('You cannot recognize yourself.');
-    const day = todayKey();
-    const dayLog = Object.assign({}, (user.recognitionLog && user.recognitionLog[day]) || {});
-    if (dayLog[activeUser.handle]) throw new Error('You already gave this user recognition today.');
-    dayLog[activeUser.handle] = true;
-    const patch = {
-      recognitionPoints: Number(user.recognitionPoints || 0) + 1,
-      recognitionLog: Object.assign({}, user.recognitionLog || {}, { [day]: dayLog })
-    };
-    const save = await fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(viewingHandle)}.json`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(patch)
+    setCurrentUser({
+      displayName: user.displayName || user.handle || handle,
+      handle: user.handle || handle,
+      email: user.email || '',
+      accountType: user.accountType || 'Member',
+      bio: user.bio || '',
+      interests: user.interests || ''
     });
-    if (!save.ok) throw new Error('Firebase blocked the recognition update.');
-    user.recognitionPoints = patch.recognitionPoints;
-    user.recognitionLog = patch.recognitionLog;
-    updateRecognitionUi(user);
-    setRecognitionStatus('Recognition granted. That point stays on their profile for life.');
+    document.getElementById('login-handle').value = '';
+    document.getElementById('login-password').value = '';
+    showAccountPane('profile');
   } catch (error) {
-    setRecognitionStatus(error.message || 'Could not grant recognition.');
-    btn.disabled = false;
-    btn.textContent = 'Grant Recognition';
+    setInlineError('login-error', error.message);
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.textContent = 'Log In';
+    }
   }
 }
 
-async function loadProfile() {
-  activeUser = getSessionUser();
-  syncCreatorDashboardLink();
-  setProfileLoadingState();
-  audioState.playing = false;
-  audioState.sourceLoaded = false;
-  audioState.pendingSource = '';
-  autoPlayAttempted = false;
-  if (audioState.el) {
-    audioState.el.pause();
-    audioState.el.removeAttribute('src');
+async function submitApply(type, button) {
+  const name  = document.getElementById(type + '-name').value.trim();
+  const email = document.getElementById(type + '-email').value.trim();
+  const msg   = document.getElementById(type + '-msg').value.trim();
+  if (!name || !email || !email.includes('@')) {
+    const bad = !name ? document.getElementById(type + '-name') : document.getElementById(type + '-email');
+    bad.style.outline = '1px solid #ff2d55';
+    setTimeout(() => bad.style.outline = '', 900);
+    return;
   }
-  let handle = requestedHandle;
-  if (!handle) {
-    if (activeUser) handle = activeUser.handle;
-  }
-  if (!handle) {
-    document.getElementById('profileTitle').textContent = 'No handle selected';
-    document.getElementById('profileSub').textContent = 'Open this page with ?handle=yourhandle or sign in first.';
-    document.getElementById('stage').innerHTML = '<div class="empty">No profile handle was provided.</div>';
-    document.getElementById('showroomGrid').innerHTML = '<div class="showroom-empty">Choose a profile to load its showroom.</div>';
-    document.getElementById('profilePosts').innerHTML = '<div class="empty">Choose a profile to see its community posts.</div>';
-    document.getElementById('sidebarCurrentHandle').textContent = '@none';
-    document.getElementById('sidebarViewMeta').textContent = 'Open a profile with ?handle=yourhandle or sign in first.';
+  if (!msg) {
+    const bad = document.getElementById(type + '-msg');
+    bad.style.outline = '1px solid #ff2d55';
+    setTimeout(() => bad.style.outline = '', 900);
     return;
   }
 
-  viewingHandle = handle;
-  document.getElementById('searchHandle').value = handle;
-  document.getElementById('sidebarCurrentHandle').textContent = `@${handle}`;
-  document.getElementById('sidebarViewMeta').textContent = activeUser && activeUser.handle === handle
-    ? 'You are viewing your own profile page.'
-    : 'You are viewing a public profile page.';
-  document.getElementById('studioLink').href = `/profiledata?handle=${encodeURIComponent(handle)}`;
-  const [userResponse, socialResponse, posts] = await Promise.all([
-    fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(handle)}.json`),
-    fetch(getPath(getCommunityPath(`social/${handle}`))).catch(() => null),
-    loadCommunityPosts(handle).catch(() => [])
-  ]);
-  let user = await userResponse.json();
-  if (!user) {
-    showProfileState({
-      title: 'Profile not found',
-      sub: 'That handle does not exist in Firebase yet.',
-      stage: 'This profile has not been created yet.',
-      showroom: 'There is no showroom to display for this handle yet.',
-      posts: 'No posts can be shown because this profile does not exist yet.',
-      sidebarHandle: `@${handle}`,
-      sidebarMeta: 'That profile has not been created yet.',
-      status: 'Search for another handle or create this profile first.'
+  setInlineError(type + '-error', '');
+  if (button) {
+    button.disabled = true;
+    button.textContent = 'Sending...';
+  }
+
+  const parts = splitNameParts(name);
+
+  try {
+    const captchaAction = getApplicationCaptchaAction(type);
+    const captchaToken = await executeRecaptchaAction(captchaAction);
+
+    await postJson('/api/applications', {
+      type,
+      firstName: parts.firstName,
+      lastName: parts.lastName,
+      email,
+      why: msg,
+      optIn: true,
+      captchaToken,
+      captchaAction
     });
-    return;
-  }
-  if (user.banned) {
-    showProfileState({
-      title: 'User banned',
-      sub: 'This account has been removed from public view.',
-      stage: escapeHtml(user.banReason || 'This user is banned from beVivid.'),
-      showroom: 'Banned profiles do not have a public showroom.',
-      posts: 'Banned profiles do not have public community posts.',
-      sidebarHandle: `@${handle}`,
-      sidebarMeta: 'This account is banned from beVivid.',
-      status: 'This account is banned from beVivid.',
-      recognizeLabel: 'User Banned'
+
+    document.getElementById(type + '-success').style.display = 'block';
+    ['name','email','msg'].forEach(f => {
+      const el = document.getElementById(type + '-' + f);
+      if (el) el.value = '';
     });
-    return;
-  }
-  user = await ensureShowroomField(handle, user);
-  followData = socialResponse && socialResponse.ok ? (await socialResponse.json()) || { followers: {}, following: {} } : { followers: {}, following: {} };
-  if (!Object.keys(followData.followers || {}).length && !Object.keys(followData.following || {}).length) {
-    const legacySocial = await fetchJson('userSocial/' + handle).catch(() => null);
-    if (legacySocial) followData = legacySocial;
-  }
-  viewingPosts = posts;
-  viewingUser = user;
-  const accountType = getAccountType(user);
-  const accountTypeBadge = document.getElementById('accountTypeBadge');
-  accountTypeBadge.hidden = false;
-  accountTypeBadge.dataset.type = accountType || 'member';
-  accountTypeBadge.textContent = formatAccountTypeLabel(accountType);
-  document.getElementById('sidebarViewMeta').textContent = user.displayName
-    ? `${user.displayName} is live here.`
-    : `Viewing @${handle}.`;
-
-  document.getElementById('profileTitle').textContent = user.displayName || '@' + handle;
-  document.getElementById('profileSub').textContent = '@' + (user.handle || handle) + '  |  ' + (user.bio || 'This vivid profile is still being shaped.');
-  document.getElementById('plusBadge').hidden = !isBeVividPlus(user);
-  updateRecognitionUi(user);
-  renderSocialStats(viewingPosts, followData);
-  renderShowroom(user);
-  renderProfilePosts(viewingPosts);
-
-  const stage = document.getElementById('stage');
-  if (!user.profileLayoutEncoded) {
-    stage.innerHTML = '<div class="empty">This user has not published any profile layout yet.</div>';
-    return;
-  }
-
-  const premium = isBeVividPlus(user);
-  const layout = sanitizePublicLayout(decodeLayout(user.profileLayoutEncoded), premium);
-  user._layoutVisualizerVariant = layout.visualizerVariant || (premium ? 'halo' : 'bars');
-  user.pageAccent = layout.pageAccent;
-  const canvasWidth = Math.max(900, Number(layout.canvasWidth) || 1200);
-  const canvasHeight = Math.max(700, Number(layout.canvasHeight) || 900);
-  const hasSong = Boolean(layout.songAudio || user.profileSongReady || user.profileSongAudio);
-  applyPageBackdrop(layout);
-  syncPageVisualizer(hasSong, layout.visualizerVariant || (premium ? 'halo' : 'bars'));
-  document.querySelector('.stage-wrap').style.border = '1px solid rgba(245,240,235,.08)';
-  document.querySelector('.stage-wrap').style.background = 'rgba(245,240,235,.02)';
-  document.querySelector('.stage-wrap').style.padding = '20px';
-  stage.style.width = `${canvasWidth}px`;
-  stage.style.minHeight = `${canvasHeight}px`;
-  stage.style.height = `${canvasHeight}px`;
-  stage.style.borderRadius = '24px';
-  stage.style.border = '1px solid rgba(245,240,235,.08)';
-  stage.style.boxShadow = '0 30px 90px rgba(0,0,0,.35)';
-  stage.style.background = `radial-gradient(circle at 20% 10%, ${(layout.accent || '#ff2d55')}22, transparent 26%), ${layout.background || '#111111'}`;
-  stage.innerHTML = '';
-  const pattern = document.createElement('div');
-  pattern.className = 'pattern-layer';
-  const patternStyle = getPatternStyle(layout.pattern || 'grid', layout.accent || '#ff2d55');
-  pattern.style.backgroundImage = patternStyle.image;
-  pattern.style.backgroundSize = patternStyle.size;
-  pattern.style.backgroundRepeat = (layout.pattern || 'grid') === 'waves' ? 'no-repeat' : 'repeat';
-  stage.appendChild(pattern);
-
-  const viz = document.createElement('canvas');
-  viz.className = 'visualizer-bg';
-  stage.appendChild(viz);
-  drawVisualizer(viz, layout.visualizerVariant || 'bars');
-
-  if (layout.songAudio) {
-    audioState.pendingSource = layout.songAudio;
-  } else if (user.profileSongReady) {
-    audioState.pendingSource = '';
-  } else {
-    audioState.pendingSource = user.profileSongAudio || '';
-  }
-
-  if (layout.songAudio || user.profileSongReady || user.profileSongAudio) {
-    const pod = document.createElement('div');
-    pod.className = 'audio-pod';
-    const button = document.createElement('button');
-    button.className = 'audio-toggle';
-    button.id = 'audioToggle';
-    button.textContent = audioState.playing ? 'Pause Audio' : 'Play Audio';
-    button.onclick = toggleProfileAudio;
-    pod.appendChild(button);
-
-    const note = document.createElement('div');
-    note.className = 'audio-note';
-    note.textContent = layout.songLabel || 'Profile song ready';
-    pod.appendChild(note);
-    stage.appendChild(pod);
-    setTimeout(() => { tryAutoPlayProfileSong(); }, 120);
-  }
-
-  (layout.elements || []).slice().sort((a, b) => (a.z || 0) - (b.z || 0)).forEach(el => {
-    const node = document.createElement('div');
-    node.className = 'el' + (el.animation && el.animation !== 'none' ? ` anim-${el.animation}` : '');
-    node.style.left = `${el.x}px`;
-    node.style.top = `${el.y}px`;
-    node.style.width = `${el.w}px`;
-    node.style.height = `${el.h}px`;
-    node.style.borderRadius = `${el.radius || 0}px`;
-    node.style.opacity = String(el.opacity ?? 1);
-    node.style.transform = `rotate(${el.rotation || 0}deg)`;
-    node.style.background = el.type === 'image' ? withAlpha(el.bg || '#161616', el.bgAlpha ?? 0.28) : (el.bg || 'rgba(255,255,255,0.03)');
-    node.style.zIndex = String(el.z || 1);
-
-    if (el.type === 'text' || el.type === 'shape') {
-      node.className += ' text-block';
-      node.style.color = el.color || '#f5f0eb';
-      node.style.fontFamily = el.fontFamily || 'Syne';
-      node.style.fontSize = `${el.fontSize || 20}px`;
-      node.style.textAlign = el.align || 'left';
-      node.textContent = el.text || '';
-    } else if (el.type === 'image') {
-      node.className += ' image-block';
-      node.innerHTML = el.url ? `<img src="${escapeAttr(el.url)}" alt="" style="transform: scaleX(${el.flipX ? -1 : 1}) scaleY(${el.flipY ? -1 : 1}); object-fit:${el.fitMode || 'cover'};">` : '';
-    } else {
-      node.className += ' embed-block';
-      node.innerHTML = getEmbedMarkup(el.url, el.type);
+  } catch (error) {
+    setInlineError(type + '-error', error.message);
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.textContent = 'Send Application';
     }
+  }
+}
 
-    stage.appendChild(node);
+/* BILLING TOGGLE */
+function setBilling(b) {
+  document.querySelectorAll('.plan-toggle-btn').forEach((btn,i) => {
+    btn.classList.toggle('active', (i===0&&b==='monthly')||(i===1&&b==='yearly'));
+  });
+  const amt = document.getElementById('priceAmt');
+  const per = document.getElementById('pricePer');
+  const alt = document.getElementById('priceAlt');
+  if (b === 'yearly') { amt.textContent = '$19.99'; per.textContent = '/ year'; alt.style.opacity = '1'; alt.style.height = 'auto'; }
+  else { amt.textContent = '$1.99'; per.textContent = '/ month'; alt.style.opacity = '0'; alt.style.height = '0'; }
+}
+
+/* ORB PARALLAX */
+document.addEventListener('mousemove', e => {
+  const orbs = document.querySelectorAll('.orb');
+  const cx = (e.clientX / window.innerWidth - 0.5) * 2;
+  const cy = (e.clientY / window.innerHeight - 0.5) * 2;
+  orbs.forEach((o, i) => { const d = (i+1)*13; o.style.transform = `translate(${cx*d}px,${cy*d}px)`; });
+});
+
+/* MOBILE NAV */
+document.getElementById('mobileToggle').addEventListener('click', () => {
+  const links = document.querySelector('.nav-center');
+  const open = links.style.display === 'flex';
+  links.style.display = open ? 'none' : 'flex';
+  if (!open) Object.assign(links.style, { flexDirection:'column', position:'absolute', top:'68px', left:'0', right:'0', background:'rgba(5,5,5,0.97)', padding:'24px clamp(24px,5vw,64px) 28px', borderBottom:'1px solid rgba(245,240,235,0.08)', gap:'18px' });
+});
+
+// Init student dot
+document.querySelector('.acct-btn[data-type="student"] .acct-dot').style.cssText = 'opacity:1;transform:scale(1)';
+
+/* ONBOARDING */
+const OB_STEPS = [
+  { label: 'Welcome',      sub: 'start here' },
+  { label: 'Account Type', sub: 'who you are' },
+  { label: 'Identity',     sub: 'name & handle' },
+  { label: 'Look',         sub: 'photo & bio' },
+  { label: 'Vibe',         sub: 'your interests' },
+  { label: 'Review',       sub: 'almost there' },
+  { label: 'Done',         sub: "you're vivid" },
+];
+const OB_INTERESTS = ['Design','Music','Photography','Film','Writing','Tech','Gaming','Art','Fashion','Science','Sports','Business','Education','Dance','Architecture','Coding','Animation','Poetry','Illustration','Podcasting'];
+const OB_TYPE_META = {
+  student:  { color: '#34aadc', borderColor: 'rgba(52,170,220,.3)' },
+  creator:  { color: '#ff9500', borderColor: 'rgba(255,149,0,.3)' },
+  partner:  { color: '#a259ff', borderColor: 'rgba(162,89,255,.3)' },
+  business: { color: '#00e5b0', borderColor: 'rgba(0,229,176,.3)' },
+};
+const OB_CONFETTI_COLORS = ['#ff2d55','#ff9500','#34aadc','#a259ff','#00e5b0'];
+const ob = { step: 0, accountType: null, displayName: '', handle: '', email: '', password: '', bio: '', avatarDataURL: null, interests: [], acceptedLegal: false, initialized: false };
+
+function openOnboarding() {
+  const overlay = document.getElementById('onboarding-overlay');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  if (!ob.initialized) { obBuildNav(); obBuildInterests(); obBuildConfetti(); ob.initialized = true; }
+  obUpdateNav();
+}
+function closeOnboarding() {
+  document.getElementById('onboarding-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('obBackdrop').addEventListener('click', closeOnboarding);
+document.querySelector('.ob-panel').addEventListener('click', e => e.stopPropagation());
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeOnboarding(); });
+
+function obBuildNav() {
+  const nav = document.getElementById('obStepsNav');
+  OB_STEPS.forEach((s, i) => {
+    const item = document.createElement('div');
+    item.className = 'ob-step-item'; item.id = 'ob-nav-' + i;
+    item.onclick = () => { if (item.classList.contains('clickable')) obGoTo(i); };
+    item.innerHTML = `<div class="ob-connector"></div><div class="ob-num" id="ob-num-${i}"><span>${i}</span></div><div><div class="ob-step-label">${s.label}</div><div class="ob-step-sub">${s.sub}</div></div>`;
+    nav.appendChild(item);
   });
 }
+function obBuildInterests() {
+  const grid = document.getElementById('obInterestGrid');
+  OB_INTERESTS.forEach(tag => {
+    const el = document.createElement('div');
+    el.className = 'ob-interest-tag'; el.textContent = tag;
+    el.onclick = () => { el.classList.toggle('selected'); ob.interests = el.classList.contains('selected') ? [...ob.interests, tag] : ob.interests.filter(t => t !== tag); };
+    grid.appendChild(el);
+  });
+}
+function obBuildConfetti() {
+  const bar = document.getElementById('obConfetti');
+  for (let i = 0; i < 12; i++) {
+    const d = document.createElement('div');
+    d.className = 'ob-confetti-dot';
+    d.style.cssText = `background:${OB_CONFETTI_COLORS[i%OB_CONFETTI_COLORS.length]};animation-delay:${i*0.06}s`;
+    bar.appendChild(d);
+  }
+}
+function obUpdateNav() {
+  OB_STEPS.forEach((_, i) => {
+    const item = document.getElementById('ob-nav-' + i);
+    const num  = document.getElementById('ob-num-' + i);
+    if (!item) return;
+    item.classList.remove('active','done','clickable');
+    if (i === ob.step) { item.classList.add('active'); num.innerHTML = `<span>${i}</span>`; }
+    else if (i < ob.step) { item.classList.add('done','clickable'); num.innerHTML = ''; }
+    else { num.innerHTML = `<span>${i}</span>`; }
+  });
+}
+function obGoTo(n) {
+  document.getElementById('ob-step-' + ob.step).classList.remove('active');
+  ob.step = n;
+  document.getElementById('ob-step-' + n).classList.add('active');
+  obUpdateNav();
+  document.getElementById('obRight').scrollTop = 0;
+  if (n === 5) obBuildReview();
+}
+function obNext() { if (ob.step < 6) obGoTo(ob.step + 1); }
+function obPrev() {
+  if (ob.step === 7) { obGoTo(1); return; } // back from application goes to type select
+  if (ob.step > 0) obGoTo(ob.step - 1);
+}
+function obSelectType(card) {
+  document.querySelectorAll('.ob-type-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected'); ob.accountType = card.dataset.type;
+  document.getElementById('ob-type-err').classList.remove('show');
+}
+function obValidateStep1() {
+  if (!ob.accountType) { document.getElementById('ob-type-err').classList.add('show'); return; }
+  if (ob.accountType === 'partner' || ob.accountType === 'business') {
+    // Update copy for the application step
+    const label = ob.accountType === 'partner' ? 'Partner Application' : 'Business Application';
+    const desc  = ob.accountType === 'partner'
+      ? 'We review every application personally. Tell us who you are and why you\'d make a great partner — no templates, just be real.'
+      : 'We\'re selective about brand and business presence on beVivid. Tell us what you\'re bringing to the table.';
+    document.getElementById('ob-app-eyebrow').textContent = label;
+    document.getElementById('ob-app-desc').textContent    = desc;
+    document.getElementById('ob-app-why-label').textContent = ob.accountType === 'partner'
+      ? 'Why do you want to partner with beVivid?'
+      : 'What does your business want to do on beVivid?';
+    obGoTo(7);
+  } else {
+    obNext();
+  }
+}
 
-loadProfile();
-document.getElementById('searchHandle').addEventListener('input', handleSearchInput);
-document.addEventListener('click', event => {
-  if (!event.target.closest('.search-form')) closeSearchResults();
+async function obSubmitApplication(button) {
+  const fn    = document.getElementById('ob-app-firstname').value.trim();
+  const ln    = document.getElementById('ob-app-lastname').value.trim();
+  const email = document.getElementById('ob-app-email').value.trim();
+  const why   = document.getElementById('ob-app-why').value.trim();
+  const optin = document.getElementById('ob-app-optin').checked;
+  let ok = true;
+
+  document.getElementById('ob-app-firstname-err').classList.toggle('show', !fn);   if (!fn) ok = false;
+  document.getElementById('ob-app-lastname-err').classList.toggle('show', !ln);    if (!ln) ok = false;
+  const eOk = email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  document.getElementById('ob-app-email-err').classList.toggle('show', !eOk);      if (!eOk) ok = false;
+  document.getElementById('ob-app-why-err').classList.toggle('show', !why);        if (!why) ok = false;
+  document.getElementById('ob-app-optin-err').classList.toggle('show', !optin);    if (!optin) ok = false;
+  document.getElementById('ob-app-captcha-err').classList.remove('show');
+  setInlineError('ob-app-submit-err', '');
+  if (!ok) return;
+
+  const phone = document.getElementById('ob-app-phone').value.replace(/\D/g, '');
+  if (button) {
+    button.disabled = true;
+    button.textContent = 'Sending...';
+  }
+
+  try {
+    const captchaAction = getApplicationCaptchaAction(ob.accountType || 'onboarding');
+    const captchaToken = await executeRecaptchaAction(captchaAction);
+
+    await postJson('/api/applications', {
+      type: ob.accountType,
+      firstName: fn,
+      lastName: ln,
+      email,
+      phone,
+      why,
+      optIn: true,
+      captchaToken,
+      captchaAction
+    });
+
+    obGoTo(8);
+
+    const bar = document.getElementById('obConfetti2');
+    if (bar && !bar.children.length) {
+      for (let i = 0; i < 12; i++) {
+        const d = document.createElement('div');
+        d.className = 'ob-confetti-dot';
+        d.style.cssText = `background:${OB_CONFETTI_COLORS[i%OB_CONFETTI_COLORS.length]};animation-delay:${i*0.06}s`;
+        bar.appendChild(d);
+      }
+    }
+  } catch (error) {
+    setInlineError('ob-app-submit-err', error.message);
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.textContent = 'Send Application ✦';
+    }
+  }
+}
+function obSanitizeHandle(input) { input.value = input.value.replace(/[^a-z0-9_]/gi,'').toLowerCase(); }
+function obUpdateInit() {
+  const name = document.getElementById('ob-displayName').value.trim();
+  document.getElementById('obAvInitial').textContent = name ? name.charAt(0).toUpperCase() : '?';
+}
+function obValidateStep2() {
+  const name   = document.getElementById('ob-displayName').value.trim();
+  const handle = document.getElementById('ob-handle').value.trim();
+  const email  = document.getElementById('ob-email').value.trim();
+  const password = document.getElementById('ob-password').value;
+  let ok = true;
+  document.getElementById('ob-name-err').classList.toggle('show', !name); if (!name) ok = false;
+  document.getElementById('ob-handle-err').classList.toggle('show', !handle); if (!handle) ok = false;
+  const eOk = email && EMAIL_PATTERN.test(email);
+  document.getElementById('ob-email-err').classList.toggle('show', !eOk); if (!eOk) ok = false;
+  const pOk = PASSWORD_PATTERN.test(password);
+  document.getElementById('ob-password-err').classList.toggle('show', !pOk); if (!pOk) ok = false;
+  if (!ok) return;
+  ob.displayName = name; ob.handle = handle; ob.email = email; ob.password = password;
+  document.getElementById('obAvInitial').textContent = name.charAt(0).toUpperCase();
+  obNext();
+}
+function obHandleAvatar(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    ob.avatarDataURL = ev.target.result;
+    document.getElementById('obAvatarZone').classList.add('has-img');
+    document.getElementById('obAvPreview').innerHTML = `<img src="${ev.target.result}" alt="avatar">`;
+  };
+  reader.readAsDataURL(file);
+}
+function obBuildReview() {
+  const avEl = document.getElementById('obPrevAvatar');
+  avEl.innerHTML = ob.avatarDataURL ? `<img src="${ob.avatarDataURL}" alt="avatar">` : `<span>${(ob.displayName||'?').charAt(0).toUpperCase()}</span>`;
+  document.getElementById('obPrevName').textContent   = ob.displayName || 'Your Name';
+  document.getElementById('obPrevHandle').textContent = '@' + (ob.handle || 'handle');
+  ob.bio = document.getElementById('ob-bio').value.trim();
+  document.getElementById('obPrevBio').textContent = ob.bio || 'No bio yet — you can add one anytime.';
+  const badge = document.getElementById('obPrevBadge');
+  const type = ob.accountType || 'student';
+  const meta = OB_TYPE_META[type];
+  badge.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+  badge.style.color = meta.color; badge.style.borderColor = meta.borderColor;
+  const tagsEl = document.getElementById('obPrevTags');
+  tagsEl.innerHTML = '';
+  (ob.interests.length ? ob.interests.slice(0,6) : ['No interests yet']).forEach(t => {
+    const el = document.createElement('div'); el.className = 'ob-prev-tag'; el.textContent = t; tagsEl.appendChild(el);
+  });
+  const legalBox = document.getElementById('ob-legal-consent');
+  if (legalBox) legalBox.checked = Boolean(ob.acceptedLegal);
+  document.getElementById('ob-legal-err').classList.remove('show');
+}
+async function obGoVivid(button) {
+  setInlineError('ob-review-err', '');
+  const legalBox = document.getElementById('ob-legal-consent');
+  const acceptedLegal = Boolean(legalBox && legalBox.checked);
+  ob.acceptedLegal = acceptedLegal;
+
+  if (!ob.displayName || !ob.handle || !ob.email) {
+    setInlineError('ob-review-err', 'Please complete your display name, handle, and email before continuing.');
+    obGoTo(2);
+    return;
+  }
+
+  document.getElementById('ob-legal-err').classList.toggle('show', !acceptedLegal);
+  if (!acceptedLegal) {
+    setInlineError('ob-review-err', 'Please agree to the Privacy Policy and Terms of Service before creating your account.');
+    return;
+  }
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = 'Saving...';
+  }
+
+  try {
+    const legalAcceptedAt = Date.now();
+    const passwordHash = await hashPassword(ob.password);
+    await saveSignupToFirebase({
+      displayName: ob.displayName,
+      handle: normalizeHandle(ob.handle),
+      email: ob.email,
+      passwordHash,
+      accountType: ob.accountType,
+      bio: ob.bio || document.getElementById('ob-bio').value.trim(),
+      interests: ob.interests,
+      acceptedLegal: true,
+      acceptedTermsAt: legalAcceptedAt,
+      acceptedPrivacyAt: legalAcceptedAt,
+      legalAcceptedVersion: '2026-04-01'
+    });
+    setCurrentUser({
+      displayName: ob.displayName,
+      handle: normalizeHandle(ob.handle),
+      email: ob.email,
+      accountType: ob.accountType,
+      bio: ob.bio || document.getElementById('ob-bio').value.trim(),
+      interests: ob.interests.join(', '),
+      acceptedLegal: true,
+      acceptedTermsAt: legalAcceptedAt,
+      acceptedPrivacyAt: legalAcceptedAt,
+      legalAcceptedVersion: '2026-04-01'
+    });
+    obGoTo(6);
+  } catch (error) {
+    setInlineError('ob-review-err', error.message);
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.textContent = 'Go Vivid ✦';
+    }
+  }
+}
+
+document.addEventListener('DOMContentLoaded', initRecaptchaGuards);
+document.addEventListener('DOMContentLoaded', hydrateSessionFromCookie);
+document.addEventListener('DOMContentLoaded', () => { syncCurrentUserRecord(); });
+document.getElementById('ob-legal-consent').addEventListener('change', e => {
+  ob.acceptedLegal = Boolean(e.target.checked);
+  document.getElementById('ob-legal-err').classList.toggle('show', !e.target.checked);
+  if (e.target.checked) setInlineError('ob-review-err', '');
 });
-document.getElementById('followModal').addEventListener('click', event => {
-  if (event.target.id === 'followModal') closeFollowModal();
+document.getElementById('account-overlay').addEventListener('click', e => {
+  if (e.target.id === 'account-overlay') closeAccountModal();
 });
 </script>
+<footer class="site-footer">
+  <div>
+    <div class="site-footer-brand">beVivid</div>
+    <div class="site-footer-copy">A more connected, vivid home for profiles, community posts, recognition, and the studio.</div>
+  </div>
+  <div class="site-footer-links">
+    <a href="/community">Community</a>
+    <a href="/profile">Profiles</a>
+    <a href="/profiledata">Studio</a>
+    <a href="/privacy">Privacy</a>
+    <a href="/tos">Terms</a>
+  </div>
+</footer>
 </body>
 </html>
