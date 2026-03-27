@@ -1,0 +1,20 @@
+svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="leftGrad" x1="0%" y1="0%" x2="65%" y2="100%">
+      <stop offset="0%" stop-color="#ffc857"/>
+      <stop offset="100%" stop-color="#ff6a3d"/>
+    </linearGradient>
+    <linearGradient id="rightGrad" x1="20%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff8a5b"/>
+      <stop offset="100%" stop-color="#ff4fa3"/>
+    </linearGradient>
+    <linearGradient id="foldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8e244f"/>
+      <stop offset="100%" stop-color="#3f0f26"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="#050505"/>
+  <polygon points="76,46 118,46 145,188 114,188" fill="url(#leftGrad)"/>
+  <polygon points="152,46 184,46 145,188 114,188" fill="url(#rightGrad)"/>
+  <polygon points="114,188 128,140 145,188" fill="url(#foldGrad)"/>
+</svg>
