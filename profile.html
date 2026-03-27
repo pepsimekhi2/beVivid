@@ -355,6 +355,54 @@ function setProfileLoadingState() {
   document.getElementById('showroomGrid').innerHTML = getLoadingMarkup(3);
   document.getElementById('profilePosts').innerHTML = getLoadingMarkup(2);
 }
+function resetStagePresentation() {
+  const stageWrap = document.querySelector('.stage-wrap');
+  const stage = document.getElementById('stage');
+  stageWrap.style.border = '1px solid rgba(245,240,235,.08)';
+  stageWrap.style.background = 'rgba(245,240,235,.02)';
+  stageWrap.style.padding = '20px';
+  stage.style.width = '1200px';
+  stage.style.minHeight = '900px';
+  stage.style.height = '900px';
+  stage.style.borderRadius = '24px';
+  stage.style.border = '1px solid rgba(245,240,235,.08)';
+  stage.style.boxShadow = '0 30px 90px rgba(0,0,0,.35)';
+  stage.style.background = '#111111';
+}
+function showProfileState(config) {
+  const accountTypeBadge = document.getElementById('accountTypeBadge');
+  const plusBadge = document.getElementById('plusBadge');
+  const followersBtn = document.getElementById('followersBtn');
+  const followingBtn = document.getElementById('followingBtn');
+  const recognizeBtn = document.getElementById('recognizeBtn');
+
+  viewingUser = null;
+  viewingPosts = [];
+  followData = { followers: {}, following: {} };
+  resetStagePresentation();
+  applyPageBackdrop({});
+  syncPageVisualizer(false);
+
+  accountTypeBadge.hidden = true;
+  plusBadge.hidden = true;
+  document.getElementById('profileTitle').textContent = config.title;
+  document.getElementById('profileSub').textContent = config.sub;
+  document.getElementById('stage').innerHTML = `<div class="empty">${config.stage}</div>`;
+  document.getElementById('showroomGrid').innerHTML = `<div class="showroom-empty">${config.showroom}</div>`;
+  document.getElementById('profilePosts').innerHTML = `<div class="empty">${config.posts}</div>`;
+  document.getElementById('sidebarCurrentHandle').textContent = config.sidebarHandle;
+  document.getElementById('sidebarViewMeta').textContent = config.sidebarMeta;
+  document.getElementById('recognitionPoints').textContent = '0';
+  document.getElementById('postCount').textContent = '0';
+  document.getElementById('totalLikeCount').textContent = '0';
+  followersBtn.textContent = 'Followers 0';
+  followingBtn.textContent = 'Following 0';
+  followersBtn.disabled = true;
+  followingBtn.disabled = true;
+  recognizeBtn.disabled = true;
+  recognizeBtn.textContent = config.recognizeLabel || 'Unavailable';
+  setRecognitionStatus(config.status);
+}
 function getAwardAccent(type) {
   const key = String(type || '').toLowerCase();
   if (key.includes('trophy')) return 'rgba(255,149,0,.28)';
@@ -650,6 +698,8 @@ function renderSocialStats(posts, social) {
   document.getElementById('totalLikeCount').textContent = String(totalLikes);
   document.getElementById('followersBtn').textContent = `Followers ${followers}`;
   document.getElementById('followingBtn').textContent = `Following ${following}`;
+  document.getElementById('followersBtn').disabled = false;
+  document.getElementById('followingBtn').disabled = false;
 }
 async function openFollowModal(type) {
   const source = Object.keys((followData && followData[type]) || {});
@@ -956,17 +1006,30 @@ async function loadProfile() {
   ]);
   let user = await userResponse.json();
   if (!user) {
-    document.getElementById('profileTitle').textContent = 'Profile not found';
-    document.getElementById('profileSub').textContent = 'That handle does not exist in Firebase yet.';
-    document.getElementById('stage').innerHTML = '<div class="empty">This profile has not been created yet.</div>';
-    document.getElementById('showroomGrid').innerHTML = '<div class="showroom-empty">There is no showroom to display for this handle yet.</div>';
-    document.getElementById('profilePosts').innerHTML = '<div class="empty">No posts can be shown because this profile does not exist yet.</div>';
-    document.getElementById('sidebarCurrentHandle').textContent = `@${handle}`;
-    document.getElementById('sidebarViewMeta').textContent = 'That profile has not been created yet.';
-    document.getElementById('recognitionPoints').textContent = '0';
-    document.getElementById('recognizeBtn').disabled = true;
-    document.getElementById('recognizeBtn').textContent = 'Unavailable';
-    setRecognitionStatus('Search for another handle or create this profile first.');
+    showProfileState({
+      title: 'Profile not found',
+      sub: 'That handle does not exist in Firebase yet.',
+      stage: 'This profile has not been created yet.',
+      showroom: 'There is no showroom to display for this handle yet.',
+      posts: 'No posts can be shown because this profile does not exist yet.',
+      sidebarHandle: `@${handle}`,
+      sidebarMeta: 'That profile has not been created yet.',
+      status: 'Search for another handle or create this profile first.'
+    });
+    return;
+  }
+  if (user.banned) {
+    showProfileState({
+      title: 'User banned',
+      sub: 'This account has been removed from public view.',
+      stage: escapeHtml(user.banReason || 'This user is banned from beVivid.'),
+      showroom: 'Banned profiles do not have a public showroom.',
+      posts: 'Banned profiles do not have public community posts.',
+      sidebarHandle: `@${handle}`,
+      sidebarMeta: 'This account is banned from beVivid.',
+      status: 'This account is banned from beVivid.',
+      recognizeLabel: 'User Banned'
+    });
     return;
   }
   user = await ensureShowroomField(handle, user);
