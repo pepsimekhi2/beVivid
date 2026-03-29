@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>beVivid Profile</title>
-<link rel="icon" type="image/png" href="/favicon.png"> 
+<link rel="icon" type="image/png" href="/favicon.png">
 <link rel="shortcut icon" href="/favicon.png">
 <link rel="apple-touch-icon" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -185,6 +185,7 @@ body::before { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512
         <a class="sidebar-link" href="/">Back To beVivid</a>
         <a class="sidebar-link" href="/community">Community</a>
         <a class="sidebar-link" id="creatorDashboardLink" href="/creator" hidden>Creator Dashboard</a>
+        <a class="sidebar-link" id="studentDashboardLink" href="/student" hidden>Student Hub</a>
         <a class="sidebar-link sidebar-link--primary" id="studioLink" href="/profiledata">Open Studio</a>
       </div>
     </div>
@@ -214,6 +215,11 @@ body::before { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512
           <small>Recognition Points</small>
           <strong id="recognitionPoints">0</strong>
           <span id="recognitionMeta">Lifetime appreciation from the community.</span>
+        </div>
+        <div class="recognition-card" id="studentWalletCard" hidden>
+          <small>Student Wallet</small>
+          <strong id="studentWalletBalance">$0.00</strong>
+          <span id="studentWalletMeta">Verified good deeds, scholarships, and competition rewards.</span>
         </div>
         <div class="recognition-card">
           <small>Posts</small>
@@ -322,6 +328,7 @@ function todayKey() { return new Date().toISOString().slice(0, 10); }
 function isBeVividPlus(user) { return Boolean(user && (user['bevivid+'] === true || user.bevividPlus === true)); }
 function getAccountType(user) { return String((user && user.accountType) || '').trim().toLowerCase(); }
 function isCreatorAccount(user) { return getAccountType(user) === 'creator'; }
+function isStudentAccount(user) { return getAccountType(user) === 'student'; }
 function formatAccountTypeLabel(type) {
   const value = String(type || '').trim().toLowerCase();
   if (!value) return 'Member';
@@ -331,6 +338,11 @@ function syncCreatorDashboardLink() {
   const link = document.getElementById('creatorDashboardLink');
   if (!link) return;
   link.hidden = !isCreatorAccount(activeUser);
+}
+function syncStudentDashboardLink() {
+  const link = document.getElementById('studentDashboardLink');
+  if (!link) return;
+  link.hidden = !isStudentAccount(activeUser);
 }
 function sanitizePublicLayout(layout, premium) {
   const next = Object.assign({}, layout || {});
@@ -378,6 +390,7 @@ function showProfileState(config) {
   const followersBtn = document.getElementById('followersBtn');
   const followingBtn = document.getElementById('followingBtn');
   const recognizeBtn = document.getElementById('recognizeBtn');
+  const studentWalletCard = document.getElementById('studentWalletCard');
 
   viewingUser = null;
   viewingPosts = [];
@@ -388,6 +401,7 @@ function showProfileState(config) {
 
   accountTypeBadge.hidden = true;
   plusBadge.hidden = true;
+  if (studentWalletCard) studentWalletCard.hidden = true;
   document.getElementById('profileTitle').textContent = config.title;
   document.getElementById('profileSub').textContent = config.sub;
   document.getElementById('stage').innerHTML = `<div class="empty">${config.stage}</div>`;
@@ -704,6 +718,15 @@ function renderSocialStats(posts, social) {
   document.getElementById('followersBtn').disabled = false;
   document.getElementById('followingBtn').disabled = false;
 }
+function renderStudentWallet(user) {
+  const card = document.getElementById('studentWalletCard');
+  const value = document.getElementById('studentWalletBalance');
+  if (!card || !value) return;
+  const student = isStudentAccount(user);
+  card.hidden = !student;
+  if (!student) return;
+  value.textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(user.studentWalletBalance || 0));
+}
 async function openFollowModal(type) {
   const source = Object.keys((followData && followData[type]) || {});
   const modal = document.getElementById('followModal');
@@ -971,6 +994,7 @@ async function grantRecognition() {
 async function loadProfile() {
   activeUser = getSessionUser();
   syncCreatorDashboardLink();
+  syncStudentDashboardLink();
   setProfileLoadingState();
   audioState.playing = false;
   audioState.sourceLoaded = false;
@@ -1036,6 +1060,18 @@ async function loadProfile() {
     return;
   }
   user = await ensureShowroomField(handle, user);
+  if (isStudentAccount(user) && !Object.prototype.hasOwnProperty.call(user, 'studentWalletBalance')) {
+    if (activeUser && activeUser.handle === handle) {
+      try {
+        await fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(handle)}.json`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ studentWalletBalance: 0 })
+        });
+      } catch (_) {}
+    }
+    user.studentWalletBalance = 0;
+  }
   followData = socialResponse && socialResponse.ok ? (await socialResponse.json()) || { followers: {}, following: {} } : { followers: {}, following: {} };
   if (!Object.keys(followData.followers || {}).length && !Object.keys(followData.following || {}).length) {
     const legacySocial = await fetchJson('userSocial/' + handle).catch(() => null);
@@ -1056,6 +1092,7 @@ async function loadProfile() {
   document.getElementById('profileSub').textContent = '@' + (user.handle || handle) + '  |  ' + (user.bio || 'This vivid profile is still being shaped.');
   document.getElementById('plusBadge').hidden = !isBeVividPlus(user);
   updateRecognitionUi(user);
+  renderStudentWallet(user);
   renderSocialStats(viewingPosts, followData);
   renderShowroom(user);
   renderProfilePosts(viewingPosts);
