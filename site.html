@@ -9,7 +9,7 @@
 <meta property="og:site_name" content="beVivid">
 <meta property="og:title" content="beVivid">
 <meta name="twitter:title" content="beVivid">
-<link rel="icon" type="image/png" href="/favicon.png"> 
+<link rel="icon" type="image/png" href="/favicon.png">
 <link rel="shortcut icon" href="/favicon.png">
 <link rel="apple-touch-icon" href="/favicon.png">
 <meta property="og:image" content="https://bevivid.live/favicon.png">
@@ -525,6 +525,7 @@ footer { position: relative; z-index: 1; padding: 44px clamp(24px,5vw,64px); bor
         <span class="nav-profile-handle" id="navProfileHandle">@you</span>
       </span>
     </button>
+    <button class="nav-cta nav-secondary" id="navStudentBtn" onclick="openStudentHub()" hidden>Student Hub</button>
     <button class="nav-cta" id="navJoinBtn" onclick="openOnboarding()">Join Free</button>
   </div>
   <button class="nav-mobile-toggle" id="mobileToggle" aria-label="Menu">
@@ -836,6 +837,10 @@ footer { position: relative; z-index: 1; padding: 44px clamp(24px,5vw,64px); bor
               <div class="profile-stat-label">Account Type</div>
               <div class="profile-stat-value" id="profileType">Member</div>
             </div>
+            <div class="profile-stat" id="profileStudentWalletStat" hidden>
+              <div class="profile-stat-label">Student Wallet</div>
+              <div class="profile-stat-value" id="profileStudentWallet">$0.00</div>
+            </div>
             <div class="profile-stat">
               <div class="profile-stat-label">Bio</div>
               <div class="profile-stat-value" id="profileBio">No bio yet.</div>
@@ -848,6 +853,7 @@ footer { position: relative; z-index: 1; padding: 44px clamp(24px,5vw,64px); bor
         </div>
         <div class="account-actions">
           <button class="account-btn ghost" onclick="openProfileStudio()">Profile Studio</button>
+          <button class="account-btn ghost" id="profileStudentHubBtn" onclick="openStudentHub()" hidden>Student Hub</button>
           <button class="account-btn ghost" onclick="logoutUser()">Log Out</button>
           <button class="account-btn ghost" onclick="viewPublicProfile()">View Profile</button>
           <button class="account-btn" onclick="closeAccountModal()">Done</button>
@@ -1238,12 +1244,20 @@ function setCurrentUser(user, persist = true) {
   const loginBtn = document.getElementById('navLoginBtn');
   const profileBtn = document.getElementById('navProfileBtn');
   const joinBtn = document.getElementById('navJoinBtn');
+  const studentBtn = document.getElementById('navStudentBtn');
+  const studentProfileBtn = document.getElementById('profileStudentHubBtn');
+  const studentWalletStat = document.getElementById('profileStudentWalletStat');
+  const studentWalletValue = document.getElementById('profileStudentWallet');
 
   if (user) {
     if (persist) setCookie(AUTH_COOKIE_NAME, JSON.stringify(user), 30);
     loginBtn.style.display = 'none';
     profileBtn.classList.add('visible');
     if (joinBtn) joinBtn.style.display = 'none';
+    const isStudent = String(user.accountType || '').trim().toLowerCase() === 'student';
+    if (studentBtn) studentBtn.hidden = !isStudent;
+    if (studentProfileBtn) studentProfileBtn.hidden = !isStudent;
+    if (studentWalletStat) studentWalletStat.hidden = !isStudent;
     document.getElementById('navProfileAvatar').textContent = (user.displayName || '?').charAt(0).toUpperCase();
     document.getElementById('navProfileName').textContent = user.displayName || 'Member';
     document.getElementById('navProfileHandle').textContent = '@' + (user.handle || 'member');
@@ -1252,6 +1266,7 @@ function setCurrentUser(user, persist = true) {
     document.getElementById('profileHandle').textContent = '@' + (user.handle || 'member');
     document.getElementById('profileEmail').textContent = user.email || 'No email saved';
     document.getElementById('profileType').textContent = user.accountType || 'Member';
+    if (studentWalletValue) studentWalletValue.textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(user.studentWalletBalance || 0));
     document.getElementById('profileBio').textContent = user.bio || 'No bio yet.';
     document.getElementById('profileInterests').textContent = user.interests || 'Still choosing your vibe.';
   } else {
@@ -1263,6 +1278,9 @@ function setCurrentUser(user, persist = true) {
       joinBtn.textContent = 'Join Free';
       joinBtn.onclick = () => openOnboarding();
     }
+    if (studentBtn) studentBtn.hidden = true;
+    if (studentProfileBtn) studentProfileBtn.hidden = true;
+    if (studentWalletStat) studentWalletStat.hidden = true;
   }
 }
 
@@ -1298,6 +1316,11 @@ function openProfileStudio() {
   window.location.href = `/profiledata?handle=${encodeURIComponent(currentUser.handle)}`;
 }
 
+function openStudentHub() {
+  if (!currentUser || !currentUser.handle) return;
+  window.location.href = `/student`;
+}
+
 function viewPublicProfile() {
   if (!currentUser || !currentUser.handle) return;
   window.location.href = `/profile?handle=${encodeURIComponent(currentUser.handle)}`;
@@ -1324,6 +1347,26 @@ async function ensureUserShowroom(handle, user) {
   return nextUser;
 }
 
+async function ensureUserDefaults(handle, user) {
+  const needsShowroom = !user || !Object.prototype.hasOwnProperty.call(user, 'showroom');
+  const needsStudentWallet = !user || !Object.prototype.hasOwnProperty.call(user, 'studentWalletBalance');
+  if (!needsShowroom && !needsStudentWallet) return user;
+  const nextUser = Object.assign({ showroom: [], studentWalletBalance: 0 }, user);
+  const patch = {};
+  if (needsShowroom) patch.showroom = [];
+  if (needsStudentWallet) patch.studentWalletBalance = 0;
+  try {
+    await fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(handle)}.json`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(patch)
+    });
+  } catch (_) {}
+  return nextUser;
+}
+
 async function syncCurrentUserRecord() {
   if (!currentUser || !currentUser.handle) return;
   try {
@@ -1332,14 +1375,15 @@ async function syncCurrentUserRecord() {
       setCurrentUser(null, false);
       return;
     }
-    user = await ensureUserShowroom(currentUser.handle, user);
+    user = await ensureUserDefaults(currentUser.handle, user);
     setCurrentUser({
       displayName: user.displayName || user.handle || currentUser.handle,
       handle: user.handle || currentUser.handle,
       email: user.email || '',
       accountType: user.accountType || 'Member',
       bio: user.bio || '',
-      interests: user.interests || ''
+      interests: user.interests || '',
+      studentWalletBalance: Number(user.studentWalletBalance || 0)
     });
   } catch (_) {}
 }
@@ -1385,6 +1429,7 @@ async function saveSignupToFirebase(payload) {
     acceptedPrivacyAt: payload.acceptedPrivacyAt || null,
     legalAcceptedVersion: payload.legalAcceptedVersion || '',
     showroom: [],
+    studentWalletBalance: 0,
     createdAt: Date.now()
   };
 
@@ -1447,7 +1492,7 @@ async function loginUser(button) {
     if (user.banned) {
       throw new Error('This account is currently banned from using beVivid.');
     }
-    user = await ensureUserShowroom(handle, user);
+    user = await ensureUserDefaults(handle, user);
 
     setCurrentUser({
       displayName: user.displayName || user.handle || handle,
@@ -1455,7 +1500,8 @@ async function loginUser(button) {
       email: user.email || '',
       accountType: user.accountType || 'Member',
       bio: user.bio || '',
-      interests: user.interests || ''
+      interests: user.interests || '',
+      studentWalletBalance: Number(user.studentWalletBalance || 0)
     });
     document.getElementById('login-handle').value = '';
     document.getElementById('login-password').value = '';
@@ -1826,6 +1872,7 @@ async function obGoVivid(button) {
       accountType: ob.accountType,
       bio: ob.bio || document.getElementById('ob-bio').value.trim(),
       interests: ob.interests.join(', '),
+      studentWalletBalance: 0,
       acceptedLegal: true,
       acceptedTermsAt: legalAcceptedAt,
       acceptedPrivacyAt: legalAcceptedAt,
