@@ -13,7 +13,8 @@ const state = {
     scholarships: [],
     competitions: [],
     studentSubmissions: [],
-    studentApplications: []
+    studentApplications: [],
+    walletLedger: []
   },
   selectedHandle: '',
   userSearch: '',
@@ -250,6 +251,17 @@ function sanitizeStudentApplication(id, application) {
     story: String((application && application.story) || ''),
     status: String((application && application.status) || 'pending'),
     createdAt: toNumber(application && application.createdAt, 0)
+  };
+}
+
+function sanitizeWalletLedger(id, item) {
+  return {
+    id,
+    handle: String((item && item.handle) || ''),
+    amount: toNumber(item && item.amount, 0),
+    note: String((item && item.note) || ''),
+    sourceId: String((item && item.sourceId) || ''),
+    createdAt: toNumber(item && item.createdAt, 0)
   };
 }
 
@@ -502,7 +514,9 @@ function renderStudentSubmissions() {
   }
   list.innerHTML = items.map(item => {
     const competition = item.competitionId ? state.data.competitions.find(entry => entry.id === item.competitionId) : null;
-    const awardValue = Math.min(5, Math.max(0, toNumber(item.rewardRequested || (competition && competition.prizeAmount) || 0, 0)));
+    const awardValue = item.kind === 'goodDeed'
+      ? Math.min(5, Math.max(0, toNumber(item.rewardRequested, 0)))
+      : Math.max(0, toNumber((competition && competition.prizeAmount) || item.rewardRequested || 0, 0));
     return `
     <article class="entry">
       <div class="row">
@@ -521,7 +535,8 @@ function renderStudentSubmissions() {
       <div class="actions">
         <button class="btn" type="button" onclick="approveStudentItem('${attr(item.id)}')">Approve</button>
         <button class="ghost" type="button" onclick="rejectStudentItem('${attr(item.id)}')">Reject</button>
-        ${awardValue ? `<button class="ghost" type="button" onclick="awardStudentItem('${attr(item.id)}', ${awardValue.toFixed(2)})">$${awardValue.toFixed(2)} Award</button>` : ''}
+        <input class="input" style="max-width:160px" id="studentAward-${attr(item.id)}" type="number" min="0" step="0.01" value="${awardValue.toFixed(2)}" placeholder="Reward">
+        <button class="ghost" type="button" onclick="awardStudentItem('${attr(item.id)}', document.getElementById('studentAward-${attr(item.id)}').value)">Award</button>
       </div>
       ${item.photoUrl ? `<img src="${attr(item.photoUrl)}" alt="" style="width:100%;max-height:280px;object-fit:cover;border-radius:16px;border:1px solid rgba(245,240,235,.08);">` : ''}
     </article>
@@ -553,6 +568,31 @@ function renderStudentApplications() {
         <button class="btn" type="button" onclick="approveScholarshipApplication('${attr(item.id)}')">Approve</button>
         <button class="ghost" type="button" onclick="rejectScholarshipApplication('${attr(item.id)}')">Reject</button>
       </div>
+    </article>
+  `).join('');
+}
+
+function renderWalletLedger() {
+  const list = document.getElementById('walletLedgerList');
+  if (!list) return;
+  const items = state.data.walletLedger;
+  if (!items.length) {
+    list.innerHTML = '<div class="empty">No student wallet changes have been recorded yet.</div>';
+    return;
+  }
+  list.innerHTML = items.slice(0, 12).map(item => `
+    <article class="entry">
+      <div class="row">
+        <div>
+          <div class="eyebrow">Wallet Entry</div>
+          <h3 class="section-title">@${esc(item.handle || '')}</h3>
+          <div class="tiny">${esc(ago(item.createdAt))}${item.sourceId ? ` | ${esc(item.sourceId)}` : ''}</div>
+        </div>
+        <div class="chips">
+          <span class="chip ${item.amount >= 0 ? 'creator' : 'banned'}">${item.amount >= 0 ? '+' : ''}${money(item.amount)}</span>
+        </div>
+      </div>
+      <div class="copy">${esc(item.note || 'No note was saved.')}</div>
     </article>
   `).join('');
 }
@@ -597,6 +637,7 @@ function renderAll() {
   renderCompetitions();
   renderStudentSubmissions();
   renderStudentApplications();
+  renderWalletLedger();
   renderPayouts();
 }
 
@@ -610,6 +651,7 @@ function renderLoading() {
   document.getElementById('competitionList').innerHTML = skeleton;
   document.getElementById('studentSubmissionList').innerHTML = skeleton;
   document.getElementById('studentApplicationList').innerHTML = skeleton;
+  document.getElementById('walletLedgerList').innerHTML = skeleton;
   document.getElementById('payoutList').innerHTML = skeleton;
 }
 
@@ -951,7 +993,7 @@ async function loadDashboard() {
   setStatus('Loading the owner dashboard...');
 
   try {
-    const [usersMap, publicIndexMap, primaryPosts, legacyPosts, applicationsMap, payoutRequestsMap, scholarshipsMap, competitionsMap, studentSubsMap, studentAppsMap] = await Promise.all([
+    const [usersMap, publicIndexMap, primaryPosts, legacyPosts, applicationsMap, payoutRequestsMap, scholarshipsMap, competitionsMap, studentSubsMap, studentAppsMap, walletLedgerMap] = await Promise.all([
       getNode('users').catch(() => ({})),
       getNode('publicUserIndex').catch(() => ({})),
       getNode(`${COMMUNITY_ROOT}/posts`).catch(() => ({})),
@@ -961,7 +1003,8 @@ async function loadDashboard() {
       getNode('studentData/scholarships').catch(() => ({})),
       getNode('studentData/competitions').catch(() => ({})),
       getNode('adminData/studentSubmissions').catch(() => ({})),
-      getNode('adminData/scholarshipApplications').catch(() => ({}))
+      getNode('adminData/scholarshipApplications').catch(() => ({})),
+      getNode('studentData/walletLedger').catch(() => ({}))
     ]);
 
     state.data.users = Object.entries(usersMap || {})
@@ -996,6 +1039,10 @@ async function loadDashboard() {
 
     state.data.studentApplications = Object.entries(studentAppsMap || {})
       .map(([id, application]) => sanitizeStudentApplication(id, application))
+      .sort((a, b) => b.createdAt - a.createdAt);
+
+    state.data.walletLedger = Object.entries(walletLedgerMap || {})
+      .map(([id, item]) => sanitizeWalletLedger(id, item))
       .sort((a, b) => b.createdAt - a.createdAt);
 
     const handles = state.data.users.map(user => user.handle);
@@ -1077,8 +1124,16 @@ async function setStudentWallet() {
   const user = selectedUser();
   if (!user) return;
   await runAction(async () => {
-    await patchNode(`users/${user.handle}`, {
-      studentWalletBalance: Math.max(0, toNumber(document.getElementById('editorStudentWallet').value, 0))
+    const nextBalance = Math.max(0, toNumber(document.getElementById('editorStudentWallet').value, 0));
+    const current = await getNode(`users/${user.handle}`).catch(() => null);
+    const delta = nextBalance - toNumber(current && current.studentWalletBalance, 0);
+    await patchNode(`users/${user.handle}`, { studentWalletBalance: nextBalance });
+    await putNode(`studentData/walletLedger/student_manual_${Date.now()}`, {
+      handle: user.handle,
+      amount: delta,
+      note: 'Manual student wallet set by owner.',
+      sourceId: 'owner-dashboard',
+      createdAt: Date.now()
     });
   }, 'Student wallet updated.');
 }
@@ -1091,7 +1146,67 @@ async function adjustStudentWallet(delta) {
     if (!current) throw new Error('That user could not be found.');
     const nextBalance = Math.max(0, toNumber(current.studentWalletBalance, 0) + toNumber(delta, 0));
     await patchNode(`users/${user.handle}`, { studentWalletBalance: nextBalance });
+    await putNode(`studentData/walletLedger/student_manual_${Date.now()}`, {
+      handle: user.handle,
+      amount: toNumber(delta, 0),
+      note: 'Manual student wallet adjustment by owner.',
+      sourceId: 'owner-dashboard',
+      createdAt: Date.now()
+    });
   }, 'Student wallet adjusted.');
+}
+
+async function createScholarship() {
+  await runAction(async () => {
+    const title = String(document.getElementById('newScholarshipTitle').value || '').trim();
+    if (!title) throw new Error('Add a scholarship title first.');
+    const id = `scholarship_${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
+    const scholarship = {
+      id,
+      title,
+      amount: Math.max(0, toNumber(document.getElementById('newScholarshipAmount').value, 0)),
+      deadlineAt: document.getElementById('newScholarshipDeadline').value ? new Date(`${document.getElementById('newScholarshipDeadline').value}T23:59:59`).getTime() : 0,
+      description: String(document.getElementById('newScholarshipDescription').value || '').trim(),
+      requirements: String(document.getElementById('newScholarshipRequirements').value || '').trim(),
+      issuer: String(document.getElementById('newScholarshipIssuer').value || '').trim(),
+      status: 'active',
+      createdAt: Date.now()
+    };
+    await putNode(`studentData/scholarships/${id}`, scholarship);
+    document.getElementById('newScholarshipTitle').value = '';
+    document.getElementById('newScholarshipAmount').value = '0';
+    document.getElementById('newScholarshipDeadline').value = '';
+    document.getElementById('newScholarshipDescription').value = '';
+    document.getElementById('newScholarshipRequirements').value = '';
+    document.getElementById('newScholarshipIssuer').value = '';
+  }, 'Scholarship published.');
+}
+
+async function createCompetition() {
+  await runAction(async () => {
+    const title = String(document.getElementById('newCompetitionTitle').value || '').trim();
+    if (!title) throw new Error('Add a competition title first.');
+    const id = `competition_${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
+    const competition = {
+      id,
+      title,
+      prizeAmount: Math.max(0, toNumber(document.getElementById('newCompetitionPrize').value, 0)),
+      deadlineAt: document.getElementById('newCompetitionDeadline').value ? new Date(`${document.getElementById('newCompetitionDeadline').value}T23:59:59`).getTime() : 0,
+      submissionType: String(document.getElementById('newCompetitionType').value || 'story'),
+      rules: String(document.getElementById('newCompetitionRules').value || '').trim(),
+      description: String(document.getElementById('newCompetitionDescription').value || '').trim(),
+      status: 'active',
+      entries: {},
+      createdAt: Date.now()
+    };
+    await putNode(`studentData/competitions/${id}`, competition);
+    document.getElementById('newCompetitionTitle').value = '';
+    document.getElementById('newCompetitionPrize').value = '0';
+    document.getElementById('newCompetitionDeadline').value = '';
+    document.getElementById('newCompetitionType').value = 'story';
+    document.getElementById('newCompetitionRules').value = '';
+    document.getElementById('newCompetitionDescription').value = '';
+  }, 'Competition published.');
 }
 
 async function clearAudio() {
@@ -1174,7 +1289,10 @@ async function approveStudentItem(id) {
   await runAction(async () => {
     const item = state.data.studentSubmissions.find(entry => entry.id === id);
     if (!item) throw new Error('That submission could not be found.');
-    const amount = Math.min(5, Math.max(0, toNumber(item.rewardRequested, 0)));
+    const competition = item.competitionId ? state.data.competitions.find(entry => entry.id === item.competitionId) : null;
+    const amount = item.kind === 'goodDeed'
+      ? Math.min(5, Math.max(0, toNumber(item.rewardRequested, 0)))
+      : Math.max(0, toNumber((competition && competition.prizeAmount) || item.rewardRequested || 0, 0));
     await patchJson(`adminData/studentSubmissions/${id}`, { status: 'approved', reviewedAt: Date.now(), awardedAmount: amount });
     await patchJson(`studentData/goodDeedSubmissions/${id}`, { status: 'approved', reviewedAt: Date.now(), awardedAmount: amount }).catch(() => null);
     if (item.competitionId) {
@@ -1199,7 +1317,7 @@ async function awardStudentItem(id, amount) {
   await runAction(async () => {
     const item = state.data.studentSubmissions.find(entry => entry.id === id);
     if (!item) throw new Error('That submission could not be found.');
-    const payout = Math.min(5, Math.max(0, toNumber(amount, 0)));
+    const payout = item.kind === 'goodDeed' ? Math.min(5, Math.max(0, toNumber(amount, 0))) : Math.max(0, toNumber(amount, 0));
     await patchJson(`adminData/studentSubmissions/${id}`, { status: 'approved', reviewedAt: Date.now(), awardedAmount: payout });
     await patchJson(`studentData/goodDeedSubmissions/${id}`, { status: 'approved', reviewedAt: Date.now(), awardedAmount: payout }).catch(() => null);
     if (item.competitionId) {
