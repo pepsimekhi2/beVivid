@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>beVivid — We're Not Open Yet</title>
+<title>beVivid â€” We're Not Open Yet</title>
 <meta name="application-name" content="beVivid">
 <meta name="description" content="beVivid is preparing to launch.">
 <meta property="og:site_name" content="beVivid">
 <meta property="og:title" content="beVivid">
 <meta name="twitter:title" content="beVivid">
-<link rel="icon" type="image/png" href="/favicon.png"> 
+<link rel="icon" type="image/png" href="/favicon.png">
 <link rel="shortcut icon" href="/favicon.png">
 <link rel="apple-touch-icon" href="/favicon.png">
 <meta property="og:image" content="https://bevivid.live/favicon.png">
@@ -20,6 +20,7 @@
 <script>document.title='beVivid';</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;700;800&family=DM+Mono:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/modern.css">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -423,7 +424,7 @@
     to   { transform: translateY(0); }
   }
 
-  /* HOVER INTERACTION — color flash on hover over headline */
+  /* HOVER INTERACTION â€” color flash on hover over headline */
   .headline: hover {  }
 </style>
 </head>
@@ -439,7 +440,7 @@
   <div class="orb"></div>
 </div>
 
-<span class="vert-text">Recognition · Feeling · Clarity · You</span>
+<span class="vert-text">Recognition Â· Feeling Â· Clarity Â· You</span>
 
 <div class="page">
   <header>
@@ -460,7 +461,7 @@
 
     <div class="sub-block">
       <p class="sub-text">
-        A place where <em>you get recognized</em> — not for what you have,
+        A place where <em>you get recognized</em> â€” not for what you have,
         but for the impression you leave. Vivid people don't go unnoticed.
         We're building the space for them. For <em>you</em>.
       </p>
@@ -479,7 +480,7 @@
           <button onclick="handleSubmit()">Notify me</button>
         </div>
         <p class="form-note">No noise. Just the moment we open the doors.</p>
-        <p class="success-msg" id="successMsg">✦ &nbsp;You're on the list. We'll find you.</p>
+        <p class="success-msg" id="successMsg">âœ¦ &nbsp;You're on the list. We'll find you.</p>
 
         <!-- Hidden Brevo iframes -->
         <iframe name="brevo-hidden-email" style="display:none;" aria-hidden="true"></iframe>
@@ -512,7 +513,7 @@
 <script>
   let mode = 'email';
 
-  // Check localStorage — if already signed up, hide form
+  // Check localStorage â€” if already signed up, hide form
   if (localStorage.getItem('bevivid_notified')) {
     document.addEventListener('DOMContentLoaded', () => {
       const wrap = document.getElementById('formWrap');
@@ -522,7 +523,7 @@
         wrap.querySelector('.form-note').style.display = 'none';
         const msg = document.getElementById('successMsg');
         msg.style.display = 'block';
-        msg.textContent = '✦  You\'re already on the list. We\'ll find you.';
+        msg.textContent = 'âœ¦  You\'re already on the list. We\'ll find you.';
       }
     });
   }
@@ -609,3 +610,5 @@
 </script>
 </body>
 </html>
+
+
