@@ -13,6 +13,22 @@
 <style>
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#050505;color:#f5f0eb;font-family:'Syne',sans-serif}body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.05;background-image:radial-gradient(circle at 14% 14%,rgba(255,45,85,.16),transparent 24%),radial-gradient(circle at 86% 10%,rgba(52,170,220,.16),transparent 22%),radial-gradient(circle at 44% 100%,rgba(0,229,176,.12),transparent 28%)}.scanline{position:fixed;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.024),transparent);animation:scan 10s linear infinite;pointer-events:none;z-index:499}.orb-layer{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}.orb{position:absolute;border-radius:50%;filter:blur(110px);mix-blend-mode:screen;opacity:0;animation:drift 24s linear infinite}.orb:nth-child(1){width:620px;height:620px;background:radial-gradient(circle,#ff2d55,transparent 70%);top:-16%;left:-10%}.orb:nth-child(2){width:500px;height:500px;background:radial-gradient(circle,#a259ff,transparent 70%);top:52%;right:-14%;animation-delay:-8s}.orb:nth-child(3){width:420px;height:420px;background:radial-gradient(circle,#34aadc,transparent 70%);top:18%;left:44%;animation-delay:-13s}.orb:nth-child(4){width:360px;height:360px;background:radial-gradient(circle,#00e5b0,transparent 70%);bottom:-8%;left:22%;animation-delay:-5s}@keyframes scan{0%{top:0}100%{top:100%}}@keyframes drift{0%,100%{opacity:0;transform:scale(.82) translateY(0)}12%,88%{opacity:.16}50%{opacity:.22;transform:scale(1.08) translateY(-28px)}}@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}.shell{position:relative;z-index:1;max-width:1640px;margin:0 auto;padding:28px;display:grid;gap:20px}.hero,.panel,.login-card,.card,.action-slab{border:1px solid rgba(245,240,235,.1);border-radius:28px;background:rgba(245,240,235,.04);backdrop-filter:blur(18px);box-shadow:0 24px 60px rgba(0,0,0,.22);animation:rise .65s cubic-bezier(.16,1,.3,1) both}.hero,.panel,.login-card{padding:24px}.eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:#34aadc;margin-bottom:12px}.title,.section-title,.login-title,.mini-title{font-family:'Bebas Neue',sans-serif;line-height:.9;margin:0}.title{font-size:clamp(68px,10vw,132px)}.section-title{font-size:38px}.login-title{font-size:50px}.mini-title{font-size:26px}.copy,.muted,.status{color:rgba(245,240,235,.62);line-height:1.75}.toolbar,.row,.stats,.chips,.actions,.search-form,.hero-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.hero-actions{justify-content:flex-end}.stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}.card{padding:18px;border-radius:22px;background:rgba(245,240,235,.07)}.card small{display:block;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(245,240,235,.38);margin-bottom:8px}.card strong{display:block;font-size:34px;line-height:1}.card span{display:block;margin-top:8px;font-size:13px;line-height:1.6;color:rgba(245,240,235,.54)}.btn,.ghost,.danger,.chip,.user-row{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:18px;border:1px solid rgba(245,240,235,.12);background:rgba(245,240,235,.03);color:#f5f0eb;text-decoration:none;padding:12px 16px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;transition:transform .18s ease,background .18s ease,border-color .18s ease,opacity .18s ease}.btn:hover,.ghost:hover,.danger:hover,.user-row:hover{transform:translateY(-1px)}.btn{background:linear-gradient(135deg,rgba(255,149,0,.98),rgba(245,240,235,.94));color:#050505;border-color:transparent}.danger{background:rgba(255,77,109,.12);border-color:rgba(255,77,109,.28);color:#ffd7df}.btn[disabled],.ghost[disabled],.danger[disabled]{opacity:.6;cursor:not-allowed;transform:none}.grid{display:grid;grid-template-columns:380px minmax(0,1fr);gap:16px}.stack,.list{display:grid;gap:12px}.list{max-height:720px;overflow:auto;padding-right:6px}.user-row{width:100%;justify-content:flex-start;text-transform:none;letter-spacing:normal;padding:14px;border-radius:22px}.user-row.active{background:rgba(255,149,0,.12);border-color:rgba(255,149,0,.26)}.avatar{width:44px;height:44px;border-radius:50%;overflow:hidden;background:linear-gradient(135deg,#ff2d55,#34aadc);display:inline-flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:22px;flex-shrink:0}.avatar img{width:100%;height:100%;object-fit:cover;display:block}.user-meta{display:grid;gap:4px;min-width:0}.user-name{font-weight:700;font-size:15px}.tiny{color:rgba(245,240,235,.48);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase}.chip{padding:7px 10px;border-radius:999px;background:rgba(245,240,235,.06);font-size:9px}.chip.banned{background:rgba(255,77,109,.14);color:#ffd7df}.chip.plus{background:rgba(162,89,255,.16);color:#eee2ff}.chip.creator{background:rgba(255,149,0,.14);color:#ffe4bf}.editor{display:grid;gap:14px;grid-template-columns:repeat(2,minmax(0,1fr))}.field{display:grid;gap:8px}.field.wide{grid-column:1/-1}.label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(245,240,235,.52)}.input,.textarea,.select,.search{width:100%;border:1px solid rgba(245,240,235,.12);border-radius:18px;background:rgba(10,10,10,.72);color:#f5f0eb;padding:14px 16px;font:inherit;outline:none}.search{min-width:280px}.textarea{min-height:110px;resize:vertical}.entry{padding:18px;border-radius:24px;border:1px solid rgba(245,240,235,.08);background:rgba(245,240,235,.03);display:grid;gap:14px}.empty{padding:18px;border-radius:20px;border:1px dashed rgba(245,240,235,.12);color:rgba(245,240,235,.5);line-height:1.8;background:rgba(245,240,235,.02)}.overlay{position:fixed;inset:0;z-index:900;background:rgba(3,3,3,.78);backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center;padding:24px}.overlay.open{display:flex}.login-card{width:min(520px,100%)}.footer-note{color:rgba(245,240,235,.42);font-size:12px;line-height:1.7}.status.ok{color:#b8ffe8}.status.err{color:#ffd1d9}.section-tools{display:grid;gap:14px}.search-slab{padding:16px 18px;border-radius:24px;border:1px solid rgba(245,240,235,.08);background:rgba(245,240,235,.025)}.action-board{display:grid;gap:14px;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:16px}.action-slab{padding:16px 18px;border-radius:24px;background:rgba(245,240,235,.03);display:grid;gap:12px}.action-copy{color:rgba(245,240,235,.48);font-size:13px;line-height:1.65}.action-row{display:flex;gap:10px;flex-wrap:wrap}.section-headline{display:grid;gap:8px}.entry-top{display:grid;gap:12px}@media(max-width:1280px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.grid,.action-board{grid-template-columns:1fr}}@media(max-width:760px){.shell{padding:18px}.stats,.editor{grid-template-columns:1fr}.search-form,.hero-actions,.actions,.action-row{flex-direction:column;align-items:stretch}.search{min-width:0;width:100%}}
 </style>
+<style>
+.hero,.panel,.login-card,.card,.action-slab,.entry,.search-slab{background:linear-gradient(180deg,rgba(24,24,24,.98),rgba(10,10,10,.92))}
+.hero,.panel,.login-card{border-color:rgba(255,149,0,.1)}
+.card:nth-child(1){background:linear-gradient(180deg,rgba(255,149,0,.2),rgba(245,240,235,.06))}
+.card:nth-child(2){background:linear-gradient(180deg,rgba(255,77,109,.18),rgba(245,240,235,.06))}
+.card:nth-child(3){background:linear-gradient(180deg,rgba(52,170,220,.18),rgba(245,240,235,.06))}
+.card:nth-child(4){background:linear-gradient(180deg,rgba(0,229,176,.18),rgba(245,240,235,.06))}
+.card:nth-child(5){background:linear-gradient(180deg,rgba(162,89,255,.18),rgba(245,240,235,.06))}
+.panel:hover,.entry:hover,.action-slab:hover{transform:translateY(-2px)}
+.search-slab,.entry,.action-slab{border-color:rgba(255,149,0,.12)}
+.section-title,.mini-title,.login-title{letter-spacing:-.02em}
+.status,.copy,.muted{color:rgba(245,240,235,.7)}
+.toolbar,.row,.stats,.chips,.actions,.search-form,.hero-actions{gap:14px}
+.grid{gap:18px}
+.action-board{gap:18px}
+</style>
 </head>
 <body>
 <div class="scanline"></div>
@@ -132,6 +148,44 @@
   <section class="panel">
     <div class="row">
       <div>
+        <div class="eyebrow">Create Programs</div>
+        <h2 class="section-title">Publish scholarships and competitions.</h2>
+      </div>
+      <div class="section-headline">
+        <div class="tiny">These show up in the student hub and community panels.</div>
+      </div>
+    </div>
+    <div class="action-board" style="grid-template-columns:repeat(2,minmax(0,1fr));">
+      <div class="action-slab">
+        <div><div class="eyebrow">Scholarship Listing</div><h3 class="mini-title">Create an opportunity.</h3></div>
+        <div class="editor">
+          <label class="field wide"><span class="label">Title</span><input class="input" id="newScholarshipTitle" type="text" placeholder="Future scholarship name"></label>
+          <label class="field"><span class="label">Amount</span><input class="input" id="newScholarshipAmount" type="number" min="0" step="0.01" value="0"></label>
+          <label class="field"><span class="label">Deadline</span><input class="input" id="newScholarshipDeadline" type="date"></label>
+          <label class="field wide"><span class="label">Description</span><textarea class="textarea" id="newScholarshipDescription" placeholder="What students should know."></textarea></label>
+          <label class="field"><span class="label">Requirements</span><input class="input" id="newScholarshipRequirements" type="text" placeholder="GPA, grade level, essay, etc."></label>
+          <label class="field"><span class="label">Issuer</span><input class="input" id="newScholarshipIssuer" type="text" placeholder="beVivid Foundation"></label>
+        </div>
+        <div class="action-row"><button class="btn" type="button" onclick="createScholarship()">Create Scholarship</button></div>
+      </div>
+      <div class="action-slab">
+        <div><div class="eyebrow">Competition</div><h3 class="mini-title">Create a challenge.</h3></div>
+        <div class="editor">
+          <label class="field wide"><span class="label">Title</span><input class="input" id="newCompetitionTitle" type="text" placeholder="Challenge title"></label>
+          <label class="field"><span class="label">Prize Amount</span><input class="input" id="newCompetitionPrize" type="number" min="0" step="0.01" value="0"></label>
+          <label class="field"><span class="label">Deadline</span><input class="input" id="newCompetitionDeadline" type="date"></label>
+          <label class="field"><span class="label">Submission Type</span><select class="select" id="newCompetitionType"><option value="story">Story</option><option value="photo">Photo</option></select></label>
+          <label class="field wide"><span class="label">Rules</span><textarea class="textarea" id="newCompetitionRules" placeholder="What counts, what not to submit, how winners are chosen."></textarea></label>
+          <label class="field wide"><span class="label">Description</span><textarea class="textarea" id="newCompetitionDescription" placeholder="Short pitch for the competition."></textarea></label>
+        </div>
+        <div class="action-row"><button class="btn" type="button" onclick="createCompetition()">Create Competition</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="row">
+      <div>
         <div class="eyebrow">Student Review Queue</div>
         <h2 class="section-title">Good deeds and scholarship applications.</h2>
       </div>
@@ -141,6 +195,19 @@
     </div>
     <div class="stack" id="studentSubmissionList"></div>
     <div class="stack" id="studentApplicationList" style="margin-top:16px;"></div>
+  </section>
+
+  <section class="panel">
+    <div class="row">
+      <div>
+        <div class="eyebrow">Student Ledger</div>
+        <h2 class="section-title">Wallet audit trail.</h2>
+      </div>
+      <div class="section-headline">
+        <div class="tiny">Good deeds, competition prizes, and manual balance changes land here.</div>
+      </div>
+    </div>
+    <div class="stack" id="walletLedgerList"></div>
   </section>
 
   <section class="panel">
