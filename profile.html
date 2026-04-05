@@ -9,75 +9,376 @@
 <link rel="apple-touch-icon" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;500;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;500;700;800&family=DM+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+
 <style>
-* { box-sizing: border-box; }
-html, body { margin: 0; min-height: 100%; background: #050505; color: #f5f0eb; font-family: 'Syne', sans-serif; }
-body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opacity: .05; background-image: radial-gradient(circle at 20% 20%, rgba(255,45,85,.18), transparent 24%), radial-gradient(circle at 80% 10%, rgba(52,170,220,.18), transparent 26%), radial-gradient(circle at 50% 100%, rgba(0,229,176,.14), transparent 25%); }
-.scanline { position: fixed; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,.024), transparent); animation: scan 10s linear infinite; pointer-events: none; z-index: 499; }
-.orb-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-.orb { position: absolute; border-radius: 50%; filter: blur(110px); mix-blend-mode: screen; opacity: 0; animation: orbf linear infinite; }
-.orb:nth-child(1) { width: 620px; height: 620px; background: radial-gradient(circle, #ff2d55, transparent 70%); top: -15%; left: -8%; animation-duration: 22s; }
-.orb:nth-child(2) { width: 500px; height: 500px; background: radial-gradient(circle, #a259ff, transparent 70%); top: 56%; right: -12%; animation-duration: 28s; animation-delay: -9s; }
-.orb:nth-child(3) { width: 420px; height: 420px; background: radial-gradient(circle, #34aadc, transparent 70%); top: 26%; left: 38%; animation-duration: 20s; animation-delay: -13s; }
-.orb:nth-child(4) { width: 360px; height: 360px; background: radial-gradient(circle, #00e5b0, transparent 70%); bottom: -2%; left: 18%; animation-duration: 25s; animation-delay: -6s; }
-@keyframes grain { 0% { transform: translate(0,0); } 25% { transform: translate(-2px,1px); } 50% { transform: translate(1px,-1px); } 75% { transform: translate(-1px,2px); } 100% { transform: translate(2px,-2px); } }
-@keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
-@keyframes orbf { 0%,100% { opacity: 0; transform: scale(.8) translateY(0); } 10%,90% { opacity: .14; } 50% { opacity: .2; transform: scale(1.06) translateY(-28px); } }
-body::before { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"); opacity: .04; z-index: 500; animation: grain .4s steps(1) infinite; }
-.shell { position: relative; z-index: 1; min-height: 100vh; padding: 28px; max-width: 1560px; margin: 0 auto; }
-.shell, .header, .stage-wrap, .section-card, .modal-card { animation: pageRise .7s cubic-bezier(.16,1,.3,1) both; }
-.header { animation-delay: .05s; }
-.stage-wrap { animation-delay: .1s; }
-.section-card { animation-delay: .14s; }
-.topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
-.back, .studio { display: inline-flex; align-items: center; justify-content: center; padding: 12px 18px; border-radius: 999px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; }
-.header { margin: 0 auto 20px; max-width: 1280px; width: 100%; }
-.eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: #34aadc; margin-bottom: 12px; }
-.title-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-.title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(58px, 10vw, 120px); line-height: .88; margin: 0; }
-.plus-badge { display: inline-flex; align-items: center; justify-content: center; padding: 12px 16px; border-radius: 18px; border: 1px solid rgba(162,89,255,.24); background: linear-gradient(135deg, rgba(162,89,255,.24), rgba(122,108,224,.14)); box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 18px 40px rgba(74,40,142,.24); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #efeefe; }
-.plus-badge[hidden] { display: none; }
-.account-type-badge { display: inline-flex; align-items: center; justify-content: center; padding: 12px 16px; border-radius: 18px; border: 1px solid rgba(52,170,220,.22); background: rgba(52,170,220,.12); box-shadow: inset 0 1px 0 rgba(255,255,255,.06); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #eaf6ff; }
-.account-type-badge[hidden] { display: none; }
-.account-type-badge[data-type="creator"] { border-color: rgba(255,149,0,.26); background: rgba(255,149,0,.14); color: #ffe3bf; }
-.account-type-badge[data-type="partner"] { border-color: rgba(255,45,85,.24); background: rgba(255,45,85,.14); color: #ffd2dd; }
-.account-type-badge[data-type="business"] { border-color: rgba(0,229,176,.22); background: rgba(0,229,176,.12); color: #d4fff3; }
-.account-type-badge[data-type="student"] { border-color: rgba(52,170,220,.22); background: rgba(52,170,220,.12); color: #eaf6ff; }
-.sub { color: rgba(245,240,235,.46); max-width: 680px; line-height: 1.8; margin-top: 10px; }
-.topbar-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.profile-tools { display: grid; gap: 16px; margin-top: 22px; }
-.profile-stats { display: flex; flex-wrap: wrap; gap: 12px; align-items: stretch; }
-.profile-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; padding: 14px 16px; border-radius: 20px; border: 1px solid rgba(245,240,235,.08); background: rgba(245,240,235,.025); }
-.action-cluster { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
-.action-cluster--primary { margin-left: auto; }
-.search-form { display: flex; gap: 10px; flex-wrap: wrap; position: relative; }
-.search-input { min-width: 260px; border: 1px solid rgba(245,240,235,.12); background: rgba(10,10,10,.88); color: #f5f0eb; border-radius: 999px; padding: 12px 16px; font: inherit; outline: none; flex: 1; backdrop-filter: blur(14px); }
-.search-btn, .recognize-btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 18px; border-radius: 999px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer; }
-.recognize-btn { background: #f5f0eb; color: #050505; border-color: transparent; }
-.recognize-btn[disabled] { opacity: .6; cursor: not-allowed; }
-.search-results { display: none; position: absolute; top: calc(100% + 10px); left: 0; right: 0; border: 1px solid rgba(245,240,235,.1); border-radius: 18px; background: rgba(10,10,10,.96); backdrop-filter: blur(18px); overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,.35); }
-.search-results.open { display: block; }
-.search-result { display: flex; align-items: center; gap: 12px; width: 100%; border: 0; border-bottom: 1px solid rgba(245,240,235,.06); background: transparent; color: #f5f0eb; padding: 12px 14px; text-align: left; cursor: pointer; }
+/* ─── Reset & Root ─────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #020202;
+  --bg-1: #0a0a0a;
+  --bg-2: #111111;
+  --bg-3: #181818;
+  --border: rgba(255,255,255,.07);
+  --border-mid: rgba(255,255,255,.12);
+  --border-hi: rgba(255,255,255,.18);
+  --text: #f0ebe4;
+  --text-dim: rgba(240,235,228,.48);
+  --text-faint: rgba(240,235,228,.26);
+  --accent: #ff2d55;
+  --accent-blue: #34aadc;
+  --accent-purple: #a259ff;
+  --accent-green: #00e5b0;
+  --accent-orange: #ff9500;
+  --mono: 'DM Mono', monospace;
+  --display: 'Bebas Neue', sans-serif;
+  --body: 'Syne', sans-serif;
+  --serif: 'Instrument Serif', serif;
+  --radius-sm: 12px;
+  --radius: 20px;
+  --radius-lg: 28px;
+  --radius-xl: 36px;
+  --ease: cubic-bezier(.16,1,.3,1);
+}
+html { scroll-behavior: smooth; }
+html, body { min-height: 100%; background: var(--bg); color: var(--text); font-family: var(--body); -webkit-font-smoothing: antialiased; }
+
+/* ─── Background System ─────────────────────────────────────────── */
+.bg-layer {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+}
+.bg-mesh {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 5%, rgba(255,45,85,.055) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 92% 8%, rgba(52,170,220,.045) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 50% 100%, rgba(162,89,255,.04) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 20% 65%, rgba(0,229,176,.03) 0%, transparent 50%);
+}
+.bg-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 100% 80% at 50% 0%, black 30%, transparent 100%);
+}
+.bg-noise {
+  position: absolute; inset: 0; opacity: .028;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: noiseShift .4s steps(1) infinite;
+}
+.scan-line {
+  position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 800; pointer-events: none;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,45,85,.06) 30%, rgba(52,170,220,.08) 60%, transparent 100%);
+  animation: scanDown 12s linear infinite;
+}
+@keyframes noiseShift { 0%,100%{transform:translate(0,0)} 25%{transform:translate(-2px,1px)} 50%{transform:translate(1px,-2px)} 75%{transform:translate(-1px,2px)} }
+@keyframes scanDown { 0%{top:-2px} 100%{top:100vh} }
+
+/* ─── Full-page visualizer ─────────────────────────────────────── */
+.full-page-viz {
+  position: fixed; inset: 0; width: 100%; height: 100%;
+  z-index: 0; pointer-events: none; opacity: .35;
+}
+
+/* ─── Shell / Layout ────────────────────────────────────────────── */
+.shell {
+  position: relative; z-index: 1;
+  min-height: 100vh; padding: 24px;
+  max-width: 1680px; margin: 0 auto;
+}
+.profile-layout-shell {
+  display: grid;
+  grid-template-columns: 280px minmax(0,1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+/* ─── Sidebar ───────────────────────────────────────────────────── */
+.profile-sidebar {
+  position: sticky; top: 24px;
+  display: grid; gap: 14px;
+  animation: riseIn .6s var(--ease) both;
+}
+.sidebar-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  background: rgba(255,255,255,.022);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 1px 0 rgba(255,255,255,.04) inset, 0 24px 48px rgba(0,0,0,.28);
+  transition: border-color .3s ease;
+}
+.sidebar-card:hover { border-color: var(--border-mid); }
+.sidebar-eyebrow {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--accent-blue); margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+}
+.sidebar-eyebrow::before {
+  content: ''; width: 4px; height: 4px; border-radius: 50%; background: currentColor;
+  box-shadow: 0 0 6px currentColor;
+}
+.sidebar-title {
+  font-family: var(--display); font-size: 32px; line-height: .9;
+  color: var(--text); margin-bottom: 10px;
+}
+.sidebar-copy {
+  color: var(--text-dim); font-size: 13px; line-height: 1.7;
+}
+.sidebar-meta { color: var(--text-dim); font-size: 13px; line-height: 1.7; }
+.sidebar-current {
+  margin-top: 10px; margin-bottom: 14px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: .14em;
+  color: var(--text); background: rgba(255,255,255,.04);
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 8px 12px;
+}
+.sidebar-section { display: grid; gap: 8px; margin-top: 16px; }
+.sidebar-link {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 100%; padding: 13px 18px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: rgba(255,255,255,.03);
+  color: var(--text-dim); text-decoration: none;
+  font-family: var(--mono); font-size: 9px; letter-spacing: .18em; text-transform: uppercase;
+  transition: all .2s var(--ease);
+  position: relative; overflow: hidden;
+}
+.sidebar-link::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,.05), transparent);
+  opacity: 0; transition: opacity .2s ease;
+}
+.sidebar-link:hover { border-color: var(--border-hi); color: var(--text); transform: translateY(-1px); }
+.sidebar-link:hover::before { opacity: 1; }
+.sidebar-link--primary {
+  background: linear-gradient(135deg, #ff9500 0%, #ff6b00 100%);
+  color: #000; border-color: transparent; font-weight: 600;
+  box-shadow: 0 4px 20px rgba(255,149,0,.28), 0 1px 0 rgba(255,255,255,.2) inset;
+}
+.sidebar-link--primary:hover {
+  background: linear-gradient(135deg, #ffaa22 0%, #ff7a00 100%);
+  color: #000; box-shadow: 0 6px 28px rgba(255,149,0,.38), 0 1px 0 rgba(255,255,255,.22) inset;
+}
+
+/* ─── Search ────────────────────────────────────────────────────── */
+.search-form { display: grid; gap: 8px; position: relative; }
+.search-input {
+  width: 100%; border: 1px solid var(--border); background: rgba(5,5,5,.7);
+  color: var(--text); border-radius: var(--radius-sm); padding: 12px 14px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: .06em;
+  outline: none; backdrop-filter: blur(14px);
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+.search-input:focus { border-color: var(--border-hi); box-shadow: 0 0 0 3px rgba(52,170,220,.08); }
+.search-input::placeholder { color: var(--text-faint); }
+.search-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 12px 18px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: rgba(255,255,255,.04);
+  color: var(--text-dim); cursor: pointer;
+  font-family: var(--mono); font-size: 9px; letter-spacing: .18em; text-transform: uppercase;
+  transition: all .2s var(--ease);
+}
+.search-btn:hover { border-color: var(--border-hi); color: var(--text); background: rgba(255,255,255,.07); }
+.search-results {
+  display: none; position: absolute; top: calc(100% + 8px); left: 0; right: 0;
+  border: 1px solid var(--border-mid); border-radius: var(--radius);
+  background: rgba(8,8,8,.97); backdrop-filter: blur(24px);
+  overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,.5), 0 1px 0 rgba(255,255,255,.05) inset;
+  z-index: 200;
+}
+.search-results.open { display: block; animation: fadeDown .18s var(--ease) both; }
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+.search-result {
+  display: flex; align-items: center; gap: 12px; width: 100%;
+  border: 0; border-bottom: 1px solid var(--border); background: transparent;
+  color: var(--text); padding: 12px 14px; text-align: left; cursor: pointer;
+  transition: background .15s ease;
+}
 .search-result:last-child { border-bottom: 0; }
-.search-result:hover { background: rgba(245,240,235,.05); }
-.search-avatar { width: 42px; height: 42px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg,#ff2d55,#34aadc); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: 'Bebas Neue', sans-serif; font-size: 20px; }
+.search-result:hover { background: rgba(255,255,255,.04); }
+.search-avatar {
+  width: 38px; height: 38px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--accent), var(--accent-blue));
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--display); font-size: 18px; border: 1px solid var(--border);
+}
 .search-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .search-meta { min-width: 0; }
-.search-name { font-weight: 700; font-size: 14px; line-height: 1.2; }
-.search-handle { margin-top: 4px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: rgba(245,240,235,.42); }
-.search-empty { padding: 14px 16px; color: rgba(245,240,235,.48); font-size: 13px; line-height: 1.6; }
-.recognition-card { border: 1px solid rgba(245,240,235,.08); border-radius: 18px; padding: 14px 16px; background: rgba(245,240,235,.03); min-width: 210px; }
-.recognition-card small { display: block; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: rgba(245,240,235,.34); margin-bottom: 8px; }
-.recognition-card strong { font-size: 28px; line-height: 1; display: block; }
-.recognition-card span { display: block; margin-top: 8px; color: rgba(245,240,235,.56); font-size: 13px; line-height: 1.5; }
-.profile-note { color: rgba(245,240,235,.5); font-size: 13px; line-height: 1.6; }
-.social-action { background: rgba(245,240,235,.03); color: #f5f0eb; border-color: rgba(245,240,235,.12); }
-.social-action:hover { background: rgba(245,240,235,.08); }
-.stage-wrap { overflow: auto; border: 1px solid rgba(245,240,235,.08); border-radius: 28px; padding: 20px; background: rgba(245,240,235,.02); display: flex; justify-content: center; }
-.stage { position: relative; width: 1200px; min-height: 900px; border-radius: 24px; overflow: hidden; border: 1px solid rgba(245,240,235,.08); background: #111; box-shadow: 0 30px 90px rgba(0,0,0,.35); }
-.full-page-viz { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: .42; }
-.stage::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; }
+.search-name { font-weight: 700; font-size: 13px; line-height: 1.2; }
+.search-handle { margin-top: 3px; font-family: var(--mono); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-faint); }
+.search-empty { padding: 14px 16px; color: var(--text-dim); font-size: 13px; line-height: 1.6; }
+
+/* ─── Main Area ─────────────────────────────────────────────────── */
+.profile-main { min-width: 0; display: grid; gap: 20px; }
+
+/* ─── Header ────────────────────────────────────────────────────── */
+.header {
+  border: 1px solid var(--border); border-radius: var(--radius-xl);
+  padding: 28px 32px; background: rgba(255,255,255,.018);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 1px 0 rgba(255,255,255,.04) inset;
+  animation: riseIn .65s var(--ease) .05s both;
+  position: relative; overflow: hidden;
+}
+.header::after {
+  content: ''; position: absolute; top: 0; left: 32px; right: 32px; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
+}
+.eyebrow {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .24em; text-transform: uppercase;
+  color: var(--accent-blue); margin-bottom: 14px;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.eyebrow::after {
+  content: ''; flex: 1; height: 1px; min-width: 32px;
+  background: linear-gradient(90deg, currentColor, transparent);
+  opacity: .4;
+}
+.title-row { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
+.title {
+  font-family: var(--display); font-size: clamp(54px,9vw,108px);
+  line-height: .86; letter-spacing: .01em; color: var(--text);
+}
+.plus-badge {
+  display: inline-flex; align-items: center; padding: 8px 14px;
+  border-radius: 999px; border: 1px solid rgba(162,89,255,.3);
+  background: linear-gradient(135deg, rgba(162,89,255,.2), rgba(122,108,224,.1));
+  box-shadow: 0 0 20px rgba(162,89,255,.15), inset 0 1px 0 rgba(255,255,255,.08);
+  font-family: var(--mono); font-size: 8px; letter-spacing: .2em; text-transform: uppercase;
+  color: #efeefe;
+}
+.plus-badge[hidden] { display: none; }
+.account-type-badge {
+  display: inline-flex; align-items: center; padding: 8px 14px;
+  border-radius: 999px; border: 1px solid rgba(52,170,220,.24);
+  background: rgba(52,170,220,.1);
+  font-family: var(--mono); font-size: 8px; letter-spacing: .18em; text-transform: uppercase;
+  color: #c8eeff;
+}
+.account-type-badge[hidden] { display: none; }
+.account-type-badge[data-type="creator"] { border-color: rgba(255,149,0,.28); background: rgba(255,149,0,.12); color: #ffe3bf; }
+.account-type-badge[data-type="partner"] { border-color: rgba(255,45,85,.26); background: rgba(255,45,85,.12); color: #ffd2dd; }
+.account-type-badge[data-type="business"] { border-color: rgba(0,229,176,.24); background: rgba(0,229,176,.1); color: #c4fff0; }
+.account-type-badge[data-type="student"] { border-color: rgba(52,170,220,.24); background: rgba(52,170,220,.1); color: #c8eeff; }
+.sub {
+  color: var(--text-dim); font-size: 14px; line-height: 1.75;
+  max-width: 620px; margin-bottom: 24px;
+  font-family: var(--serif); font-style: italic;
+}
+
+/* ─── Stats Row ─────────────────────────────────────────────────── */
+.profile-tools { display: grid; gap: 12px; }
+.profile-stats { display: flex; flex-wrap: wrap; gap: 10px; }
+.recognition-card {
+  flex: 1; min-width: 140px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 18px 20px;
+  background: rgba(255,255,255,.025);
+  backdrop-filter: blur(12px);
+  position: relative; overflow: hidden;
+  transition: border-color .25s ease, transform .2s var(--ease);
+}
+.recognition-card:hover { border-color: var(--border-mid); transform: translateY(-2px); }
+.recognition-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent);
+}
+.recognition-card small {
+  display: block; font-family: var(--mono); font-size: 8px; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--text-faint); margin-bottom: 10px;
+}
+.recognition-card strong {
+  display: block; font-family: var(--display); font-size: 42px; line-height: 1;
+  color: var(--text); letter-spacing: .01em;
+}
+.recognition-card span {
+  display: block; margin-top: 8px; color: var(--text-faint); font-size: 11px; line-height: 1.5;
+}
+.recognition-card[hidden] { display: none; }
+
+/* ─── Action Row ────────────────────────────────────────────────── */
+.profile-actions {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  align-items: center; justify-content: space-between;
+  padding: 14px 18px;
+  border-radius: var(--radius); border: 1px solid var(--border);
+  background: rgba(255,255,255,.018);
+}
+.action-cluster { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.action-cluster--primary { margin-left: auto; }
+.social-action {
+  background: rgba(255,255,255,.03) !important;
+  color: var(--text-dim) !important;
+  border-color: var(--border) !important;
+}
+.social-action:hover { color: var(--text) !important; }
+.recognize-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 12px 22px; border-radius: var(--radius-sm);
+  border: 1px solid rgba(0,229,176,.3);
+  background: rgba(0,229,176,.12);
+  color: #c4fff0; cursor: pointer;
+  font-family: var(--mono); font-size: 9px; letter-spacing: .18em; text-transform: uppercase;
+  transition: all .2s var(--ease);
+  box-shadow: 0 0 0 0 rgba(0,229,176,.2);
+}
+.recognize-btn:not([disabled]):hover {
+  background: rgba(0,229,176,.2); border-color: rgba(0,229,176,.5);
+  box-shadow: 0 0 20px rgba(0,229,176,.15); transform: translateY(-1px);
+}
+.recognize-btn[disabled] { opacity: .45; cursor: not-allowed; }
+.profile-note {
+  margin-top: 8px; color: var(--text-faint);
+  font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase;
+  min-height: 16px;
+}
+
+/* ─── Tab Bar ───────────────────────────────────────────────────── */
+.profile-tab-bar {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  padding: 6px; border-radius: var(--radius);
+  border: 1px solid var(--border); background: rgba(255,255,255,.02);
+  width: fit-content;
+  animation: riseIn .6s var(--ease) .12s both;
+}
+.profile-tab-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 10px 20px; border-radius: 14px; border: 1px solid transparent;
+  background: transparent; color: var(--text-faint); cursor: pointer;
+  font-family: var(--mono); font-size: 9px; letter-spacing: .18em; text-transform: uppercase;
+  transition: all .22s var(--ease);
+}
+.profile-tab-btn:hover { color: var(--text); background: rgba(255,255,255,.04); }
+.profile-tab-btn.active {
+  background: var(--bg-3); color: var(--text);
+  border-color: var(--border-mid);
+  box-shadow: 0 2px 12px rgba(0,0,0,.3), 0 1px 0 rgba(255,255,255,.06) inset;
+}
+.profile-tab-panel { display: none; animation: riseIn .4s var(--ease) both; }
+.profile-tab-panel.active { display: block; }
+
+/* ─── Stage (Vivid Page) ────────────────────────────────────────── */
+.stage-wrap {
+  overflow: auto; border: 1px solid var(--border); border-radius: var(--radius-xl);
+  padding: 20px; background: rgba(255,255,255,.015);
+  box-shadow: 0 1px 0 rgba(255,255,255,.04) inset;
+}
+.stage {
+  position: relative; width: 1200px; min-height: 900px;
+  border-radius: 20px; overflow: hidden;
+  border: 1px solid var(--border); background: var(--bg-2);
+  box-shadow: 0 24px 80px rgba(0,0,0,.4);
+}
+.stage::before {
+  content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
 .pattern-layer { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: .42; mix-blend-mode: screen; }
 .el { position: absolute; overflow: hidden; }
 .el.anim-float { animation: profileFloat 4.8s ease-in-out infinite; }
@@ -86,201 +387,311 @@ body::before { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512
 .el.anim-flicker { animation: profileFlicker 2.6s steps(2, end) infinite; }
 .text-block { padding: 18px; white-space: pre-wrap; line-height: 1.45; }
 .image-block img, .embed-block iframe { width: 100%; height: 100%; border: 0; display: block; object-fit: cover; position: relative; z-index: 1; }
-.spotify-card { width: 100%; height: 100%; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; background: linear-gradient(135deg,#1db954,#111111 72%); color: #ffffff; }
-.spotify-card small { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; opacity: .7; }
+.spotify-card { width: 100%; height: 100%; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; background: linear-gradient(135deg,#1db954,#111111 72%); color: #fff; }
+.spotify-card small { font-family: var(--mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; opacity: .7; }
 .spotify-card strong { font-size: 22px; line-height: 1.1; }
 .spotify-card span { font-size: 13px; line-height: 1.6; opacity: .85; }
-.spotify-card a { display: inline-flex; width: fit-content; margin-top: 12px; padding: 10px 14px; border-radius: 999px; background: rgba(255,255,255,.16); color: #fff; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
+.spotify-card a { display: inline-flex; width: fit-content; margin-top: 12px; padding: 10px 14px; border-radius: 999px; background: rgba(255,255,255,.16); color: #fff; text-decoration: none; font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
 .visualizer-bg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: .9; }
-.audio-pod { position: absolute; left: 20px; bottom: 20px; z-index: 4; display: grid; gap: 8px; padding: 12px; border-radius: 18px; border: 1px solid rgba(245,240,235,.12); background: rgba(5,5,5,.42); backdrop-filter: blur(14px); }
-.audio-toggle { border: 1px solid rgba(245,240,235,.12); background: rgba(5,5,5,.55); color: #f5f0eb; border-radius: 999px; padding: 12px 16px; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; backdrop-filter: blur(14px); }
-.audio-note { color: rgba(245,240,235,.56); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
-.empty { padding: 26px; border-radius: 16px; border: 1px solid rgba(245,240,235,.08); background: rgba(245,240,235,.03); color: rgba(245,240,235,.56); line-height: 1.8; }
-.profile-tab-bar { display: flex; flex-wrap: wrap; gap: 10px; }
-.profile-tab-btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 18px; border-radius: 999px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: rgba(245,240,235,.72); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer; transition: transform .18s ease, border-color .18s ease, background .18s ease, color .18s ease; }
-.profile-tab-btn:hover { transform: translateY(-1px); border-color: rgba(255,149,0,.24); color: #f5f0eb; }
-.profile-tab-btn.active { background: linear-gradient(135deg, rgba(255,149,0,.96), rgba(245,240,235,.92)); color: #050505; border-color: transparent; }
-.profile-tab-panel { display: none; }
-.profile-tab-panel.active { display: block; }
-.posts-wrap { margin-top: 22px; display: grid; gap: 16px; }
-.section-card { border: 1px solid rgba(245,240,235,.08); border-radius: 28px; padding: 22px; background: rgba(245,240,235,.02); }
-.section-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
-.section-title-sm { font-family: 'Bebas Neue', sans-serif; font-size: 36px; line-height: .9; margin: 0; }
-.section-sub { color: rgba(245,240,235,.48); line-height: 1.7; font-size: 13px; }
-.mini-feed { display: grid; gap: 12px; }
-.mini-post { border: 1px solid rgba(245,240,235,.08); border-radius: 20px; padding: 18px; background: rgba(5,5,5,.34); }
-.mini-post-text { white-space: pre-wrap; line-height: 1.75; color: #f5f0eb; }
-.mini-post-img { width: 100%; max-height: 340px; object-fit: cover; display: block; margin-top: 14px; border-radius: 16px; border: 1px solid rgba(245,240,235,.08); }
-.mini-post-meta, .follow-person-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
-.mini-chip { padding: 8px 10px; border-radius: 999px; background: rgba(245,240,235,.05); color: rgba(245,240,235,.6); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .11em; text-transform: uppercase; }
-.meta-copy { color: rgba(245,240,235,.42); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
-.showroom-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top: 16px; }
-.showroom-card { position: relative; min-height: 180px; padding: 18px; border: 1px solid rgba(245,240,235,.08); border-radius: 22px; background: linear-gradient(180deg, rgba(16,16,16,.92), rgba(6,6,6,.88)); overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,.03); }
-.showroom-card::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at top right, var(--award-accent, rgba(52,170,220,.16)), transparent 46%); pointer-events: none; opacity: .9; }
+.audio-pod { position: absolute; left: 18px; bottom: 18px; z-index: 4; display: grid; gap: 6px; padding: 12px; border-radius: var(--radius); border: 1px solid var(--border-mid); background: rgba(5,5,5,.55); backdrop-filter: blur(18px); }
+.audio-toggle { border: 1px solid var(--border-mid); background: rgba(5,5,5,.6); color: var(--text); border-radius: 10px; padding: 10px 16px; cursor: pointer; font-family: var(--mono); font-size: 9px; letter-spacing: .16em; text-transform: uppercase; transition: all .2s ease; }
+.audio-toggle:hover { background: rgba(255,255,255,.06); border-color: var(--border-hi); }
+.audio-note { color: var(--text-faint); font-family: var(--mono); font-size: 8px; letter-spacing: .14em; text-transform: uppercase; }
+
+/* ─── Section Cards ─────────────────────────────────────────────── */
+.section-card {
+  border: 1px solid var(--border); border-radius: var(--radius-xl);
+  padding: 26px; background: rgba(255,255,255,.018);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 1px 0 rgba(255,255,255,.04) inset;
+  animation: riseIn .6s var(--ease) .16s both;
+}
+.section-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.section-title-sm { font-family: var(--display); font-size: 44px; line-height: .9; color: var(--text); }
+.section-sub { color: var(--text-dim); font-size: 13px; line-height: 1.7; font-family: var(--serif); font-style: italic; margin-bottom: 20px; }
+.studio {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 10px 18px; border-radius: var(--radius-sm); border: 1px solid var(--border);
+  background: rgba(255,255,255,.03); color: var(--text-dim); text-decoration: none;
+  font-family: var(--mono); font-size: 8px; letter-spacing: .18em; text-transform: uppercase;
+  transition: all .2s var(--ease);
+}
+.studio:hover { border-color: var(--border-hi); color: var(--text); background: rgba(255,255,255,.06); }
+
+/* ─── Showroom ──────────────────────────────────────────────────── */
+.showroom-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+.showroom-card {
+  position: relative; min-height: 170px; padding: 20px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: linear-gradient(180deg, rgba(18,18,18,.96), rgba(6,6,6,.92));
+  overflow: hidden; transition: border-color .25s ease, transform .22s var(--ease);
+}
+.showroom-card:hover { border-color: var(--border-mid); transform: translateY(-3px); }
+.showroom-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at top right, var(--award-accent, rgba(52,170,220,.14)), transparent 50%);
+  opacity: .8;
+}
+.showroom-card::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.07), transparent);
+}
 .showroom-card > * { position: relative; z-index: 1; }
 .showroom-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.showroom-icon { width: 52px; height: 52px; border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; background: rgba(245,240,235,.08); color: #f5f0eb; font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: .04em; box-shadow: inset 0 1px 0 rgba(255,255,255,.06); }
-.showroom-type { display: inline-flex; align-items: center; justify-content: center; padding: 8px 10px; border-radius: 999px; border: 1px solid rgba(245,240,235,.1); background: rgba(245,240,235,.04); color: rgba(245,240,235,.64); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
-.showroom-title { margin-top: 18px; font-size: 22px; line-height: 1.15; font-weight: 700; }
-.showroom-copy { margin-top: 10px; color: rgba(245,240,235,.58); line-height: 1.7; font-size: 14px; }
-.showroom-empty { padding: 22px; border: 1px dashed rgba(245,240,235,.12); border-radius: 20px; color: rgba(245,240,235,.52); line-height: 1.8; background: rgba(245,240,235,.02); }
-.mention-link { color: #8fdfff; text-decoration: none; font-weight: 700; }
-.mention-link:hover { color: #f5f0eb; }
-.loading-stack { display: grid; gap: 12px; margin-top: 14px; }
-.loading-card { padding: 18px; border-radius: 20px; border: 1px solid rgba(245,240,235,.08); background: rgba(245,240,235,.025); overflow: hidden; }
-.loading-bar { height: 12px; border-radius: 999px; background: linear-gradient(90deg, rgba(245,240,235,.04), rgba(245,240,235,.14), rgba(245,240,235,.04)); background-size: 200% 100%; animation: shimmerBar 1.2s linear infinite; }
-.loading-bar + .loading-bar { margin-top: 10px; }
-.loading-bar.short { width: 46%; }
-.loading-bar.mid { width: 68%; }
-.modal { position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(5,5,5,.82); backdrop-filter: blur(14px); }
-.modal.open { display: flex; }
-.modal-card { width: min(720px, 100%); max-height: min(80vh, 900px); overflow: auto; border: 1px solid rgba(245,240,235,.12); border-radius: 28px; background: linear-gradient(180deg, rgba(18,18,18,.98), rgba(8,8,8,.98)); padding: 24px; box-shadow: 0 30px 80px rgba(0,0,0,.45); }
+.showroom-icon {
+  width: 46px; height: 46px; border-radius: 13px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,.07); color: var(--text);
+  font-family: var(--display); font-size: 24px;
+  border: 1px solid var(--border); box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+}
+.showroom-type {
+  display: inline-flex; align-items: center; padding: 6px 10px; border-radius: 999px;
+  border: 1px solid var(--border); background: rgba(255,255,255,.04);
+  color: var(--text-faint); font-family: var(--mono); font-size: 8px; letter-spacing: .14em; text-transform: uppercase;
+}
+.showroom-title { margin-top: 16px; font-size: 18px; line-height: 1.2; font-weight: 700; color: var(--text); }
+.showroom-copy { margin-top: 8px; color: var(--text-dim); line-height: 1.65; font-size: 12px; }
+.showroom-empty {
+  padding: 28px; border: 1px dashed rgba(255,255,255,.08); border-radius: var(--radius);
+  color: var(--text-dim); line-height: 1.8; text-align: center; font-family: var(--serif); font-style: italic;
+}
+
+/* ─── Posts ─────────────────────────────────────────────────────── */
+.mini-feed { display: grid; gap: 10px; }
+.mini-post {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 20px; background: rgba(5,5,5,.4);
+  transition: border-color .25s ease;
+  position: relative; overflow: hidden;
+}
+.mini-post:hover { border-color: var(--border-mid); }
+.mini-post::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
+}
+.mini-post-text { white-space: pre-wrap; line-height: 1.8; color: var(--text); font-size: 14px; }
+.mini-post-img { width: 100%; max-height: 320px; object-fit: cover; display: block; margin-top: 14px; border-radius: 13px; border: 1px solid var(--border); }
+.mini-post-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; align-items: center; }
+.mini-chip {
+  padding: 6px 12px; border-radius: 999px;
+  background: rgba(255,255,255,.04); color: var(--text-faint);
+  border: 1px solid var(--border);
+  font-family: var(--mono); font-size: 8px; letter-spacing: .12em; text-transform: uppercase;
+}
+.meta-copy {
+  color: var(--text-faint); font-family: var(--mono);
+  font-size: 9px; letter-spacing: .12em; text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.mention-link { color: var(--accent-blue); text-decoration: none; font-weight: 700; }
+.mention-link:hover { color: var(--text); }
+.empty {
+  padding: 28px; border-radius: var(--radius); border: 1px dashed rgba(255,255,255,.08);
+  background: rgba(255,255,255,.02); color: var(--text-dim); line-height: 1.8;
+  font-family: var(--serif); font-style: italic; text-align: center;
+}
+
+/* ─── Follow Modal ─────────────────────────────────────────────── */
+.modal {
+  position: fixed; inset: 0; z-index: 9999; display: none;
+  align-items: center; justify-content: center; padding: 24px;
+  background: rgba(2,2,2,.82); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+}
+.modal.open { display: flex; animation: fadeIn .2s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.modal-card {
+  width: min(700px, 100%); max-height: min(80vh, 900px); overflow: auto;
+  border: 1px solid var(--border-mid); border-radius: var(--radius-xl);
+  background: linear-gradient(180deg, rgba(16,16,16,.99), rgba(6,6,6,.99));
+  padding: 28px; box-shadow: 0 40px 100px rgba(0,0,0,.6), 0 1px 0 rgba(255,255,255,.05) inset;
+  animation: riseIn .28s var(--ease);
+}
 .modal-close { margin-left: auto; }
-.follow-list { display: grid; gap: 12px; margin-top: 14px; }
-.follow-person { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 14px; border-radius: 18px; border: 1px solid rgba(245,240,235,.08); background: rgba(245,240,235,.03); }
+.follow-list { display: grid; gap: 10px; margin-top: 14px; }
+.follow-person {
+  display: flex; justify-content: space-between; gap: 12px; align-items: center;
+  padding: 14px 16px; border-radius: var(--radius); border: 1px solid var(--border);
+  background: rgba(255,255,255,.025); transition: border-color .2s ease;
+}
+.follow-person:hover { border-color: var(--border-mid); }
 .follow-person-main { display: flex; gap: 12px; align-items: center; min-width: 0; }
-@keyframes pageRise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes profileFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
-@keyframes profilePulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.035); opacity: .88; } }
-@keyframes profileDrift { 0%, 100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(16px,-10px,0); } }
-@keyframes profileFlicker { 0%, 100% { opacity: 1; } 35% { opacity: .82; } 50% { opacity: .98; } 65% { opacity: .72; } }
-@keyframes shimmerBar { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-/* Sidebar refresh */
-.profile-layout-shell { display: grid; grid-template-columns: 300px minmax(0,1fr); gap: 24px; align-items: start; max-width: 1680px; }
-.profile-sidebar { position: sticky; top: 24px; display: grid; gap: 16px; }
-.profile-main { min-width: 0; display: grid; gap: 22px; }
-.profile-main .header { margin: 0; max-width: none; }
-.profile-main .stage-wrap { margin: 0; }
-.sidebar-card { border: 1px solid rgba(245,240,235,.08); border-radius: 28px; padding: 20px; background: rgba(245,240,235,.03); backdrop-filter: blur(18px); box-shadow: 0 22px 50px rgba(0,0,0,.22); }
-.sidebar-title { font-family: 'Bebas Neue', sans-serif; font-size: 38px; line-height: .92; margin: 0 0 10px; }
-.sidebar-copy, .sidebar-meta { color: rgba(245,240,235,.56); line-height: 1.7; font-size: 13px; }
-.sidebar-current { margin-top: 12px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: rgba(245,240,235,.72); }
-.sidebar-section { display: grid; gap: 10px; margin-top: 16px; }
-.sidebar-link { display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 13px 16px; border-radius: 16px; border: 1px solid rgba(245,240,235,.12); background: rgba(245,240,235,.03); color: #f5f0eb; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; transition: transform .18s ease, border-color .18s ease, background .18s ease; }
-.sidebar-link:hover { transform: translateY(-1px); border-color: rgba(255,149,0,.24); background: rgba(245,240,235,.06); }
-.sidebar-link--primary { background: linear-gradient(135deg, rgba(255,149,0,.98), rgba(245,240,235,.94)); color: #050505; border-color: transparent; }
-.sidebar-link--primary:hover { background: #ff9500; }
-.profile-sidebar .search-form { display: grid; gap: 10px; width: 100%; }
-.profile-sidebar .search-input { min-width: 0; width: 100%; }
-.profile-sidebar .search-btn { width: 100%; }
-@media (max-width: 1080px) { .profile-layout-shell { grid-template-columns: 1fr; } .profile-sidebar { position: static; } }
-@media (max-width: 760px) { .profile-layout-shell { padding: 18px; } .profile-tools { flex-direction: column; align-items: stretch; } .search-form { width: 100%; } .search-input { min-width: 0; width: 100%; } .search-btn { width: 100%; } .stage-wrap { padding: 10px; } .stage { width: 980px; min-height: 780px; } .audio-toggle { left: 12px; bottom: 12px; } .audio-note { left: 12px; right: auto; bottom: 58px; } }
+.author-name { font-weight: 700; font-size: 14px; line-height: 1.2; }
+.author-handle { margin-top: 3px; font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-faint); }
+.follow-person-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+
+/* ─── Loading ───────────────────────────────────────────────────── */
+.loading-stack { display: grid; gap: 10px; margin-top: 14px; }
+.loading-card { padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); background: rgba(255,255,255,.02); overflow: hidden; }
+.loading-bar {
+  height: 10px; border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255,255,255,.03), rgba(255,255,255,.1), rgba(255,255,255,.03));
+  background-size: 200% 100%;
+  animation: shimmerBar 1.4s linear infinite;
+}
+.loading-bar + .loading-bar { margin-top: 10px; }
+.loading-bar.short { width: 40%; }
+.loading-bar.mid { width: 65%; }
+
+/* ─── Divider line ─────────────────────────────────────────────── */
+.hr { height: 1px; background: linear-gradient(90deg, transparent, var(--border-mid), transparent); margin: 6px 0; }
+
+/* ─── Keyframes ─────────────────────────────────────────────────── */
+@keyframes riseIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes profileFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+@keyframes profilePulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.035);opacity:.88} }
+@keyframes profileDrift { 0%,100%{transform:translate3d(0,0,0)} 50%{transform:translate3d(16px,-10px,0)} }
+@keyframes profileFlicker { 0%,100%{opacity:1} 35%{opacity:.8} 50%{opacity:.98} 65%{opacity:.7} }
+@keyframes shimmerBar { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+/* ─── Responsive ─────────────────────────────────────────────────── */
+@media (max-width: 1080px) {
+  .profile-layout-shell { grid-template-columns: 1fr; }
+  .profile-sidebar { position: static; }
+}
+@media (max-width: 760px) {
+  .shell { padding: 14px; }
+  .header { padding: 20px; }
+  .profile-tab-bar { width: 100%; }
+  .profile-tab-btn { flex: 1; }
+  .stage { width: 980px; min-height: 780px; }
+  .recognition-card strong { font-size: 32px; }
+}
 </style>
 </head>
 <body>
-<div class="scanline"></div>
-<div class="orb-layer" aria-hidden="true">
-  <div class="orb"></div>
-  <div class="orb"></div>
-  <div class="orb"></div>
-  <div class="orb"></div>
+
+<div class="bg-layer" aria-hidden="true">
+  <div class="bg-mesh"></div>
+  <div class="bg-grid"></div>
+  <div class="bg-noise"></div>
 </div>
+<div class="scan-line" aria-hidden="true"></div>
+
 <div class="shell profile-layout-shell">
+
+  <!-- ── Sidebar ── -->
   <aside class="profile-sidebar">
     <div class="sidebar-card">
-      <div class="eyebrow">Navigate</div>
-      <h2 class="sidebar-title">Keep the profile focused.</h2>
-      <div class="sidebar-copy">Everything important sits in one calm lane now, so the actual page has room to breathe.</div>
+      <div class="sidebar-eyebrow">Navigate</div>
+      <h2 class="sidebar-title">beVivid</h2>
+      <p class="sidebar-copy">Your profile, your world. Everything in one focused lane.</p>
       <div class="sidebar-section">
-        <a class="sidebar-link" href="/">Back To beVivid</a>
+        <a class="sidebar-link" href="/">Back to beVivid</a>
         <a class="sidebar-link" href="/community">Community</a>
         <a class="sidebar-link" id="creatorDashboardLink" href="/creator" hidden>Creator Dashboard</a>
         <a class="sidebar-link" id="studentDashboardLink" href="/student" hidden>Student Hub</a>
+        <div class="hr"></div>
         <a class="sidebar-link sidebar-link--primary" id="studioLink" href="/profiledata">Open Studio</a>
       </div>
     </div>
+
     <div class="sidebar-card">
-      <div class="eyebrow">Find Profiles</div>
-      <div class="sidebar-meta" id="sidebarViewMeta">Search by handle or display name to jump into another page.</div>
+      <div class="sidebar-eyebrow">Find Profiles</div>
+      <p class="sidebar-meta" id="sidebarViewMeta">Search by handle or name to jump to another page.</p>
       <div class="sidebar-current" id="sidebarCurrentHandle">@loading</div>
       <form class="search-form" onsubmit="event.preventDefault(); searchProfiles();">
-        <input class="search-input" id="searchHandle" type="text" placeholder="Find a user by handle" />
+        <input class="search-input" id="searchHandle" type="text" placeholder="Search handle…" autocomplete="off" />
         <button class="search-btn" type="submit">Search User</button>
         <div class="search-results" id="searchResults"></div>
       </form>
     </div>
   </aside>
+
+  <!-- ── Main ── -->
   <div class="profile-main">
-  <div class="header">
-    <div class="eyebrow">Profile</div>
-    <div class="title-row">
-      <h1 class="title" id="profileTitle">Loading...</h1>
-      <div class="account-type-badge" id="accountTypeBadge" hidden>Member</div>
-      <div class="plus-badge" id="plusBadge" hidden>beVivid+</div>
-    </div>
-    <div class="sub" id="profileSub">Pulling the latest profile layout.</div>
-    <div class="profile-tools">
-      <div class="profile-stats">
-        <div class="recognition-card">
-          <small>Recognition Points</small>
-          <strong id="recognitionPoints">0</strong>
-          <span id="recognitionMeta">Lifetime appreciation from the community.</span>
+
+    <!-- Header -->
+    <div class="header">
+      <div class="eyebrow">Profile</div>
+      <div class="title-row">
+        <h1 class="title" id="profileTitle">Loading…</h1>
+        <div class="account-type-badge" id="accountTypeBadge" hidden>Member</div>
+        <div class="plus-badge" id="plusBadge" hidden>beVivid+</div>
+      </div>
+      <p class="sub" id="profileSub">Pulling the latest profile layout.</p>
+
+      <div class="profile-tools">
+        <div class="profile-stats">
+          <div class="recognition-card">
+            <small>Recognition</small>
+            <strong id="recognitionPoints">0</strong>
+            <span id="recognitionMeta">Lifetime community appreciation.</span>
+          </div>
+          <div class="recognition-card" id="studentWalletCard" hidden>
+            <small>Student Wallet</small>
+            <strong id="studentWalletBalance">$0.00</strong>
+            <span id="studentWalletMeta">Scholarships &amp; competition rewards.</span>
+          </div>
+          <div class="recognition-card">
+            <small>Posts</small>
+            <strong id="postCount">0</strong>
+            <span id="postMeta">Community updates shared.</span>
+          </div>
+          <div class="recognition-card">
+            <small>Total Likes</small>
+            <strong id="totalLikeCount">0</strong>
+            <span id="likeMeta">Across all published posts.</span>
+          </div>
         </div>
-        <div class="recognition-card" id="studentWalletCard" hidden>
-          <small>Student Wallet</small>
-          <strong id="studentWalletBalance">$0.00</strong>
-          <span id="studentWalletMeta">Verified good deeds, scholarships, and competition rewards.</span>
-        </div>
-        <div class="recognition-card">
-          <small>Posts</small>
-          <strong id="postCount">0</strong>
-          <span id="postMeta">Community updates shared by this profile.</span>
-        </div>
-        <div class="recognition-card">
-          <small>Total Likes</small>
-          <strong id="totalLikeCount">0</strong>
-          <span id="likeMeta">All likes collected across published posts.</span>
+
+        <div class="profile-actions">
+          <div class="action-cluster">
+            <button class="search-btn social-action" id="followersBtn" type="button" onclick="openFollowModal('followers')">Followers 0</button>
+            <button class="search-btn social-action" id="followingBtn" type="button" onclick="openFollowModal('following')">Following 0</button>
+          </div>
+          <div class="action-cluster action-cluster--primary">
+            <button class="recognize-btn" id="recognizeBtn" onclick="grantRecognition()">Grant Recognition</button>
+          </div>
         </div>
       </div>
-      <div class="profile-actions">
-        <div class="action-cluster">
-          <button class="search-btn social-action" id="followersBtn" type="button" onclick="openFollowModal('followers')">Followers 0</button>
-          <button class="search-btn social-action" id="followingBtn" type="button" onclick="openFollowModal('following')">Following 0</button>
-        </div>
-        <div class="action-cluster action-cluster--primary">
-          <button class="recognize-btn" id="recognizeBtn" onclick="grantRecognition()">Grant Recognition</button>
-        </div>
-      </div>
+
+      <div class="profile-note" id="recognitionStatus"></div>
     </div>
-    <div class="profile-note" id="recognitionStatus"></div>
-  </div>
-  <div class="profile-tab-bar">
-    <button class="profile-tab-btn active" id="profileTabBtn-page" type="button" onclick="switchProfileTab('page')">Vivid Page</button>
-    <button class="profile-tab-btn" id="profileTabBtn-showroom" type="button" onclick="switchProfileTab('showroom')">Showroom</button>
-    <button class="profile-tab-btn" id="profileTabBtn-posts" type="button" onclick="switchProfileTab('posts')">Posts</button>
-  </div>
-  <div class="posts-wrap">
+
+    <!-- Tab Bar -->
+    <div class="profile-tab-bar">
+      <button class="profile-tab-btn active" id="profileTabBtn-page" type="button" onclick="switchProfileTab('page')">Vivid Page</button>
+      <button class="profile-tab-btn" id="profileTabBtn-showroom" type="button" onclick="switchProfileTab('showroom')">Showroom</button>
+      <button class="profile-tab-btn" id="profileTabBtn-posts" type="button" onclick="switchProfileTab('posts')">Posts</button>
+    </div>
+
+    <!-- Tab Panels -->
     <div class="profile-tab-panel active" id="profileTab-page">
       <div class="stage-wrap"><div class="stage" id="stage"></div></div>
     </div>
+
     <div class="profile-tab-panel" id="profileTab-showroom">
       <div class="section-card">
-      <div class="section-head">
-        <div>
-          <div class="eyebrow">Showroom</div>
-          <h2 class="section-title-sm">Awards on display.</h2>
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Showroom</div>
+            <h2 class="section-title-sm">Awards on display.</h2>
+          </div>
         </div>
-      </div>
-      <div class="section-sub">Trophies, awards, certifications, and community proof points live here.</div>
-      <div class="showroom-grid" id="showroomGrid"></div>
+        <p class="section-sub">Trophies, awards, certifications, and community proof points live here.</p>
+        <div class="showroom-grid" id="showroomGrid"></div>
       </div>
     </div>
+
     <div class="profile-tab-panel" id="profileTab-posts">
       <div class="section-card">
-      <div class="section-head">
-        <div>
-          <div class="eyebrow">Community Posts</div>
-          <h2 class="section-title-sm">What they’ve shared.</h2>
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Community Posts</div>
+            <h2 class="section-title-sm">What they've shared.</h2>
+          </div>
+          <a class="studio" href="/community">Open Community</a>
         </div>
-        <a class="studio" href="/community">Open Community</a>
-      </div>
-      <div class="section-sub">Recent posts from this profile appear here so their page and community presence stay connected.</div>
-      <div class="mini-feed" id="profilePosts"></div>
+        <p class="section-sub">Recent posts from this profile, bridging page and community together.</p>
+        <div class="mini-feed" id="profilePosts"></div>
       </div>
     </div>
-  </div>
+
   </div>
 </div>
+
+<!-- Follow Modal -->
 <div class="modal" id="followModal">
   <div class="modal-card">
     <div class="section-head">
@@ -290,12 +701,13 @@ body::before { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512
       </div>
       <button class="search-btn modal-close" type="button" onclick="closeFollowModal()">Close</button>
     </div>
-    <div class="section-sub" id="followModalSub">People connected to this profile.</div>
+    <p class="section-sub" id="followModalSub">People connected to this profile.</p>
     <div class="follow-list" id="followModalList"></div>
   </div>
 </div>
 
 <script>
+/* ── All original JS preserved exactly ── */
 const FIREBASE_DB_URL = 'https://bevivid-73a69-default-rtdb.firebaseio.com';
 const AUTH_COOKIE_NAME = 'bevivid_session';
 const COMMUNITY_ROOT = 'communityData';
@@ -320,8 +732,8 @@ function renderRichText(value) {
   return escaped.replace(/(^|[\s(>])@([a-z0-9_]{3,30})/gi, (match, prefix, handle) => `${prefix}<a class="mention-link" href="/profile?handle=${encodeURIComponent(handle.toLowerCase())}">@${escapeHtml(handle.toLowerCase())}</a>`);
 }
 function switchProfileTab(tab) {
-  document.querySelectorAll('.profile-tab-btn').forEach(button => button.classList.toggle('active', button.id === `profileTabBtn-${tab}`));
-  document.querySelectorAll('.profile-tab-panel').forEach(panel => panel.classList.toggle('active', panel.id === `profileTab-${tab}`));
+  document.querySelectorAll('.profile-tab-btn').forEach(b => b.classList.toggle('active', b.id === `profileTabBtn-${tab}`));
+  document.querySelectorAll('.profile-tab-panel').forEach(p => p.classList.toggle('active', p.id === `profileTab-${tab}`));
 }
 function getSessionUser() { const raw = getCookie(AUTH_COOKIE_NAME); if (!raw) return null; try { return JSON.parse(raw); } catch (_) { return null; } }
 function todayKey() { return new Date().toISOString().slice(0, 10); }
@@ -329,32 +741,15 @@ function isBeVividPlus(user) { return Boolean(user && (user['bevivid+'] === true
 function getAccountType(user) { return String((user && user.accountType) || '').trim().toLowerCase(); }
 function isCreatorAccount(user) { return getAccountType(user) === 'creator'; }
 function isStudentAccount(user) { return getAccountType(user) === 'student'; }
-function formatAccountTypeLabel(type) {
-  const value = String(type || '').trim().toLowerCase();
-  if (!value) return 'Member';
-  return value.charAt(0).toUpperCase() + value.slice(1);
-}
-function syncCreatorDashboardLink() {
-  const link = document.getElementById('creatorDashboardLink');
-  if (!link) return;
-  link.hidden = !isCreatorAccount(activeUser);
-}
-function syncStudentDashboardLink() {
-  const link = document.getElementById('studentDashboardLink');
-  if (!link) return;
-  link.hidden = !isStudentAccount(activeUser);
-}
+function formatAccountTypeLabel(type) { const value = String(type || '').trim().toLowerCase(); if (!value) return 'Member'; return value.charAt(0).toUpperCase() + value.slice(1); }
+function syncCreatorDashboardLink() { const link = document.getElementById('creatorDashboardLink'); if (link) link.hidden = !isCreatorAccount(activeUser); }
+function syncStudentDashboardLink() { const link = document.getElementById('studentDashboardLink'); if (link) link.hidden = !isStudentAccount(activeUser); }
 function sanitizePublicLayout(layout, premium) {
   const next = Object.assign({}, layout || {});
-  next.canvasWidth = 1200;
-  next.canvasHeight = 900;
-  next.pageMode = 'framed';
-  next.pageBackground = next.pageBackground || '#050505';
-  next.pageAccent = next.pageAccent || '#a259ff';
+  next.canvasWidth = 1200; next.canvasHeight = 900; next.pageMode = 'framed';
+  next.pageBackground = next.pageBackground || '#050505'; next.pageAccent = next.pageAccent || '#a259ff';
   next.pagePattern = next.pagePattern || 'none';
-  next.visualizerVariant = premium
-    ? (next.visualizerVariant || 'halo')
-    : ((next.visualizerVariant === 'bars' || next.visualizerVariant === 'wave') ? next.visualizerVariant : 'bars');
+  next.visualizerVariant = premium ? (next.visualizerVariant || 'halo') : ((next.visualizerVariant === 'bars' || next.visualizerVariant === 'wave') ? next.visualizerVariant : 'bars');
   return next;
 }
 function getProfileAudioPath(handle) { return `${FIREBASE_DB_URL}/profileAudio/${encodeURIComponent(handle)}.json`; }
@@ -373,16 +768,10 @@ function setProfileLoadingState() {
 function resetStagePresentation() {
   const stageWrap = document.querySelector('.stage-wrap');
   const stage = document.getElementById('stage');
-  stageWrap.style.border = '1px solid rgba(245,240,235,.08)';
-  stageWrap.style.background = 'rgba(245,240,235,.02)';
-  stageWrap.style.padding = '20px';
-  stage.style.width = '1200px';
-  stage.style.minHeight = '900px';
-  stage.style.height = '900px';
-  stage.style.borderRadius = '24px';
-  stage.style.border = '1px solid rgba(245,240,235,.08)';
-  stage.style.boxShadow = '0 30px 90px rgba(0,0,0,.35)';
-  stage.style.background = '#111111';
+  stageWrap.style.border = ''; stageWrap.style.background = ''; stageWrap.style.padding = '20px';
+  stage.style.width = '1200px'; stage.style.minHeight = '900px'; stage.style.height = '900px';
+  stage.style.borderRadius = '20px'; stage.style.border = ''; stage.style.boxShadow = '';
+  stage.style.background = 'var(--bg-2)';
 }
 function showProfileState(config) {
   const accountTypeBadge = document.getElementById('accountTypeBadge');
@@ -391,16 +780,9 @@ function showProfileState(config) {
   const followingBtn = document.getElementById('followingBtn');
   const recognizeBtn = document.getElementById('recognizeBtn');
   const studentWalletCard = document.getElementById('studentWalletCard');
-
-  viewingUser = null;
-  viewingPosts = [];
-  followData = { followers: {}, following: {} };
-  resetStagePresentation();
-  applyPageBackdrop({});
-  syncPageVisualizer(false);
-
-  accountTypeBadge.hidden = true;
-  plusBadge.hidden = true;
+  viewingUser = null; viewingPosts = []; followData = { followers: {}, following: {} };
+  resetStagePresentation(); applyPageBackdrop({}); syncPageVisualizer(false);
+  accountTypeBadge.hidden = true; plusBadge.hidden = true;
   if (studentWalletCard) studentWalletCard.hidden = true;
   document.getElementById('profileTitle').textContent = config.title;
   document.getElementById('profileSub').textContent = config.sub;
@@ -412,114 +794,43 @@ function showProfileState(config) {
   document.getElementById('recognitionPoints').textContent = '0';
   document.getElementById('postCount').textContent = '0';
   document.getElementById('totalLikeCount').textContent = '0';
-  followersBtn.textContent = 'Followers 0';
-  followingBtn.textContent = 'Following 0';
-  followersBtn.disabled = true;
-  followingBtn.disabled = true;
-  recognizeBtn.disabled = true;
-  recognizeBtn.textContent = config.recognizeLabel || 'Unavailable';
+  followersBtn.textContent = 'Followers 0'; followingBtn.textContent = 'Following 0';
+  followersBtn.disabled = true; followingBtn.disabled = true;
+  recognizeBtn.disabled = true; recognizeBtn.textContent = config.recognizeLabel || 'Unavailable';
   setRecognitionStatus(config.status);
 }
-function getAwardAccent(type) {
-  const key = String(type || '').toLowerCase();
-  if (key.includes('trophy')) return 'rgba(255,149,0,.28)';
-  if (key.includes('cert')) return 'rgba(52,170,220,.26)';
-  if (key.includes('recogn')) return 'rgba(0,229,176,.24)';
-  return 'rgba(162,89,255,.24)';
-}
-function getAwardIcon(type) {
-  const key = String(type || '').toLowerCase();
-  if (key.includes('trophy')) return 'T';
-  if (key.includes('cert')) return 'C';
-  if (key.includes('recogn')) return 'R';
-  return 'A';
-}
-function unwrapAwardCollection(value) {
-  if (!value) return [];
-  if (Array.isArray(value)) return value;
-  if (typeof value === 'object') return Object.values(value);
-  return [value];
-}
+function getAwardAccent(type) { const key = String(type || '').toLowerCase(); if (key.includes('trophy')) return 'rgba(255,149,0,.28)'; if (key.includes('cert')) return 'rgba(52,170,220,.26)'; if (key.includes('recogn')) return 'rgba(0,229,176,.24)'; return 'rgba(162,89,255,.24)'; }
+function getAwardIcon(type) { const key = String(type || '').toLowerCase(); if (key.includes('trophy')) return 'T'; if (key.includes('cert')) return 'C'; if (key.includes('recogn')) return 'R'; return 'A'; }
+function unwrapAwardCollection(value) { if (!value) return []; if (Array.isArray(value)) return value; if (typeof value === 'object') return Object.values(value); return [value]; }
 function normalizeAwardItem(item, fallbackType = 'Award') {
   if (!item) return null;
-  if (typeof item === 'string') {
-    return { title: item, type: fallbackType, description: '', icon: getAwardIcon(fallbackType), accent: getAwardAccent(fallbackType) };
-  }
+  if (typeof item === 'string') return { title: item, type: fallbackType, description: '', icon: getAwardIcon(fallbackType), accent: getAwardAccent(fallbackType) };
   const title = item.title || item.name || item.label || item.award || item.id;
   if (!title) return null;
   const type = item.type || item.category || fallbackType;
-  return {
-    title,
-    type,
-    description: item.description || item.copy || item.reason || item.subtitle || '',
-    icon: item.icon || item.emoji || getAwardIcon(type),
-    accent: item.accent || getAwardAccent(type)
-  };
+  return { title, type, description: item.description || item.copy || item.reason || item.subtitle || '', icon: item.icon || item.emoji || getAwardIcon(type), accent: item.accent || getAwardAccent(type) };
 }
 function getShowroomItems(user) {
-  const buckets = [
-    ['Award', user && user.awards],
-    ['Trophy', user && user.trophies],
-    ['Certification', user && user.certifications],
-    ['Showcase', user && (user.showroom || user.showcase || user.badges)]
-  ];
-  const seen = new Set();
-  const items = [];
-  buckets.forEach(([type, source]) => {
-    unwrapAwardCollection(source).forEach(entry => {
-      const item = normalizeAwardItem(entry, type);
-      if (!item) return;
-      const key = `${String(item.type).toLowerCase()}::${String(item.title).toLowerCase()}`;
-      if (seen.has(key)) return;
-      seen.add(key);
-      items.push(item);
-    });
-  });
-  if (!items.length && Number(user && user.recognitionPoints || 0) > 0) {
-    items.push({
-      title: 'Community Recognition',
-      type: 'Recognition',
-      description: `${Number(user.recognitionPoints || 0)} lifetime recognition points from other users.`,
-      icon: 'R',
-      accent: getAwardAccent('recognition')
-    });
-  }
+  const buckets = [['Award', user && user.awards], ['Trophy', user && user.trophies], ['Certification', user && user.certifications], ['Showcase', user && (user.showroom || user.showcase || user.badges)]];
+  const seen = new Set(); const items = [];
+  buckets.forEach(([type, source]) => { unwrapAwardCollection(source).forEach(entry => { const item = normalizeAwardItem(entry, type); if (!item) return; const key = `${String(item.type).toLowerCase()}::${String(item.title).toLowerCase()}`; if (seen.has(key)) return; seen.add(key); items.push(item); }); });
+  if (!items.length && Number(user && user.recognitionPoints || 0) > 0) items.push({ title: 'Community Recognition', type: 'Recognition', description: `${Number(user.recognitionPoints || 0)} lifetime recognition points from other users.`, icon: 'R', accent: getAwardAccent('recognition') });
   return items.slice(0, 12);
 }
 function renderShowroom(user) {
   const box = document.getElementById('showroomGrid');
   const items = getShowroomItems(user);
-  if (!items.length) {
-    box.innerHTML = '<div class="showroom-empty">This profile has not added any awards to its showroom yet.</div>';
-    return;
-  }
-  box.innerHTML = items.map(item => `
-    <article class="showroom-card" style="--award-accent:${escapeAttr(item.accent || getAwardAccent(item.type))};">
-      <div class="showroom-top">
-        <div class="showroom-icon">${escapeHtml(item.icon || getAwardIcon(item.type))}</div>
-        <div class="showroom-type">${escapeHtml(item.type || 'Award')}</div>
-      </div>
-      <div class="showroom-title">${escapeHtml(item.title || 'Untitled Award')}</div>
-      <div class="showroom-copy">${escapeHtml(item.description || 'Displayed on this profile as part of the user showcase.')}</div>
-    </article>
-  `).join('');
+  if (!items.length) { box.innerHTML = '<div class="showroom-empty">This profile has not added any awards to its showroom yet.</div>'; return; }
+  box.innerHTML = items.map(item => `<article class="showroom-card" style="--award-accent:${escapeAttr(item.accent || getAwardAccent(item.type))};"><div class="showroom-top"><div class="showroom-icon">${escapeHtml(item.icon || getAwardIcon(item.type))}</div><div class="showroom-type">${escapeHtml(item.type || 'Award')}</div></div><div class="showroom-title">${escapeHtml(item.title || 'Untitled Award')}</div><div class="showroom-copy">${escapeHtml(item.description || 'Displayed on this profile as part of the user showcase.')}</div></article>`).join('');
 }
 async function ensureShowroomField(handle, user) {
   const nextUser = Object.assign({ showroom: [] }, user || {});
   const hasShowroom = user && Object.prototype.hasOwnProperty.call(user, 'showroom');
-  if (!hasShowroom && activeUser && activeUser.handle === handle) {
-    try {
-      await fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(handle)}.json`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ showroom: [] })
-      });
-    } catch (_) {}
-  }
+  if (!hasShowroom && activeUser && activeUser.handle === handle) { try { await fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(handle)}.json`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ showroom: [] }) }); } catch (_) {} }
   return nextUser;
 }
 function applyPageBackdrop(layout) {
-  const background = (layout && layout.pageBackground) || '#050505';
+  const background = (layout && layout.pageBackground) || '#020202';
   const accent = (layout && layout.pageAccent) || '#a259ff';
   const patternName = (layout && layout.pagePattern) || 'none';
   const pattern = getPatternStyle(patternName, accent);
@@ -530,60 +841,26 @@ function applyPageBackdrop(layout) {
   document.body.style.backgroundRepeat = `no-repeat, ${patternName === 'waves' ? 'no-repeat' : 'repeat'}`;
 }
 function syncPageVisualizer(enabled, variant) {
-  if (!pageVisualizer) {
-    pageVisualizer = document.createElement('canvas');
-    pageVisualizer.className = 'full-page-viz';
-    document.body.appendChild(pageVisualizer);
-  }
+  if (!pageVisualizer) { pageVisualizer = document.createElement('canvas'); pageVisualizer.className = 'full-page-viz'; document.body.appendChild(pageVisualizer); }
   pageVisualizer.style.display = enabled ? 'block' : 'none';
   if (enabled) drawVisualizer(pageVisualizer, variant || 'bars');
 }
 function getProfilePreviewImage(user) {
   if (user.profileImage) return user.profileImage;
   if (!user.profileLayoutEncoded) return '';
-  try {
-    const layout = decodeLayout(user.profileLayoutEncoded);
-    const imageEl = (layout.elements || []).find(el => el.type === 'image' && el.url);
-    return imageEl ? imageEl.url : '';
-  } catch (_) {
-    return '';
-  }
+  try { const layout = decodeLayout(user.profileLayoutEncoded); const imageEl = (layout.elements || []).find(el => el.type === 'image' && el.url); return imageEl ? imageEl.url : ''; } catch (_) { return ''; }
 }
 function renderSearchResults(users) {
   const box = document.getElementById('searchResults');
-  if (!users.length) {
-    box.innerHTML = '<div class="search-empty">No matching profiles yet.</div>';
-    box.classList.add('open');
-    return;
-  }
-  box.innerHTML = users.map(user => {
-    const avatar = getProfilePreviewImage(user);
-    const avatarMarkup = avatar
-      ? `<div class="search-avatar"><img src="${escapeAttr(avatar)}" alt=""></div>`
-      : `<div class="search-avatar">${escapeHtml((user.displayName || user.handle || '?').charAt(0).toUpperCase())}</div>`;
-    return `<button class="search-result" type="button" data-handle="${escapeAttr(user.handle || '')}">${avatarMarkup}<div class="search-meta"><div class="search-name">${escapeHtml(user.displayName || 'Unknown User')}</div><div class="search-handle">@${escapeHtml(user.handle || '')}</div></div></button>`;
-  }).join('');
+  if (!users.length) { box.innerHTML = '<div class="search-empty">No matching profiles yet.</div>'; box.classList.add('open'); return; }
+  box.innerHTML = users.map(user => { const avatar = getProfilePreviewImage(user); const avatarMarkup = avatar ? `<div class="search-avatar"><img src="${escapeAttr(avatar)}" alt=""></div>` : `<div class="search-avatar">${escapeHtml((user.displayName || user.handle || '?').charAt(0).toUpperCase())}</div>`; return `<button class="search-result" type="button" data-handle="${escapeAttr(user.handle || '')}">${avatarMarkup}<div class="search-meta"><div class="search-name">${escapeHtml(user.displayName || 'Unknown User')}</div><div class="search-handle">@${escapeHtml(user.handle || '')}</div></div></button>`; }).join('');
   box.classList.add('open');
-  box.querySelectorAll('.search-result').forEach(button => {
-    button.addEventListener('click', () => {
-      const handle = button.dataset.handle;
-      if (!handle) return;
-      window.location.href = `/profile?handle=${encodeURIComponent(handle)}`;
-    });
-  });
+  box.querySelectorAll('.search-result').forEach(button => { button.addEventListener('click', () => { const handle = button.dataset.handle; if (!handle) return; window.location.href = `/profile?handle=${encodeURIComponent(handle)}`; }); });
 }
-function normalizeSearchQuery(value) {
-  return String(value || '').trim().replace(/^@+/, '').replace(/[^a-z0-9_ ]/gi, '').toLowerCase();
-}
+function normalizeSearchQuery(value) { return String(value || '').trim().replace(/^@+/, '').replace(/[^a-z0-9_ ]/gi, '').toLowerCase(); }
 async function getSearchIndex() {
   const cached = sessionStorage.getItem('bevivid_profile_search_index');
-  if (cached) {
-    try {
-      return JSON.parse(cached);
-    } catch (_) {
-      sessionStorage.removeItem('bevivid_profile_search_index');
-    }
-  }
+  if (cached) { try { return JSON.parse(cached); } catch (_) { sessionStorage.removeItem('bevivid_profile_search_index'); } }
   const response = await fetch(`${FIREBASE_DB_URL}/publicUserIndex.json`);
   if (!response.ok) throw new Error('Could not read public search index.');
   const data = await response.json();
@@ -591,61 +868,28 @@ async function getSearchIndex() {
   return data || {};
 }
 function getSearchRank(user, query) {
-  const handle = normalizeSearchQuery(user.handle);
-  const displayName = normalizeSearchQuery(user.displayName);
+  const handle = normalizeSearchQuery(user.handle); const displayName = normalizeSearchQuery(user.displayName);
   const words = displayName.split(/\s+/).filter(Boolean);
-  if (handle.startsWith(query)) return 0;
-  if (words.some(word => word.startsWith(query))) return 1;
-  if (displayName.startsWith(query)) return 2;
-  if (handle.includes(query)) return 3;
-  if (displayName.includes(query)) return 4;
-  return 9;
+  if (handle.startsWith(query)) return 0; if (words.some(word => word.startsWith(query))) return 1;
+  if (displayName.startsWith(query)) return 2; if (handle.includes(query)) return 3;
+  if (displayName.includes(query)) return 4; return 9;
 }
 async function queryUsersByPrefix(query) {
   let data = null;
-  try {
-    const response = await fetch(`${FIREBASE_DB_URL}/publicUserIndex.json?orderBy=%22%24key%22&limitToFirst=200`);
-    if (response.ok) data = await response.json();
-  } catch (_) {
-    data = null;
-  }
+  try { const response = await fetch(`${FIREBASE_DB_URL}/publicUserIndex.json?orderBy=%22%24key%22&limitToFirst=200`); if (response.ok) data = await response.json(); } catch (_) { data = null; }
   if (!data) data = await getSearchIndex();
-  return Object.values(data || {})
-    .filter(user => user && (user.handle || user.displayName))
-    .map(user => ({
-      ...user,
-      _rank: getSearchRank(user, query)
-    }))
-    .filter(user => user._rank < 9)
-    .sort((a, b) => {
-      if (a._rank !== b._rank) return a._rank - b._rank;
-      return normalizeSearchQuery(a.handle).localeCompare(normalizeSearchQuery(b.handle));
-    })
-    .slice(0, 7);
+  return Object.values(data || {}).filter(user => user && (user.handle || user.displayName)).map(user => ({ ...user, _rank: getSearchRank(user, query) })).filter(user => user._rank < 9).sort((a, b) => { if (a._rank !== b._rank) return a._rank - b._rank; return normalizeSearchQuery(a.handle).localeCompare(normalizeSearchQuery(b.handle)); }).slice(0, 7);
 }
 async function handleSearchInput() {
   const query = normalizeSearchQuery(document.getElementById('searchHandle').value);
-  if (!query) {
-    closeSearchResults();
-    return;
-  }
+  if (!query) { closeSearchResults(); return; }
   if (profileSearchTimer) clearTimeout(profileSearchTimer);
-  profileSearchTimer = setTimeout(async () => {
-    try {
-      const matches = await queryUsersByPrefix(query);
-      renderSearchResults(matches);
-    } catch (_) {
-      document.getElementById('searchResults').innerHTML = '<div class="search-empty">Search could not read the public profile index right now.</div>';
-      document.getElementById('searchResults').classList.add('open');
-    }
-  }, 120);
+  profileSearchTimer = setTimeout(async () => { try { const matches = await queryUsersByPrefix(query); renderSearchResults(matches); } catch (_) { document.getElementById('searchResults').innerHTML = '<div class="search-empty">Search could not read the public profile index right now.</div>'; document.getElementById('searchResults').classList.add('open'); } }, 120);
 }
 function withAlpha(color, alpha) {
   const hex = /^#[0-9a-fA-F]{6}$/.test(String(color || '').trim()) ? color : '#161616';
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
 }
 function getPatternStyle(pattern, accent) {
   if (pattern === 'dots') return { image: `radial-gradient(${accent}88 1.6px, transparent 1.6px)`, size: '22px 22px' };
@@ -654,63 +898,25 @@ function getPatternStyle(pattern, accent) {
   if (pattern === 'none') return { image: 'none', size: 'auto' };
   return { image: `linear-gradient(${accent}55 1px, transparent 1px), linear-gradient(90deg, ${accent}55 1px, transparent 1px)`, size: '40px 40px' };
 }
-async function fetchJson(path) {
-  const response = await fetch(getPath(path));
-  if (!response.ok) throw new Error(`Could not load ${path}.`);
-  return response.json();
-}
+async function fetchJson(path) { const response = await fetch(getPath(path)); if (!response.ok) throw new Error(`Could not load ${path}.`); return response.json(); }
 async function loadCommunityPosts(handle) {
   let data = await fetchJson(getCommunityPath('posts')).catch(() => null);
   if (!data) data = await fetchJson('communityPosts').catch(() => null);
-  return Object.values(data || {}).filter(post => post && post.authorHandle === handle).map(post => Object.assign({ stats: { likeCount: Number(post.likeCount || 0), commentCount: Number(post.commentCount || 0), impressionCount: Number(post.impressionCount || 0), reachCount: Number(post.reachCount || 0) } }, post)).sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
+  return Object.values(data || {}).filter(post => post && post.authorHandle === handle).map(post => Object.assign({ stats: { likeCount: Number(post.likeCount||0), commentCount: Number(post.commentCount||0), impressionCount: Number(post.impressionCount||0), reachCount: Number(post.reachCount||0) } }, post)).sort((a,b) => Number(b.createdAt||0)-Number(a.createdAt||0));
 }
-function canSeeProfilePostAnalytics() {
-  return Boolean(activeUser && viewingUser && activeUser.handle === viewingUser.handle);
-}
-function getProfilePostEngagement(post) {
-  const likes = Number(post.stats?.likeCount || 0);
-  const comments = Number(post.stats?.commentCount || 0);
-  const reach = Math.max(1, Number(post.stats?.reachCount || 0));
-  return Math.round(((likes + comments) / reach) * 100);
-}
-function toggleProfilePostAnalytics(id) {
-  const box = document.getElementById(`profile-post-analytics-${id}`);
-  if (box) box.style.display = box.style.display === 'none' ? 'flex' : 'none';
-}
-function formatTimeAgo(value) {
-  const diff = Math.max(1, Date.now() - Number(value || 0));
-  const mins = Math.floor(diff / 60000);
-  if (mins < 60) return `${mins}m ago`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
-  return new Date(Number(value || 0)).toLocaleDateString();
-}
+function canSeeProfilePostAnalytics() { return Boolean(activeUser && viewingUser && activeUser.handle === viewingUser.handle); }
+function getProfilePostEngagement(post) { const likes = Number(post.stats?.likeCount||0), comments = Number(post.stats?.commentCount||0), reach = Math.max(1, Number(post.stats?.reachCount||0)); return Math.round(((likes+comments)/reach)*100); }
+function toggleProfilePostAnalytics(id) { const box = document.getElementById(`profile-post-analytics-${id}`); if (box) box.style.display = box.style.display === 'none' ? 'flex' : 'none'; }
+function formatTimeAgo(value) { const diff = Math.max(1, Date.now()-Number(value||0)); const mins = Math.floor(diff/60000); if (mins<60) return `${mins}m ago`; const hours = Math.floor(mins/60); if (hours<24) return `${hours}h ago`; const days = Math.floor(hours/24); if (days<7) return `${days}d ago`; return new Date(Number(value||0)).toLocaleDateString(); }
 function renderProfilePosts(posts) {
   const box = document.getElementById('profilePosts');
-  if (!posts.length) {
-    box.innerHTML = '<div class="empty">No community posts yet from this profile.</div>';
-    return;
-  }
-  box.innerHTML = posts.slice(0, 8).map(post => `
-    <article class="mini-post">
-      <div class="meta-copy">${escapeHtml(formatTimeAgo(post.createdAt))}</div>
-      <div class="mini-post-text">${renderRichText(post.text || '')}</div>
-      ${post.imageUrl ? `<img class="mini-post-img" src="${escapeAttr(post.imageUrl)}" alt="">` : ''}
-      <div class="mini-post-meta">
-        <span class="mini-chip">${escapeHtml(String(post.stats?.likeCount || 0))} likes</span>
-        <span class="mini-chip">${escapeHtml(String(post.stats?.commentCount || 0))} comments</span>
-        ${canSeeProfilePostAnalytics() ? `<button class="search-btn social-action" type="button" onclick="toggleProfilePostAnalytics('${escapeAttr(post.id)}')">Analytics</button>` : ''}
-      </div>
-      ${canSeeProfilePostAnalytics() ? `<div class="mini-post-meta" id="profile-post-analytics-${escapeAttr(post.id)}" style="display:none;"><span class="mini-chip">${escapeHtml(String(post.stats?.impressionCount || 0))} impressions</span><span class="mini-chip">${escapeHtml(String(post.stats?.reachCount || 0))} reach</span><span class="mini-chip">${escapeHtml(String(getProfilePostEngagement(post)))}% engagement</span></div>` : ''}
-    </article>
-  `).join('');
+  if (!posts.length) { box.innerHTML = '<div class="empty">No community posts yet from this profile.</div>'; return; }
+  box.innerHTML = posts.slice(0, 8).map(post => `<article class="mini-post"><div class="meta-copy">${escapeHtml(formatTimeAgo(post.createdAt))}</div><div class="mini-post-text">${renderRichText(post.text||'')}</div>${post.imageUrl?`<img class="mini-post-img" src="${escapeAttr(post.imageUrl)}" alt="">`:''}<div class="mini-post-meta"><span class="mini-chip">${escapeHtml(String(post.stats?.likeCount||0))} likes</span><span class="mini-chip">${escapeHtml(String(post.stats?.commentCount||0))} comments</span>${canSeeProfilePostAnalytics()?`<button class="search-btn social-action" type="button" onclick="toggleProfilePostAnalytics('${escapeAttr(post.id)}')">Analytics</button>`:''}</div>${canSeeProfilePostAnalytics()?`<div class="mini-post-meta" id="profile-post-analytics-${escapeAttr(post.id)}" style="display:none;"><span class="mini-chip">${escapeHtml(String(post.stats?.impressionCount||0))} impressions</span><span class="mini-chip">${escapeHtml(String(post.stats?.reachCount||0))} reach</span><span class="mini-chip">${escapeHtml(String(getProfilePostEngagement(post)))}% engagement</span></div>`:''}</article>`).join('');
 }
 function renderSocialStats(posts, social) {
-  const totalLikes = posts.reduce((sum, post) => sum + Number(post.stats?.likeCount || 0), 0);
-  const followers = Object.keys((social && social.followers) || {}).length;
-  const following = Object.keys((social && social.following) || {}).length;
+  const totalLikes = posts.reduce((sum,post) => sum+Number(post.stats?.likeCount||0),0);
+  const followers = Object.keys((social&&social.followers)||{}).length;
+  const following = Object.keys((social&&social.following)||{}).length;
   document.getElementById('postCount').textContent = String(posts.length);
   document.getElementById('totalLikeCount').textContent = String(totalLikes);
   document.getElementById('followersBtn').textContent = `Followers ${followers}`;
@@ -719,489 +925,152 @@ function renderSocialStats(posts, social) {
   document.getElementById('followingBtn').disabled = false;
 }
 function renderStudentWallet(user) {
-  const card = document.getElementById('studentWalletCard');
-  const value = document.getElementById('studentWalletBalance');
-  if (!card || !value) return;
-  const student = isStudentAccount(user);
-  card.hidden = !student;
-  if (!student) return;
-  value.textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(user.studentWalletBalance || 0));
+  const card = document.getElementById('studentWalletCard'), value = document.getElementById('studentWalletBalance');
+  if (!card||!value) return;
+  const student = isStudentAccount(user); card.hidden = !student; if (!student) return;
+  value.textContent = new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(user.studentWalletBalance||0));
 }
 async function openFollowModal(type) {
-  const source = Object.keys((followData && followData[type]) || {});
+  const source = Object.keys((followData&&followData[type])||{});
   const modal = document.getElementById('followModal');
-  document.getElementById('followModalEyebrow').textContent = type === 'followers' ? 'Followers' : 'Following';
-  document.getElementById('followModalTitle').textContent = type === 'followers' ? 'People following this profile.' : 'People this profile follows.';
-  document.getElementById('followModalSub').textContent = source.length ? 'Open any profile from here.' : 'No one is in this list yet.';
+  document.getElementById('followModalEyebrow').textContent = type==='followers'?'Followers':'Following';
+  document.getElementById('followModalTitle').textContent = type==='followers'?'People following this profile.':'People this profile follows.';
+  document.getElementById('followModalSub').textContent = source.length?'Open any profile from here.':'No one is in this list yet.';
   const list = document.getElementById('followModalList');
-  if (!source.length) {
-    list.innerHTML = '<div class="empty">No profiles to show yet.</div>';
-    modal.classList.add('open');
-    return;
-  }
-  const users = await Promise.all(source.map(async handle => {
-    const user = await fetchJson(`publicUserIndex/${handle}`).catch(() => null);
-    return user || { handle, displayName: handle, profileImage: '' };
-  }));
-  list.innerHTML = users.map(user => `
-    <div class="follow-person">
-      <div class="follow-person-main">
-        ${user.profileImage ? `<div class="search-avatar"><img src="${escapeAttr(user.profileImage)}" alt=""></div>` : `<div class="search-avatar">${escapeHtml((user.displayName || user.handle || '?').charAt(0).toUpperCase())}</div>`}
-        <div>
-          <div class="author-name">${escapeHtml(user.displayName || user.handle || 'Member')}</div>
-          <div class="author-handle">@${escapeHtml(user.handle || '')}</div>
-        </div>
-      </div>
-      <a class="studio" href="/profile?handle=${encodeURIComponent(user.handle || '')}">View Profile</a>
-    </div>
-  `).join('');
+  if (!source.length) { list.innerHTML='<div class="empty">No profiles to show yet.</div>'; modal.classList.add('open'); return; }
+  const users = await Promise.all(source.map(async handle => { const user = await fetchJson(`publicUserIndex/${handle}`).catch(()=>null); return user||{handle,displayName:handle,profileImage:''}; }));
+  list.innerHTML = users.map(user=>`<div class="follow-person"><div class="follow-person-main">${user.profileImage?`<div class="search-avatar"><img src="${escapeAttr(user.profileImage)}" alt=""></div>`:`<div class="search-avatar">${escapeHtml((user.displayName||user.handle||'?').charAt(0).toUpperCase())}</div>`}<div><div class="author-name">${escapeHtml(user.displayName||user.handle||'Member')}</div><div class="author-handle">@${escapeHtml(user.handle||'')}</div></div></div><a class="studio" href="/profile?handle=${encodeURIComponent(user.handle||'')}">View Profile</a></div>`).join('');
   modal.classList.add('open');
 }
-function closeFollowModal() {
-  document.getElementById('followModal').classList.remove('open');
-}
+function closeFollowModal() { document.getElementById('followModal').classList.remove('open'); }
 function updateRecognitionUi(user) {
-  document.getElementById('recognitionPoints').textContent = String(user.recognitionPoints || 0);
-  const btn = document.getElementById('recognizeBtn');
-  const viewer = activeUser;
-  const log = (user.recognitionLog && user.recognitionLog[todayKey()]) || {};
-  if (!viewer || !viewer.handle) {
-    btn.disabled = true;
-    btn.textContent = 'Log In To Recognize';
-    setRecognitionStatus('Sign in first to give one recognition point per day.');
-    return;
-  }
-  if (viewer.handle === (user.handle || viewingHandle)) {
-    btn.disabled = true;
-    btn.textContent = 'Your Profile';
-    setRecognitionStatus('You cannot give recognition to yourself.');
-    return;
-  }
-  if (log[viewer.handle]) {
-    btn.disabled = true;
-    btn.textContent = 'Already Given Today';
-    setRecognitionStatus('You already gave this profile a recognition point today.');
-    return;
-  }
-  btn.disabled = false;
-  btn.textContent = 'Grant Recognition';
-  setRecognitionStatus('You can grant this profile one lifetime recognition point today.');
+  document.getElementById('recognitionPoints').textContent = String(user.recognitionPoints||0);
+  const btn = document.getElementById('recognizeBtn'); const viewer = activeUser;
+  const log = (user.recognitionLog&&user.recognitionLog[todayKey()])||{};
+  if (!viewer||!viewer.handle) { btn.disabled=true; btn.textContent='Log In To Recognize'; setRecognitionStatus('Sign in first to give one recognition point per day.'); return; }
+  if (viewer.handle===(user.handle||viewingHandle)) { btn.disabled=true; btn.textContent='Your Profile'; setRecognitionStatus('You cannot give recognition to yourself.'); return; }
+  if (log[viewer.handle]) { btn.disabled=true; btn.textContent='Already Given Today'; setRecognitionStatus('You already gave this profile a recognition point today.'); return; }
+  btn.disabled=false; btn.textContent='Grant Recognition'; setRecognitionStatus('You can grant this profile one lifetime recognition point today.');
 }
-function getEmbedUrl(type, url) {
-  const raw = String(url || '').trim();
-  if (!raw) return '';
-  if (type === 'spotify' || type === 'song') return raw;
-  if (type === 'soundcloud' && raw.includes('soundcloud.com') && !raw.includes('w.soundcloud.com')) return `https://w.soundcloud.com/player/?url=${encodeURIComponent(raw)}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=false&show_user=true&show_reposts=false&visual=true`;
-  return raw;
-}
+function getEmbedUrl(type, url) { const raw=String(url||'').trim(); if (!raw) return ''; if (type==='spotify'||type==='song') return raw; if (type==='soundcloud'&&raw.includes('soundcloud.com')&&!raw.includes('w.soundcloud.com')) return `https://w.soundcloud.com/player/?url=${encodeURIComponent(raw)}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=false&show_user=true&show_reposts=false&visual=true`; return raw; }
 function getEmbedMarkup(url, type) {
-  const src = getEmbedUrl(type, url);
-  if (!src) return '';
-  if (type === 'spotify' || type === 'song') {
-    return `<div class="spotify-card"><small>Spotify</small><strong>Open on Spotify</strong><span>Spotify embeds can return 429s, so this profile uses a direct play link instead.</span><a href="${escapeAttr(src)}" target="_blank" rel="noreferrer">Play</a></div>`;
-  }
+  const src=getEmbedUrl(type,url); if (!src) return '';
+  if (type==='spotify'||type==='song') return `<div class="spotify-card"><small>Spotify</small><strong>Open on Spotify</strong><span>Spotify embeds can return 429s, so this profile uses a direct play link instead.</span><a href="${escapeAttr(src)}" target="_blank" rel="noreferrer">Play</a></div>`;
   return `<iframe src="${escapeAttr(src)}" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
 }
-
-function drawVisualizer(canvas, styleVariant = 'bars') {
-  const ctx = canvas.getContext('2d');
-  const dpr = window.devicePixelRatio || 1;
-  const width = canvas.clientWidth;
-  const height = canvas.clientHeight;
-  canvas.width = width * dpr;
-  canvas.height = height * dpr;
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const bars = 54;
-  const gap = width / bars;
-  const accent = (styleVariant === 'halo' || styleVariant === 'orbit')
-    ? ((viewingUser && (viewingUser.pageAccent || viewingUser.profileAccent)) || '#a259ff')
-    : '#ff2d55';
-
+function drawVisualizer(canvas, styleVariant='bars') {
+  const ctx=canvas.getContext('2d'); const dpr=window.devicePixelRatio||1;
+  const width=canvas.clientWidth; const height=canvas.clientHeight;
+  canvas.width=width*dpr; canvas.height=height*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+  const bars=54; const gap=width/bars;
+  const accent=(styleVariant==='halo'||styleVariant==='orbit')?((viewingUser&&(viewingUser.pageAccent||viewingUser.profileAccent))||'#a259ff'):'#ff2d55';
   function frame() {
-    ctx.clearRect(0, 0, width, height);
-    let values = new Array(bars).fill(0).map((_, i) => 0.25 + Math.sin((Date.now() / 420) + i * 0.35) * 0.12);
-    if (audioState.analyser && audioState.data) {
-      audioState.analyser.getByteFrequencyData(audioState.data);
-      values = values.map((_, i) => (audioState.data[Math.min(audioState.data.length - 1, i * 2)] || 0) / 255);
-    }
-    if (styleVariant === 'halo' || styleVariant === 'orbit') {
-      const centerX = width / 2;
-      const centerY = height / 2;
-      const ring = Math.min(width, height) * (styleVariant === 'orbit' ? 0.16 : 0.2);
-      ctx.save();
-      ctx.translate(centerX, centerY);
-      values.forEach((value, i) => {
-        const angle = (Math.PI * 2 * i) / bars;
-        const motion = 0.18 + value * 0.26;
-        const outer = ring + motion * Math.min(width, height) * (styleVariant === 'orbit' ? 0.12 : 0.18);
-        const inner = ring * (styleVariant === 'orbit' ? 0.28 : 0.58);
-        ctx.strokeStyle = `${accent}${i % 2 ? '88' : 'cc'}`;
-        ctx.lineWidth = Math.max(2.4, Math.min(8, 2.4 + value * 8));
-        ctx.beginPath();
-        ctx.moveTo(Math.cos(angle) * inner, Math.sin(angle) * inner);
-        ctx.lineTo(Math.cos(angle) * outer, Math.sin(angle) * outer);
-        ctx.stroke();
-      });
-      const orb = ctx.createRadialGradient(0, 0, ring * 0.08, 0, 0, ring * (styleVariant === 'orbit' ? 1.6 : 1.1));
-      orb.addColorStop(0, `${accent}cc`);
-      orb.addColorStop(.45, `${accent}2a`);
-      orb.addColorStop(1, `${accent}00`);
-      ctx.fillStyle = orb;
-      ctx.beginPath();
-      ctx.arc(0, 0, ring * 1.05, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    } else if (styleVariant === 'wave') {
-      ctx.beginPath();
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = '#ff2d55cc';
-      values.forEach((value, i) => {
-        const x = i * gap;
-        const y = height * 0.55 - (value * height * 0.28);
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      });
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = '#34aadc99';
-      values.forEach((value, i) => {
-        const x = i * gap;
-        const y = height * 0.7 - (value * height * 0.18);
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      });
-      ctx.stroke();
+    ctx.clearRect(0,0,width,height);
+    let values=new Array(bars).fill(0).map((_,i)=>0.25+Math.sin((Date.now()/420)+i*0.35)*0.12);
+    if (audioState.analyser&&audioState.data){audioState.analyser.getByteFrequencyData(audioState.data);values=values.map((_,i)=>(audioState.data[Math.min(audioState.data.length-1,i*2)]||0)/255);}
+    if (styleVariant==='halo'||styleVariant==='orbit'){
+      const centerX=width/2,centerY=height/2,ring=Math.min(width,height)*(styleVariant==='orbit'?.16:.2);
+      ctx.save();ctx.translate(centerX,centerY);
+      values.forEach((value,i)=>{const angle=(Math.PI*2*i)/bars;const motion=0.18+value*0.26;const outer=ring+motion*Math.min(width,height)*(styleVariant==='orbit'?.12:.18);const inner=ring*(styleVariant==='orbit'?.28:.58);ctx.strokeStyle=`${accent}${i%2?'88':'cc'}`;ctx.lineWidth=Math.max(2.4,Math.min(8,2.4+value*8));ctx.beginPath();ctx.moveTo(Math.cos(angle)*inner,Math.sin(angle)*inner);ctx.lineTo(Math.cos(angle)*outer,Math.sin(angle)*outer);ctx.stroke();});
+      const orb=ctx.createRadialGradient(0,0,ring*.08,0,0,ring*(styleVariant==='orbit'?1.6:1.1));orb.addColorStop(0,`${accent}cc`);orb.addColorStop(.45,`${accent}2a`);orb.addColorStop(1,`${accent}00`);ctx.fillStyle=orb;ctx.beginPath();ctx.arc(0,0,ring*1.05,0,Math.PI*2);ctx.fill();ctx.restore();
+    } else if (styleVariant==='wave'){
+      ctx.beginPath();ctx.lineWidth=4;ctx.strokeStyle='#ff2d55cc';values.forEach((value,i)=>{const x=i*gap;const y=height*.55-(value*height*.28);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.stroke();
+      ctx.beginPath();ctx.lineWidth=2;ctx.strokeStyle='#34aadc99';values.forEach((value,i)=>{const x=i*gap;const y=height*.7-(value*height*.18);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.stroke();
     } else {
-      const gradient = ctx.createLinearGradient(0, height, width, 0);
-      gradient.addColorStop(0, '#ff2d5500');
-      gradient.addColorStop(0.4, '#ff2d5555');
-      gradient.addColorStop(1, '#34aadc20');
-      ctx.fillStyle = gradient;
-      values.forEach((value, i) => {
-        const barHeight = Math.max(20, value * (height * 0.65));
-        const x = i * gap;
-        const y = height - barHeight;
-        ctx.fillRect(x + 3, y, Math.max(6, gap - 6), barHeight);
-      });
+      const gradient=ctx.createLinearGradient(0,height,width,0);gradient.addColorStop(0,'#ff2d5500');gradient.addColorStop(.4,'#ff2d5555');gradient.addColorStop(1,'#34aadc20');ctx.fillStyle=gradient;
+      values.forEach((value,i)=>{const barHeight=Math.max(20,value*(height*.65));const x=i*gap;const y=height-barHeight;ctx.fillRect(x+3,y,Math.max(6,gap-6),barHeight);});
     }
-
-    audioState.raf = requestAnimationFrame(frame);
+    audioState.raf=requestAnimationFrame(frame);
   }
-
   if (audioState.raf) cancelAnimationFrame(audioState.raf);
   frame();
 }
-
 function setupAudioPlayback(src) {
   if (!src) return;
-  if (!audioState.el) {
-    audioState.el = new Audio();
-    audioState.el.loop = true;
-    audioState.el.crossOrigin = 'anonymous';
-  }
-  audioState.el.src = src;
-  audioState.sourceLoaded = true;
+  if (!audioState.el){audioState.el=new Audio();audioState.el.loop=true;audioState.el.crossOrigin='anonymous';}
+  audioState.el.src=src; audioState.sourceLoaded=true;
 }
-
 async function tryAutoPlayProfileSong() {
-  if (autoPlayAttempted || !viewingUser) return;
-  autoPlayAttempted = true;
-  try {
-    await toggleProfileAudio();
-    const note = document.querySelector('.audio-note');
-    if (note && audioState.playing) note.textContent = viewingUser.profileSongLabel || 'Auto-playing for beVivid+';
-  } catch (_) {
-    const note = document.querySelector('.audio-note');
-    if (note) note.textContent = 'Autoplay is ready. Tap play if your browser blocks it.';
-  }
+  if (autoPlayAttempted||!viewingUser) return;
+  autoPlayAttempted=true;
+  try {await toggleProfileAudio();const note=document.querySelector('.audio-note');if(note&&audioState.playing)note.textContent=viewingUser.profileSongLabel||'Auto-playing for beVivid+';}
+  catch(_){const note=document.querySelector('.audio-note');if(note)note.textContent='Autoplay is ready. Tap play if your browser blocks it.';}
 }
-
 async function toggleProfileAudio() {
-  if (!audioState.sourceLoaded) {
-    let source = audioState.pendingSource || '';
-    if (!source && viewingHandle) {
-      const response = await fetch(getProfileAudioPath(viewingHandle));
-      const record = response.ok ? await response.json() : null;
-      source = (record && record.audioData) || '';
-    }
-    if (!source) return;
-    setupAudioPlayback(source);
-  }
+  if (!audioState.sourceLoaded){let source=audioState.pendingSource||'';if(!source&&viewingHandle){const response=await fetch(getProfileAudioPath(viewingHandle));const record=response.ok?await response.json():null;source=(record&&record.audioData)||'';}if(!source)return;setupAudioPlayback(source);}
   if (!audioState.el) return;
-  if (!audioState.ctx) {
-    audioState.ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const source = audioState.ctx.createMediaElementSource(audioState.el);
-    audioState.analyser = audioState.ctx.createAnalyser();
-    audioState.analyser.fftSize = 128;
-    audioState.data = new Uint8Array(audioState.analyser.frequencyBinCount);
-    source.connect(audioState.analyser);
-    audioState.analyser.connect(audioState.ctx.destination);
-  }
-  if (audioState.ctx.state === 'suspended') await audioState.ctx.resume();
-  if (audioState.playing) {
-    audioState.el.pause();
-    audioState.playing = false;
-  } else {
-    await audioState.el.play();
-    audioState.playing = true;
-  }
-  const btn = document.getElementById('audioToggle');
-  if (btn) btn.textContent = audioState.playing ? 'Pause Audio' : 'Play Audio';
+  if (!audioState.ctx){audioState.ctx=new(window.AudioContext||window.webkitAudioContext)();const source=audioState.ctx.createMediaElementSource(audioState.el);audioState.analyser=audioState.ctx.createAnalyser();audioState.analyser.fftSize=128;audioState.data=new Uint8Array(audioState.analyser.frequencyBinCount);source.connect(audioState.analyser);audioState.analyser.connect(audioState.ctx.destination);}
+  if (audioState.ctx.state==='suspended') await audioState.ctx.resume();
+  if (audioState.playing){audioState.el.pause();audioState.playing=false;}else{await audioState.el.play();audioState.playing=true;}
+  const btn=document.getElementById('audioToggle');if(btn)btn.textContent=audioState.playing?'Pause Audio':'Play Audio';
 }
-
-function searchProfiles() {
-  const handle = document.getElementById('searchHandle').value.trim().replace(/[^a-z0-9_]/gi, '').toLowerCase();
-  if (!handle) return;
-  window.location.href = `/profile?handle=${encodeURIComponent(handle)}`;
-}
-
+function searchProfiles() { const handle=document.getElementById('searchHandle').value.trim().replace(/[^a-z0-9_]/gi,'').toLowerCase(); if(!handle)return; window.location.href=`/profile?handle=${encodeURIComponent(handle)}`; }
 async function grantRecognition() {
-  if (!activeUser || !activeUser.handle || !viewingHandle) return;
-  const btn = document.getElementById('recognizeBtn');
-  btn.disabled = true;
-  btn.textContent = 'Granting...';
+  if (!activeUser||!activeUser.handle||!viewingHandle) return;
+  const btn=document.getElementById('recognizeBtn');btn.disabled=true;btn.textContent='Granting…';
   try {
-    const response = await fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(viewingHandle)}.json`);
-    const user = await response.json();
-    if (!user) throw new Error('Profile not found.');
-    if ((user.handle || viewingHandle) === activeUser.handle) throw new Error('You cannot recognize yourself.');
-    const day = todayKey();
-    const dayLog = Object.assign({}, (user.recognitionLog && user.recognitionLog[day]) || {});
-    if (dayLog[activeUser.handle]) throw new Error('You already gave this user recognition today.');
-    dayLog[activeUser.handle] = true;
-    const patch = {
-      recognitionPoints: Number(user.recognitionPoints || 0) + 1,
-      recognitionLog: Object.assign({}, user.recognitionLog || {}, { [day]: dayLog })
-    };
-    const save = await fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(viewingHandle)}.json`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(patch)
-    });
-    if (!save.ok) throw new Error('Firebase blocked the recognition update.');
-    user.recognitionPoints = patch.recognitionPoints;
-    user.recognitionLog = patch.recognitionLog;
-    updateRecognitionUi(user);
-    setRecognitionStatus('Recognition granted. That point stays on their profile for life.');
-  } catch (error) {
-    setRecognitionStatus(error.message || 'Could not grant recognition.');
-    btn.disabled = false;
-    btn.textContent = 'Grant Recognition';
-  }
+    const response=await fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(viewingHandle)}.json`);const user=await response.json();
+    if(!user)throw new Error('Profile not found.');if((user.handle||viewingHandle)===activeUser.handle)throw new Error('You cannot recognize yourself.');
+    const day=todayKey();const dayLog=Object.assign({},((user.recognitionLog&&user.recognitionLog[day])||{}));if(dayLog[activeUser.handle])throw new Error('You already gave this user recognition today.');
+    dayLog[activeUser.handle]=true;const patch={recognitionPoints:Number(user.recognitionPoints||0)+1,recognitionLog:Object.assign({},user.recognitionLog||{},{[day]:dayLog})};
+    const save=await fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(viewingHandle)}.json`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(patch)});
+    if(!save.ok)throw new Error('Firebase blocked the recognition update.');user.recognitionPoints=patch.recognitionPoints;user.recognitionLog=patch.recognitionLog;updateRecognitionUi(user);setRecognitionStatus('Recognition granted. That point stays on their profile for life.');
+  } catch(error){setRecognitionStatus(error.message||'Could not grant recognition.');btn.disabled=false;btn.textContent='Grant Recognition';}
 }
-
 async function loadProfile() {
-  activeUser = getSessionUser();
-  syncCreatorDashboardLink();
-  syncStudentDashboardLink();
-  setProfileLoadingState();
-  audioState.playing = false;
-  audioState.sourceLoaded = false;
-  audioState.pendingSource = '';
-  autoPlayAttempted = false;
-  if (audioState.el) {
-    audioState.el.pause();
-    audioState.el.removeAttribute('src');
-  }
-  let handle = requestedHandle;
-  if (!handle) {
-    if (activeUser) handle = activeUser.handle;
-  }
-  if (!handle) {
-    document.getElementById('profileTitle').textContent = 'No handle selected';
-    document.getElementById('profileSub').textContent = 'Open this page with ?handle=yourhandle or sign in first.';
-    document.getElementById('stage').innerHTML = '<div class="empty">No profile handle was provided.</div>';
-    document.getElementById('showroomGrid').innerHTML = '<div class="showroom-empty">Choose a profile to load its showroom.</div>';
-    document.getElementById('profilePosts').innerHTML = '<div class="empty">Choose a profile to see its community posts.</div>';
-    document.getElementById('sidebarCurrentHandle').textContent = '@none';
-    document.getElementById('sidebarViewMeta').textContent = 'Open a profile with ?handle=yourhandle or sign in first.';
-    return;
-  }
-
-  viewingHandle = handle;
-  document.getElementById('searchHandle').value = handle;
-  document.getElementById('sidebarCurrentHandle').textContent = `@${handle}`;
-  document.getElementById('sidebarViewMeta').textContent = activeUser && activeUser.handle === handle
-    ? 'You are viewing your own profile page.'
-    : 'You are viewing a public profile page.';
-  document.getElementById('studioLink').href = `/profiledata?handle=${encodeURIComponent(handle)}`;
-  const [userResponse, socialResponse, posts] = await Promise.all([
-    fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(handle)}.json`),
-    fetch(getPath(getCommunityPath(`social/${handle}`))).catch(() => null),
-    loadCommunityPosts(handle).catch(() => [])
-  ]);
-  let user = await userResponse.json();
-  if (!user) {
-    showProfileState({
-      title: 'Profile not found',
-      sub: 'That handle does not exist in Firebase yet.',
-      stage: 'This profile has not been created yet.',
-      showroom: 'There is no showroom to display for this handle yet.',
-      posts: 'No posts can be shown because this profile does not exist yet.',
-      sidebarHandle: `@${handle}`,
-      sidebarMeta: 'That profile has not been created yet.',
-      status: 'Search for another handle or create this profile first.'
-    });
-    return;
-  }
-  if (user.banned) {
-    showProfileState({
-      title: 'User banned',
-      sub: 'This account has been removed from public view.',
-      stage: escapeHtml(user.banReason || 'This user is banned from beVivid.'),
-      showroom: 'Banned profiles do not have a public showroom.',
-      posts: 'Banned profiles do not have public community posts.',
-      sidebarHandle: `@${handle}`,
-      sidebarMeta: 'This account is banned from beVivid.',
-      status: 'This account is banned from beVivid.',
-      recognizeLabel: 'User Banned'
-    });
-    return;
-  }
-  user = await ensureShowroomField(handle, user);
-  if (isStudentAccount(user) && !Object.prototype.hasOwnProperty.call(user, 'studentWalletBalance')) {
-    if (activeUser && activeUser.handle === handle) {
-      try {
-        await fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(handle)}.json`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ studentWalletBalance: 0 })
-        });
-      } catch (_) {}
-    }
-    user.studentWalletBalance = 0;
-  }
-  followData = socialResponse && socialResponse.ok ? (await socialResponse.json()) || { followers: {}, following: {} } : { followers: {}, following: {} };
-  if (!Object.keys(followData.followers || {}).length && !Object.keys(followData.following || {}).length) {
-    const legacySocial = await fetchJson('userSocial/' + handle).catch(() => null);
-    if (legacySocial) followData = legacySocial;
-  }
-  viewingPosts = posts;
-  viewingUser = user;
-  const accountType = getAccountType(user);
-  const accountTypeBadge = document.getElementById('accountTypeBadge');
-  accountTypeBadge.hidden = false;
-  accountTypeBadge.dataset.type = accountType || 'member';
-  accountTypeBadge.textContent = formatAccountTypeLabel(accountType);
-  document.getElementById('sidebarViewMeta').textContent = user.displayName
-    ? `${user.displayName} is live here.`
-    : `Viewing @${handle}.`;
-
-  document.getElementById('profileTitle').textContent = user.displayName || '@' + handle;
-  document.getElementById('profileSub').textContent = '@' + (user.handle || handle) + '  |  ' + (user.bio || 'This vivid profile is still being shaped.');
-  document.getElementById('plusBadge').hidden = !isBeVividPlus(user);
-  updateRecognitionUi(user);
-  renderStudentWallet(user);
-  renderSocialStats(viewingPosts, followData);
-  renderShowroom(user);
-  renderProfilePosts(viewingPosts);
-
-  const stage = document.getElementById('stage');
-  if (!user.profileLayoutEncoded) {
-    stage.innerHTML = '<div class="empty">This user has not published any profile layout yet.</div>';
-    return;
-  }
-
-  const premium = isBeVividPlus(user);
-  const layout = sanitizePublicLayout(decodeLayout(user.profileLayoutEncoded), premium);
-  user._layoutVisualizerVariant = layout.visualizerVariant || (premium ? 'halo' : 'bars');
-  user.pageAccent = layout.pageAccent;
-  const canvasWidth = Math.max(900, Number(layout.canvasWidth) || 1200);
-  const canvasHeight = Math.max(700, Number(layout.canvasHeight) || 900);
-  const hasSong = Boolean(layout.songAudio || user.profileSongReady || user.profileSongAudio);
-  applyPageBackdrop(layout);
-  syncPageVisualizer(hasSong, layout.visualizerVariant || (premium ? 'halo' : 'bars'));
-  document.querySelector('.stage-wrap').style.border = '1px solid rgba(245,240,235,.08)';
-  document.querySelector('.stage-wrap').style.background = 'rgba(245,240,235,.02)';
-  document.querySelector('.stage-wrap').style.padding = '20px';
-  stage.style.width = `${canvasWidth}px`;
-  stage.style.minHeight = `${canvasHeight}px`;
-  stage.style.height = `${canvasHeight}px`;
-  stage.style.borderRadius = '24px';
-  stage.style.border = '1px solid rgba(245,240,235,.08)';
-  stage.style.boxShadow = '0 30px 90px rgba(0,0,0,.35)';
-  stage.style.background = `radial-gradient(circle at 20% 10%, ${(layout.accent || '#ff2d55')}22, transparent 26%), ${layout.background || '#111111'}`;
-  stage.innerHTML = '';
-  const pattern = document.createElement('div');
-  pattern.className = 'pattern-layer';
-  const patternStyle = getPatternStyle(layout.pattern || 'grid', layout.accent || '#ff2d55');
-  pattern.style.backgroundImage = patternStyle.image;
-  pattern.style.backgroundSize = patternStyle.size;
-  pattern.style.backgroundRepeat = (layout.pattern || 'grid') === 'waves' ? 'no-repeat' : 'repeat';
-  stage.appendChild(pattern);
-
-  const viz = document.createElement('canvas');
-  viz.className = 'visualizer-bg';
-  stage.appendChild(viz);
-  drawVisualizer(viz, layout.visualizerVariant || 'bars');
-
-  if (layout.songAudio) {
-    audioState.pendingSource = layout.songAudio;
-  } else if (user.profileSongReady) {
-    audioState.pendingSource = '';
-  } else {
-    audioState.pendingSource = user.profileSongAudio || '';
-  }
-
-  if (layout.songAudio || user.profileSongReady || user.profileSongAudio) {
-    const pod = document.createElement('div');
-    pod.className = 'audio-pod';
-    const button = document.createElement('button');
-    button.className = 'audio-toggle';
-    button.id = 'audioToggle';
-    button.textContent = audioState.playing ? 'Pause Audio' : 'Play Audio';
-    button.onclick = toggleProfileAudio;
-    pod.appendChild(button);
-
-    const note = document.createElement('div');
-    note.className = 'audio-note';
-    note.textContent = layout.songLabel || 'Profile song ready';
-    pod.appendChild(note);
-    stage.appendChild(pod);
-    setTimeout(() => { tryAutoPlayProfileSong(); }, 120);
-  }
-
-  (layout.elements || []).slice().sort((a, b) => (a.z || 0) - (b.z || 0)).forEach(el => {
-    const node = document.createElement('div');
-    node.className = 'el' + (el.animation && el.animation !== 'none' ? ` anim-${el.animation}` : '');
-    node.style.left = `${el.x}px`;
-    node.style.top = `${el.y}px`;
-    node.style.width = `${el.w}px`;
-    node.style.height = `${el.h}px`;
-    node.style.borderRadius = `${el.radius || 0}px`;
-    node.style.opacity = String(el.opacity ?? 1);
-    node.style.transform = `rotate(${el.rotation || 0}deg)`;
-    node.style.background = el.type === 'image' ? withAlpha(el.bg || '#161616', el.bgAlpha ?? 0.28) : (el.bg || 'rgba(255,255,255,0.03)');
-    node.style.zIndex = String(el.z || 1);
-
-    if (el.type === 'text' || el.type === 'shape') {
-      node.className += ' text-block';
-      node.style.color = el.color || '#f5f0eb';
-      node.style.fontFamily = el.fontFamily || 'Syne';
-      node.style.fontSize = `${el.fontSize || 20}px`;
-      node.style.textAlign = el.align || 'left';
-      node.textContent = el.text || '';
-    } else if (el.type === 'image') {
-      node.className += ' image-block';
-      node.innerHTML = el.url ? `<img src="${escapeAttr(el.url)}" alt="" style="transform: scaleX(${el.flipX ? -1 : 1}) scaleY(${el.flipY ? -1 : 1}); object-fit:${el.fitMode || 'cover'};">` : '';
-    } else {
-      node.className += ' embed-block';
-      node.innerHTML = getEmbedMarkup(el.url, el.type);
-    }
-
+  activeUser=getSessionUser();syncCreatorDashboardLink();syncStudentDashboardLink();setProfileLoadingState();
+  audioState.playing=false;audioState.sourceLoaded=false;audioState.pendingSource='';autoPlayAttempted=false;
+  if(audioState.el){audioState.el.pause();audioState.el.removeAttribute('src');}
+  let handle=requestedHandle;if(!handle){if(activeUser)handle=activeUser.handle;}
+  if(!handle){document.getElementById('profileTitle').textContent='No handle selected';document.getElementById('profileSub').textContent='Open this page with ?handle=yourhandle or sign in first.';document.getElementById('stage').innerHTML='<div class="empty">No profile handle was provided.</div>';document.getElementById('showroomGrid').innerHTML='<div class="showroom-empty">Choose a profile to load its showroom.</div>';document.getElementById('profilePosts').innerHTML='<div class="empty">Choose a profile to see its community posts.</div>';document.getElementById('sidebarCurrentHandle').textContent='@none';document.getElementById('sidebarViewMeta').textContent='Open a profile with ?handle=yourhandle or sign in first.';return;}
+  viewingHandle=handle;document.getElementById('searchHandle').value=handle;document.getElementById('sidebarCurrentHandle').textContent=`@${handle}`;
+  document.getElementById('sidebarViewMeta').textContent=activeUser&&activeUser.handle===handle?'You are viewing your own profile page.':'You are viewing a public profile page.';
+  document.getElementById('studioLink').href=`/profiledata?handle=${encodeURIComponent(handle)}`;
+  const[userResponse,socialResponse,posts]=await Promise.all([fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(handle)}.json`),fetch(getPath(getCommunityPath(`social/${handle}`))).catch(()=>null),loadCommunityPosts(handle).catch(()=>[])]);
+  let user=await userResponse.json();
+  if(!user){showProfileState({title:'Profile not found',sub:'That handle does not exist in Firebase yet.',stage:'This profile has not been created yet.',showroom:'There is no showroom to display for this handle yet.',posts:'No posts can be shown because this profile does not exist yet.',sidebarHandle:`@${handle}`,sidebarMeta:'That profile has not been created yet.',status:'Search for another handle or create this profile first.'});return;}
+  if(user.banned){showProfileState({title:'User banned',sub:'This account has been removed from public view.',stage:escapeHtml(user.banReason||'This user is banned from beVivid.'),showroom:'Banned profiles do not have a public showroom.',posts:'Banned profiles do not have public community posts.',sidebarHandle:`@${handle}`,sidebarMeta:'This account is banned from beVivid.',status:'This account is banned from beVivid.',recognizeLabel:'User Banned'});return;}
+  user=await ensureShowroomField(handle,user);
+  if(isStudentAccount(user)&&!Object.prototype.hasOwnProperty.call(user,'studentWalletBalance')){if(activeUser&&activeUser.handle===handle){try{await fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(handle)}.json`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({studentWalletBalance:0})});}catch(_){}}user.studentWalletBalance=0;}
+  followData=socialResponse&&socialResponse.ok?(await socialResponse.json())||{followers:{},following:{}}:{followers:{},following:{}};
+  if(!Object.keys(followData.followers||{}).length&&!Object.keys(followData.following||{}).length){const legacySocial=await fetchJson('userSocial/'+handle).catch(()=>null);if(legacySocial)followData=legacySocial;}
+  viewingPosts=posts;viewingUser=user;
+  const accountType=getAccountType(user);const accountTypeBadge=document.getElementById('accountTypeBadge');
+  accountTypeBadge.hidden=false;accountTypeBadge.dataset.type=accountType||'member';accountTypeBadge.textContent=formatAccountTypeLabel(accountType);
+  document.getElementById('sidebarViewMeta').textContent=user.displayName?`${user.displayName} is live here.`:`Viewing @${handle}.`;
+  document.getElementById('profileTitle').textContent=user.displayName||'@'+handle;
+  document.getElementById('profileSub').textContent='@'+(user.handle||handle)+'  ·  '+(user.bio||'This vivid profile is still being shaped.');
+  document.getElementById('plusBadge').hidden=!isBeVividPlus(user);
+  updateRecognitionUi(user);renderStudentWallet(user);renderSocialStats(viewingPosts,followData);renderShowroom(user);renderProfilePosts(viewingPosts);
+  const stage=document.getElementById('stage');
+  if(!user.profileLayoutEncoded){stage.innerHTML='<div class="empty">This user has not published any profile layout yet.</div>';return;}
+  const premium=isBeVividPlus(user);const layout=sanitizePublicLayout(decodeLayout(user.profileLayoutEncoded),premium);
+  user._layoutVisualizerVariant=layout.visualizerVariant||(premium?'halo':'bars');user.pageAccent=layout.pageAccent;
+  const canvasWidth=Math.max(900,Number(layout.canvasWidth)||1200);const canvasHeight=Math.max(700,Number(layout.canvasHeight)||900);
+  const hasSong=Boolean(layout.songAudio||user.profileSongReady||user.profileSongAudio);
+  applyPageBackdrop(layout);syncPageVisualizer(hasSong,layout.visualizerVariant||(premium?'halo':'bars'));
+  stage.style.width=`${canvasWidth}px`;stage.style.minHeight=`${canvasHeight}px`;stage.style.height=`${canvasHeight}px`;
+  stage.style.background=`radial-gradient(circle at 20% 10%, ${(layout.accent||'#ff2d55')}22, transparent 26%), ${layout.background||'#111111'}`;
+  stage.innerHTML='';
+  const pattern=document.createElement('div');pattern.className='pattern-layer';const patternStyle=getPatternStyle(layout.pattern||'grid',layout.accent||'#ff2d55');pattern.style.backgroundImage=patternStyle.image;pattern.style.backgroundSize=patternStyle.size;pattern.style.backgroundRepeat=(layout.pattern||'grid')==='waves'?'no-repeat':'repeat';stage.appendChild(pattern);
+  const viz=document.createElement('canvas');viz.className='visualizer-bg';stage.appendChild(viz);drawVisualizer(viz,layout.visualizerVariant||'bars');
+  if(layout.songAudio){audioState.pendingSource=layout.songAudio;}else if(user.profileSongReady){audioState.pendingSource='';}else{audioState.pendingSource=user.profileSongAudio||'';}
+  if(layout.songAudio||user.profileSongReady||user.profileSongAudio){const pod=document.createElement('div');pod.className='audio-pod';const button=document.createElement('button');button.className='audio-toggle';button.id='audioToggle';button.textContent=audioState.playing?'Pause Audio':'Play Audio';button.onclick=toggleProfileAudio;pod.appendChild(button);const note=document.createElement('div');note.className='audio-note';note.textContent=layout.songLabel||'Profile song ready';pod.appendChild(note);stage.appendChild(pod);setTimeout(()=>{tryAutoPlayProfileSong();},120);}
+  (layout.elements||[]).slice().sort((a,b)=>(a.z||0)-(b.z||0)).forEach(el=>{
+    const node=document.createElement('div');node.className='el'+(el.animation&&el.animation!=='none'?` anim-${el.animation}`:'');
+    node.style.left=`${el.x}px`;node.style.top=`${el.y}px`;node.style.width=`${el.w}px`;node.style.height=`${el.h}px`;
+    node.style.borderRadius=`${el.radius||0}px`;node.style.opacity=String(el.opacity??1);node.style.transform=`rotate(${el.rotation||0}deg)`;
+    node.style.background=el.type==='image'?withAlpha(el.bg||'#161616',el.bgAlpha??0.28):(el.bg||'rgba(255,255,255,0.03)');node.style.zIndex=String(el.z||1);
+    if(el.type==='text'||el.type==='shape'){node.className+=' text-block';node.style.color=el.color||'#f5f0eb';node.style.fontFamily=el.fontFamily||'Syne';node.style.fontSize=`${el.fontSize||20}px`;node.style.textAlign=el.align||'left';node.textContent=el.text||'';}
+    else if(el.type==='image'){node.className+=' image-block';node.innerHTML=el.url?`<img src="${escapeAttr(el.url)}" alt="" style="transform:scaleX(${el.flipX?-1:1}) scaleY(${el.flipY?-1:1});object-fit:${el.fitMode||'cover'};">`:'';}
+    else{node.className+=' embed-block';node.innerHTML=getEmbedMarkup(el.url,el.type);}
     stage.appendChild(node);
   });
 }
-
 loadProfile();
 document.getElementById('searchHandle').addEventListener('input', handleSearchInput);
-document.addEventListener('click', event => {
-  if (!event.target.closest('.search-form')) closeSearchResults();
-});
-document.getElementById('followModal').addEventListener('click', event => {
-  if (event.target.id === 'followModal') closeFollowModal();
-});
+document.addEventListener('click', event => { if (!event.target.closest('.search-form')) closeSearchResults(); });
+document.getElementById('followModal').addEventListener('click', event => { if (event.target.id==='followModal') closeFollowModal(); });
 </script>
 </body>
 </html>
